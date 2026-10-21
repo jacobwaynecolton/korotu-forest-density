@@ -1,0 +1,177 @@
+
+=== verify/check_inputs.py
+{
+ "sites": 49,
+ "stacks": 181,
+ "scenes_listed": 181,
+ "max_days_from_flight": 44,
+ "scenes_outside_may_oct": 0,
+ "scenes_outside_jun1_sep15": 26,
+ "problems": []
+}
+
+=== verify/check_labels.py 300
+Z17_E0400_N5110_2021: 100.0% exact, 100.0% within 2 pts, mean |diff| 0.0000
+Z18_E0305_N5105_2022: 100.0% exact, 100.0% within 2 pts, mean |diff| 0.0000
+Z15_E0690_N5475_2020: 100.0% exact, 100.0% within 2 pts, mean |diff| 0.0000
+Z17_E0355_N5560_2019: 100.0% exact, 100.0% within 2 pts, mean |diff| 0.0000
+Z16_E0350_N5600_2023: 100.0% exact, 100.0% within 2 pts, mean |diff| 0.0000
+Z15_E0415_N5390_2020: 100.0% exact, 100.0% within 2 pts, mean |diff| 0.0000
+Z17_E0315_N5215_2021: 100.0% exact, 100.0% within 2 pts, mean |diff| 0.0000
+Z17_E0435_N5480_2021: 100.0% exact, 100.0% within 2 pts, mean |diff| 0.0000
+Z15_E0445_N5490_2023: 100.0% exact, 100.0% within 2 pts, mean |diff| 0.0000
+Z16_E0405_N5390_2022: 100.0% exact, 100.0% within 2 pts, mean |diff| 0.0000
+Z17_E0600_N5480_2025: 100.0% exact, 100.0% within 2 pts, mean |diff| 0.0000
+Z15_E0630_N5565_2024: 100.0% exact, 100.0% within 2 pts, mean |diff| 0.0000
+{'cells': 3600, 'sites': 12, 'exact': 1.0, 'within_2pct': 1.0, 'mean_abs_diff': 0.0, 'max_abs_diff': 0.0}
+
+=== verify/check_labels.py 60 1
+Z17_E0400_N5110_2021: 68.3% exact, 95.0% within 2 pts, mean |diff| 0.0043
+Z18_E0305_N5105_2022: 61.7% exact, 81.7% within 2 pts, mean |diff| 0.0096
+Z15_E0690_N5475_2020: 43.3% exact, 85.0% within 2 pts, mean |diff| 0.0092
+Z17_E0355_N5560_2019: 18.3% exact, 71.7% within 2 pts, mean |diff| 0.0143
+Z16_E0350_N5600_2023: 20.0% exact, 63.3% within 2 pts, mean |diff| 0.0191
+Z15_E0415_N5390_2020: 51.7% exact, 85.0% within 2 pts, mean |diff| 0.0081
+{'cells': 360, 'sites': 6, 'exact': 0.4388888888888889, 'within_2pct': 0.8027777777777776, 'mean_abs_diff': 0.010763890265176693, 'max_abs_diff': 0.08249999582767487}
+
+=== verify/check_alignment.py
+Z17_E0600_N5175_2020: r(0,0)=0.808  peak at (0,0)  sub-pixel (-1.6 m, -1.7 m)
+Z16_E0565_N5615_2019: r(0,0)=0.460  peak at (0,0)  sub-pixel (-3.1 m, -3.8 m)
+Z15_E0575_N5345_2020: r(0,0)=0.914  peak at (0,0)  sub-pixel (-0.9 m, -0.8 m)
+Z16_E0670_N5210_2023: r(0,0)=0.750  peak at (0,0)  sub-pixel (+0.4 m, -2.0 m)
+Z16_E0405_N5390_2022: r(0,0)=0.790  peak at (0,0)  sub-pixel (+0.0 m, -0.8 m)
+Z17_E0650_N4940_2023: r(0,0)=0.504  peak at (0,0)  sub-pixel (+0.9 m, -2.3 m)
+Z17_E0515_N5370_2023: r(0,0)=0.663  peak at (-1,0)  sub-pixel (-6.7 m, -1.7 m)
+Z17_E0400_N5110_2021: r(0,0)=0.805  peak at (0,0)  sub-pixel (+1.5 m, -1.1 m)
+Z15_E0530_N5540_2021: r(0,0)=0.677  peak at (-1,0)  sub-pixel (-6.6 m, -6.2 m)
+Z16_E0585_N5370_2021: r(0,0)=0.665  peak at (0,0)  sub-pixel (+0.8 m, -0.2 m)
+Z18_E0305_N5105_2022: r(0,0)=0.826  peak at (0,0)  sub-pixel (+1.2 m, +0.7 m)
+Z15_E0690_N5475_2020: r(0,0)=0.774  peak at (0,0)  sub-pixel (-1.2 m, +0.6 m)
+Z16_E0425_N5700_2024: r(0,0)=0.635  peak at (0,0)  sub-pixel (-0.9 m, -4.9 m)
+Z17_E0355_N5560_2019: r(0,0)=0.481  peak at (0,0)  sub-pixel (+0.3 m, -4.3 m)
+Z16_E0350_N5600_2023: r(0,0)=0.708  peak at (0,0)  sub-pixel (-1.9 m, -0.1 m)
+Z15_E0415_N5390_2020: r(0,0)=0.699  peak at (0,0)  sub-pixel (-1.3 m, -3.8 m)
+Z17_E0600_N5480_2025: r(0,0)=0.539  peak at (0,0)  sub-pixel (-0.5 m, -3.1 m)
+Z16_E0575_N5580_2020: r(0,0)=0.210  peak at (-1,0)  sub-pixel (-10.6 m, +6.1 m)
+Z17_E0600_N5545_2025: r(0,0)=0.444  peak at (0,0)  sub-pixel (-0.3 m, -3.5 m)
+Z17_E0360_N5435_2021: r(0,0)=0.643  peak at (0,0)  sub-pixel (-0.9 m, -2.3 m)
+Z17_E0580_N5310_2025: r(0,0)=0.350  peak at (0,0)  sub-pixel (+1.8 m, -2.8 m)
+Z15_E0535_N5710_2025: r(0,0)=0.554  peak at (0,0)  sub-pixel (-0.4 m, -2.0 m)
+Z16_E0420_N5540_2022: r(0,0)=0.650  peak at (0,0)  sub-pixel (-1.4 m, -0.8 m)
+Z15_E0415_N5625_2025: r(0,0)=0.943  peak at (0,0)  sub-pixel (-2.9 m, -3.7 m)
+Z17_E0320_N5305_2021: r(0,0)=0.752  peak at (0,-1)  sub-pixel (-2.5 m, -5.6 m)
+Z17_E0630_N5185_2020: r(0,0)=0.758  peak at (0,0)  sub-pixel (+0.7 m, -1.3 m)
+Z17_E0310_N5125_2021: r(0,0)=0.570  peak at (0,0)  sub-pixel (+0.4 m, -2.8 m)
+Z17_E0590_N4970_2019: r(0,0)=0.842  peak at (0,0)  sub-pixel (-0.5 m, -3.1 m)
+Z18_E0325_N5015_2022: r(0,0)=0.803  peak at (0,0)  sub-pixel (+2.1 m, -0.6 m)
+Z16_E0690_N5445_2023: r(0,0)=0.682  peak at (0,0)  sub-pixel (-1.5 m, -3.4 m)
+Z17_E0475_N5320_2023: r(0,0)=0.892  peak at (0,0)  sub-pixel (+0.5 m, -1.4 m)
+Z15_E0630_N5565_2024: r(0,0)=0.733  peak at (0,-1)  sub-pixel (-2.1 m, -6.3 m)
+Z17_E0665_N5045_2019: r(0,0)=0.817  peak at (0,0)  sub-pixel (-0.9 m, -1.5 m)
+Z15_E0445_N5490_2023: r(0,0)=0.911  peak at (0,0)  sub-pixel (-2.0 m, -2.1 m)
+Z16_E0350_N5465_2020: r(0,0)=0.905  peak at (0,-1)  sub-pixel (+0.6 m, -7.5 m)
+Z15_E0480_N5780_2025: r(0,0)=0.633  peak at (0,0)  sub-pixel (-2.0 m, -3.6 m)
+Z17_E0315_N5215_2021: r(0,0)=0.655  peak at (0,0)  sub-pixel (-0.6 m, -2.2 m)
+Z15_E0655_N5390_2019: r(0,0)=0.673  peak at (0,0)  sub-pixel (-0.2 m, -0.6 m)
+Z17_E0515_N5525_2023: r(0,0)=0.608  peak at (0,0)  sub-pixel (+0.6 m, -2.0 m)
+Z17_E0395_N5355_2021: r(0,0)=0.713  peak at (0,0)  sub-pixel (-4.2 m, -2.0 m)
+Z16_E0390_N5625_2023: r(0,0)=0.756  peak at (0,0)  sub-pixel (-1.4 m, -0.6 m)
+Z15_E0350_N5580_2022: r(0,0)=0.671  peak at (0,0)  sub-pixel (-2.5 m, -1.2 m)
+Z17_E0435_N5480_2021: r(0,0)=0.496  peak at (0,-1)  sub-pixel (-2.1 m, -13.2 m)
+Z15_E0520_N5405_2021: r(0,0)=0.907  peak at (0,0)  sub-pixel (-2.0 m, -2.7 m)
+Z15_E0735_N5410_2019: r(0,0)=0.590  peak at (0,0)  sub-pixel (-0.8 m, +0.3 m)
+Z16_E0425_N5460_2021: r(0,0)=0.718  peak at (0,0)  sub-pixel (+0.1 m, -0.9 m)
+Z17_E0405_N5280_2021: r(0,0)=0.870  peak at (0,0)  sub-pixel (-1.8 m, -0.2 m)
+Z17_E0670_N5120_2020: r(0,0)=0.620  peak at (0,0)  sub-pixel (-0.6 m, -0.2 m)
+Z16_E0365_N5700_2024: r(0,0)=0.553  peak at (0,0)  sub-pixel (-2.7 m, -4.9 m)
+{'sites': 49, 'peak_at_zero': 42, 'median_abs_subpx_m': 2.482826357652086, 'mean_r0': 0.6861599496468899, 'mean_r_shift1': 0.6715298948332095, 'shifts': [-3, -2, -1, 0, 1, 2, 3]}
+
+=== verify/check_splits.py
+{
+ "n_sites": 49,
+ "split_counts": {
+  "train": 43,
+  "val": 3,
+  "test": 3
+ },
+ "footprint_overlaps": [],
+ "shared_tiles": [],
+ "min_gap_km": 39.95199760027593,
+ "code_checks": {
+  "norm_stats_from_train_only": true,
+  "train_crops_from_train_only": true,
+  "checkpoint_selected_on_val": true,
+  "test_predicted_once_after_selection": true
+ }
+}
+             site_id split        nearest_train  gap_km  centre_deg
+Z17_E0400_N5110_2021   val Z17_E0310_N5125_2021   86.66        1.18
+Z18_E0305_N5105_2022  test Z18_E0325_N5015_2022   87.34        0.85
+Z15_E0690_N5475_2020   val Z15_E0735_N5410_2019   71.93        0.84
+Z17_E0355_N5560_2019   val Z17_E0435_N5480_2021  105.71        1.34
+Z16_E0350_N5600_2023  test Z16_E0390_N5625_2023   39.95        0.60
+Z15_E0415_N5390_2020  test Z15_E0445_N5490_2023   98.31        0.99
+
+=== verify/check_metrics.py
+split              source      n  n_stored    mae   rmse     r2   acc4  f1_macro  max_abs_diff
+  val model:unet_r34_ens3 735040    735040 0.1034 0.1623 0.8398 0.7333    0.5857           0.0
+  val         meta_chm_v2 735040    735040 0.1546 0.2804 0.5217 0.7266    0.5027           0.0
+  val           scanfi_v2 735040    735040 0.2206 0.2713 0.5524 0.4375    0.4346           0.0
+  val          ntems_2022 735040    735040 0.1802 0.2797 0.5242 0.6598    0.5441           0.0
+  val     meta_chm_v2_cal 735040    735040 0.1737 0.2433 0.6400 0.5346    0.3206           0.0
+  val       scanfi_v2_cal 735040    735040 0.1869 0.2524 0.6125 0.6548    0.4810           0.0
+  val      ntems_2022_cal 735040    735040 0.2175 0.2911 0.4847 0.5108    0.2598           0.0
+ test model:unet_r34_ens3 726188    726188 0.1063 0.1670 0.8191 0.7426    0.6458           0.0
+ test         meta_chm_v2 726188    726188 0.1482 0.2561 0.5744 0.6946    0.5345           0.0
+ test           scanfi_v2 726188    726188 0.1998 0.2733 0.5152 0.5555    0.5155           0.0
+ test          ntems_2022 726188    726188 0.2030 0.3229 0.3234 0.6164    0.5041           0.0
+ test     meta_chm_v2_cal 726188    726188 0.1501 0.1988 0.7435 0.5272    0.3848           0.0
+ test       scanfi_v2_cal 726188    726188 0.1610 0.2377 0.6331 0.6965    0.5449           0.0
+ test      ntems_2022_cal 726188    726188 0.2014 0.2804 0.4895 0.4568    0.2836           0.0
+largest difference from stored results: 6.1957462715867e-08 | cell counts match: True
+
+=== verify/check_benchmarks.py
+Z17_E0400_N5110_2021 [('ntems_2022', 0.975, 0.0141), ('scanfi_v2', 1.0, 0.0), ('meta_chm_v2', 0.875, 0.0019)]
+Z18_E0305_N5105_2022 [('ntems_2022', 1.0, 0.0), ('scanfi_v2', 1.0, 0.0), ('meta_chm_v2', 0.875, 0.0029)]
+Z15_E0690_N5475_2020 [('ntems_2022', 1.0, 0.0), ('scanfi_v2', 1.0, 0.0), ('meta_chm_v2', 0.872, 0.0017)]
+Z17_E0355_N5560_2019 [('ntems_2022', 1.0, 0.0), ('scanfi_v2', 1.0, 0.0), ('meta_chm_v2', 0.825, 0.0011)]
+Z16_E0350_N5600_2023 [('ntems_2022', 1.0, 0.0), ('scanfi_v2', 0.975, 0.0018), ('meta_chm_v2', 0.4, 0.0097)]
+Z15_E0415_N5390_2020 [('ntems_2022', 1.0, 0.0), ('scanfi_v2', 1.0, 0.0), ('meta_chm_v2', 0.75, 0.0024)]
+             cells   exact  mean_abs_diff  max_abs_diff
+product                                                
+meta_chm_v2  239.0  0.7657         0.0033        0.0452
+ntems_2022   240.0  0.9958         0.0023        0.5625
+scanfi_v2    240.0  0.9958         0.0003        0.0700
+
+=== verify/check_baselines.py
+/home/jacob/Projects/korotu-forest-density/verify/check_baselines.py:71: RuntimeWarning: Mean of empty slice
+  P[name] = np.nanmean(np.clip(p, 0, 1).reshape(D, H, W), axis=0)
+/home/jacob/Projects/korotu-forest-density/verify/check_baselines.py:71: RuntimeWarning: Mean of empty slice
+  P[name] = np.nanmean(np.clip(p, 0, 1).reshape(D, H, W), axis=0)
+training rows: 1,287,696
+split          test     val
+method                     
+constant     0.3428  0.3631
+ndvi_linear  0.2346  0.2439
+pixel_gbm    0.1462  0.1445
+unet         0.1063  0.1034
+
+=== pytest
+ile_codes_thresholds
+  /home/jacob/Projects/korotu-forest-density/.venv/lib/python3.11/site-packages/rasterio/transform.py:178: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(west, north) * Affine.scale(xsize, -ysize)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+16 passed, 1 warning in 0.87s
+
+
+PASS  inputs: grids match, reflectance plausible
+PASS  labels: independent recompute exact
+PASS  labels: 1 m shift is detected (check has power)
+PASS  alignment: pooled NDVI correlation peaks at zero shift
+PASS  splits: no overlap, no shared tiles
+PASS  splits: training code isolates test
+PASS  metrics: sklearn matches stored results
+PASS  benchmarks: NTEMS/SCANFI match source pixels (>=99%)
+PASS  benchmarks: Meta conversion within 0.01 on average
+PASS  unit tests pass

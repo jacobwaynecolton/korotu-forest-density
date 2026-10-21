@@ -1,0 +1,171 @@
+{
+ "summary": [
+  {
+   "product": "meta_chm_v2",
+   "cells": 239.0,
+   "exact": 0.7656903765690377,
+   "mean_abs_diff": 0.003301997630377542,
+   "max_abs_diff": 0.04517239948798868
+  },
+  {
+   "product": "ntems_2022",
+   "cells": 240.0,
+   "exact": 0.9958333333333333,
+   "mean_abs_diff": 0.002343760301048547,
+   "max_abs_diff": 0.5625000286102295
+  },
+  {
+   "product": "scanfi_v2",
+   "cells": 240.0,
+   "exact": 0.9958333333333333,
+   "mean_abs_diff": 0.00029167615001399763,
+   "max_abs_diff": 0.06999997615814213
+  }
+ ],
+ "per_site": [
+  {
+   "site_id": "Z17_E0400_N5110_2021",
+   "product": "ntems_2022",
+   "cells": 40,
+   "exact": 0.975,
+   "mean_abs_diff": 0.014062510073184953,
+   "max_abs_diff": 0.5625000286102295
+  },
+  {
+   "site_id": "Z17_E0400_N5110_2021",
+   "product": "scanfi_v2",
+   "cells": 40,
+   "exact": 1.0,
+   "mean_abs_diff": 1.0162591929097076e-08,
+   "max_abs_diff": 2.8610229518832853e-08
+  },
+  {
+   "site_id": "Z17_E0400_N5110_2021",
+   "product": "meta_chm_v2",
+   "cells": 40,
+   "exact": 0.875,
+   "mean_abs_diff": 0.0018748646953354168,
+   "max_abs_diff": 0.020833333333333315
+  },
+  {
+   "site_id": "Z18_E0305_N5105_2022",
+   "product": "ntems_2022",
+   "cells": 40,
+   "exact": 1.0,
+   "mean_abs_diff": 5.826354015914248e-09,
+   "max_abs_diff": 2.8610229518832853e-08
+  },
+  {
+   "site_id": "Z18_E0305_N5105_2022",
+   "product": "scanfi_v2",
+   "cells": 40,
+   "exact": 1.0,
+   "mean_abs_diff": 9.074807162667842e-09,
+   "max_abs_diff": 2.8610229518832853e-08
+  },
+  {
+   "site_id": "Z18_E0305_N5105_2022",
+   "product": "meta_chm_v2",
+   "cells": 40,
+   "exact": 0.875,
+   "mean_abs_diff": 0.0029360288989419545,
+   "max_abs_diff": 0.04517239948798868
+  },
+  {
+   "site_id": "Z15_E0690_N5475_2020",
+   "product": "ntems_2022",
+   "cells": 40,
+   "exact": 1.0,
+   "mean_abs_diff": 1.2062489982214708e-08,
+   "max_abs_diff": 2.8610229518832853e-08
+  },
+  {
+   "site_id": "Z15_E0690_N5475_2020",
+   "product": "scanfi_v2",
+   "cells": 40,
+   "exact": 1.0,
+   "mean_abs_diff": 1.0326504696483996e-08,
+   "max_abs_diff": 2.8610229518832853e-08
+  },
+  {
+   "site_id": "Z15_E0690_N5475_2020",
+   "product": "meta_chm_v2",
+   "cells": 39,
+   "exact": 0.8717948717948718,
+   "mean_abs_diff": 0.0017373546686617713,
+   "max_abs_diff": 0.03975610471353297
+  },
+  {
+   "site_id": "Z17_E0355_N5560_2019",
+   "product": "ntems_2022",
+   "cells": 40,
+   "exact": 1.0,
+   "mean_abs_diff": 1.153722404209634e-08,
+   "max_abs_diff": 2.622604367008563e-08
+  },
+  {
+   "site_id": "Z17_E0355_N5560_2019",
+   "product": "scanfi_v2",
+   "cells": 40,
+   "exact": 1.0,
+   "mean_abs_diff": 9.633600710212687e-09,
+   "max_abs_diff": 2.8610229518832853e-08
+  },
+  {
+   "site_id": "Z17_E0355_N5560_2019",
+   "product": "meta_chm_v2",
+   "cells": 40,
+   "exact": 0.825,
+   "mean_abs_diff": 0.001132236774642793,
+   "max_abs_diff": 0.013727782040658054
+  },
+  {
+   "site_id": "Z16_E0350_N5600_2023",
+   "product": "ntems_2022",
+   "cells": 40,
+   "exact": 1.0,
+   "mean_abs_diff": 1.2800097455578641e-08,
+   "max_abs_diff": 2.8610229518832853e-08
+  },
+  {
+   "site_id": "Z16_E0350_N5600_2023",
+   "product": "scanfi_v2",
+   "cells": 40,
+   "exact": 0.975,
+   "mean_abs_diff": 0.0017500086426734812,
+   "max_abs_diff": 0.06999997615814213
+  },
+  {
+   "site_id": "Z16_E0350_N5600_2023",
+   "product": "meta_chm_v2",
+   "cells": 40,
+   "exact": 0.4,
+   "mean_abs_diff": 0.009718559654061367,
+   "max_abs_diff": 0.03857145241328652
+  },
+  {
+   "site_id": "Z15_E0415_N5390_2020",
+   "product": "ntems_2022",
+   "cells": 40,
+   "exact": 1.0,
+   "mean_abs_diff": 9.506940832487708e-09,
+   "max_abs_diff": 2.8610229518832853e-08
+  },
+  {
+   "site_id": "Z15_E0415_N5390_2020",
+   "product": "scanfi_v2",
+   "cells": 40,
+   "exact": 1.0,
+   "mean_abs_diff": 9.059906005970397e-09,
+   "max_abs_diff": 2.8610229518832853e-08
+  },
+  {
+   "site_id": "Z15_E0415_N5390_2020",
+   "product": "meta_chm_v2",
+   "cells": 40,
+   "exact": 0.75,
+   "mean_abs_diff": 0.0023738250165790528,
+   "max_abs_diff": 0.01962963022567607
+  }
+ ]
+}

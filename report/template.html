@@ -1,0 +1,879 @@
+<title>Ontario Canopy Cover Labels</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column (~72ch) with full-width figure bands; data set in mono, headings in a technical grotesque. */
+:root {
+  --bg: #f7f8f5;
+  --surface: #fcfcfb;
+  --ink: #15201b;
+  --ink-2: #4a524d;
+  --muted: #7d837e;
+  --line: #dfe3dc;
+  --accent: #1d5c46;
+  --accent-soft: #e3eee8;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  /* categorical slots (dataviz reference, validated): train / val / test */
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+  /* ordinal cover classes, light -> dark = low -> high cover */
+  --c0: #86b6ef; --c1: #3987e5; --c2: #1c5cab; --c3: #104281;
+  --c-text-on-dark: #ffffff;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111613; --surface: #1a1a19; --ink: #eef1ec; --ink-2: #c3c8c1; --muted: #8d948e;
+    --line: #2b322e; --accent: #7cc4a4; --accent-soft: #1d2b25; --grid: #2c2c2a; --axis: #383835;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+    --c0: #cde2fb; --c1: #86b6ef; --c2: #3987e5; --c3: #1c5cab;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111613; --surface: #1a1a19; --ink: #eef1ec; --ink-2: #c3c8c1; --muted: #8d948e;
+  --line: #2b322e; --accent: #7cc4a4; --accent-soft: #1d2b25; --grid: #2c2c2a; --axis: #383835;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+  --c0: #cde2fb; --c1: #86b6ef; --c2: #3987e5; --c3: #1c5cab;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 17px/1.6 var(--body); }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 72px; }
+.col { max-width: 72ch; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; letter-spacing: -0.01em; margin: 0; }
+h1 { font-size: clamp(30px, 5vw, 44px); font-weight: 700; line-height: 1.1; }
+h2 { font-size: 26px; font-weight: 600; margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); }
+h3 { font-size: 18px; font-weight: 600; margin-top: 24px; }
+p { margin: 12px 0 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font: 500 12px/1.4 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.lede { font-size: 19px; color: var(--ink-2); margin-top: 14px; }
+.meta { font: 400 13px/1.5 var(--mono); color: var(--muted); margin-top: 14px; }
+code, .mono { font-family: var(--mono); font-size: 0.86em; }
+code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 28px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+.tile .v { font: 600 30px/1.1 var(--display); }
+.tile .k { font-size: 14px; color: var(--ink-2); margin-top: 4px; }
+
+figure { margin: 22px 0 0; }
+figcaption { font-size: 14px; color: var(--ink-2); margin-top: 8px; max-width: 80ch; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+.pipeline img { display: block; width: 100%; height: auto; border-radius: 4px; background: #fff; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 18px; }
+.steps > div { min-width: 0; }
+.steps b { font-family: var(--display); font-weight: 600; display: block; }
+.steps p { font-size: 15px; color: var(--ink-2); margin-top: 4px; }
+
+.two { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; margin-top: 22px; align-items: start; }
+@media (max-width: 820px) { .two { grid-template-columns: minmax(0, 1fr); } }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); margin: 0 0 10px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.chart { width: 100%; height: auto; display: block; overflow: visible; }
+#map { overflow: hidden; border-radius: 4px; }
+#wcBars { max-width: 900px; }
+.chart text { font-family: var(--body); fill: var(--ink-2); }
+.chart .tick { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+.chart .lab { font-size: 12.5px; fill: var(--ink); }
+.chart .inlab { font-family: var(--mono); font-size: 11px; }
+.hit { cursor: default; }
+.tip { position: fixed; pointer-events: none; z-index: 20; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; font-size: 13px; line-height: 1.45; box-shadow: 0 4px 16px rgba(0,0,0,0.12); max-width: 280px; }
+.tip b { font-family: var(--display); font-weight: 600; }
+
+.findings { margin: 14px 0 0; padding-left: 20px; }
+.findings li { margin-top: 8px; }
+.callout { background: var(--accent-soft); border-radius: 8px; padding: 14px 16px; margin-top: 18px; font-size: 16px; }
+
+.tablewrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font: 600 12px/1.3 var(--display); text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: 13px; }
+tr:last-child td { border-bottom: 0; }
+.pill { display: inline-block; font: 500 11.5px/1 var(--mono); padding: 4px 7px; border-radius: 999px; border: 1px solid currentColor; }
+.pill.train { color: var(--s1); } .pill.val { color: var(--s2); } .pill.test { color: var(--s3); }
+.minibar { display: inline-flex; width: 120px; height: 10px; gap: 1px; vertical-align: middle; }
+.minibar i { display: block; height: 100%; }
+
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-top: 20px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px; min-width: 0; scroll-margin-top: 16px; }
+.card:target { outline: 2px solid var(--accent); }
+.card .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.card img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; display: block; max-width: 100%; }
+.card .hd { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+.card .id { font: 500 12.5px/1.3 var(--mono); overflow-wrap: anywhere; }
+.card .sub { font-size: 13px; color: var(--ink-2); margin-top: 8px; }
+.ramp { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); margin-top: 12px; }
+.ramp .bar { width: 160px; height: 10px; border-radius: 3px; background: linear-gradient(90deg, #f3f2ee, #cde2fb, #86b6ef, #3987e5, #1c5cab, #104281); border: 1px solid var(--line); }
+
+#compareFigs { display: grid; gap: 12px; margin-top: 14px; }
+#compareFigs figure { margin: 0; overflow-x: auto; }
+#compareFigs img { display: block; width: 100%; min-width: 640px; height: auto; border-radius: 6px; background: #fff; }
+td.best { font-weight: 600; color: var(--ink); }
+table.wrap td { white-space: normal; vertical-align: top; min-width: 150px; }
+table.wrap td:nth-child(4), table.wrap td:nth-child(5) { min-width: 0; white-space: nowrap; }
+.chart .cellv { font-family: var(--mono); font-size: 12px; font-weight: 500; }
+.conf td.num { min-width: 64px; }
+.phase { margin-top: 72px; padding-top: 28px; border-top: 3px solid var(--accent); }
+.lit { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 18px; }
+.lit section { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.lit h3 { margin-top: 0; font-size: 16px; }
+.lit ul { padding-left: 18px; margin: 8px 0 0; font-size: 15px; }
+.lit li { margin-top: 8px; }
+.lit .use { display: block; color: var(--ink-2); font-size: 14px; }
+.decisions { display: grid; gap: 10px; margin-top: 16px; }
+.decisions div { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.decisions div b { font-family: var(--display); font-weight: 600; }
+@media (max-width: 620px) { .decisions div { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
+pre { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; overflow-x: auto; font: 13px/1.55 var(--mono); }
+@media (prefers-reduced-motion: no-preference) { .card { transition: border-color .15s; } .card:hover { border-color: var(--axis); } }
+</style>
+
+<div class="wrap">
+  <header class="col">
+    <div class="eyebrow">CSC2701 · Korotu forest density · Phase 1 labels · Phase 2 model</div>
+    <h1>Ontario canopy cover from airborne lidar and Sentinel-2</h1>
+    <p class="lede">Training labels for the forest-density model: canopy cover for every 10&nbsp;m cell in 49 Ontario sites, measured from leaf-on lidar and placed exactly on the Sentinel-2 pixel grid, and a model trained on them that beats the current national and global canopy maps on held-out sites.</p>
+    <p class="meta">Prepared by Jacob Colton · data as of 18 Oct 2026 · Ontario FRI leaf-on SPL lidar (Open Government Licence – Ontario)</p>
+  </header>
+
+  <div class="tiles" id="tiles"></div>
+  <p class="callout col">Headline: a U-Net trained on these labels predicts 10&nbsp;m canopy cover from Sentinel-2 with a test error 28&nbsp;% lower than Meta/WRI's 2026 global canopy map and about half that of Canada's SCANFI and NTEMS products, with the lowest error at 5 of 6 held-out sites. <a href="#phase2">Jump to phase 2</a>.</p>
+
+  <div class="eyebrow" style="margin-top:44px">Phase 1</div>
+  <h2 id="what" style="border-top:0;margin-top:6px;padding-top:0">What was built</h2>
+  <div class="col">
+    <p>Each label says what fraction of a 10&nbsp;m Sentinel-2 pixel is covered by tree crowns taller than 2&nbsp;m. The lidar measures heights every 0.5&nbsp;m, so every label is an average of 400 height measurements. Labels are continuous (0 to 1), so the cut points between dense, moderate, sparse and non-forest can still be chosen later without redoing any processing.</p>
+  </div>
+  <figure class="panel pipeline">
+    <img src="figures/pipeline.png" alt="Four panels of the same 300 by 300 metre area: Sentinel-2 true colour image, lidar canopy height at 0.5 metres, a tree mask of heights above 2 metres, and the resulting canopy cover label per 10 metre cell ranging from dense at the top to open at the bottom.">
+    <figcaption id="pipecap">One 300&nbsp;m window, from the input image to the label.</figcaption>
+  </figure>
+  <div class="steps">
+    <div><b>1 · Height map</b><p>Ontario's Forest Resources Inventory lidar comes with a ready-made canopy height model: 0.5&nbsp;m pixels, flown leaf-on, 2018–2025.</p></div>
+    <div><b>2 · Tree mask</b><p>Pixels above 2&nbsp;m count as tree crown, the standard "% of first returns above 2&nbsp;m" convention. A 5&nbsp;m version is stored too.</p></div>
+    <div><b>3 · Onto the S2 grid</b><p>The mask is reprojected from NAD83(CSRS) to WGS84 UTM, the CRS Sentinel-2 uses, with a grid snapped to 60&nbsp;m so the 10, 20 and 60&nbsp;m bands all line up.</p></div>
+    <div><b>4 · Average to 10 m</b><p>400 mask pixels become one cover value. Cells with any missing lidar are left empty rather than guessed.</p></div>
+  </div>
+
+  <h2 id="sites">Where the labels come from</h2>
+  <div class="col">
+    <p>The 49 sites are 5&nbsp;km × 5&nbsp;km blocks spread across Ontario's managed forest, from the Lake of the Woods area to the Ottawa Valley. Twelve were spread out evenly first. Five were added because they contain open and partly treed forest, which the first twelve barely had. Thirty-two more training sites were then added, each kept at least 0.5° from every validation and test site. Every site was flown in a single season between 1 June and 15 September.</p>
+  </div>
+  <div class="two">
+    <figure class="panel" style="margin:0">
+      <div class="legend" id="mapLegend"></div>
+      <svg class="chart" id="map" role="img" aria-label="Map of Ontario showing 49 lidar sites coloured by train, validation and test split"></svg>
+      <figcaption>Circles were placed for even spread; diamonds were chosen for sparse cover. Hover over a site for details, or click it to jump to its images.</figcaption>
+    </figure>
+    <div>
+      <h3 style="margin-top:0">Spatial split</h3>
+      <p>Whole sites go to train, validation or test, never individual cells. Neighbouring cells look almost identical, so a random split would leak and overstate accuracy. The proposed split keeps the class mix similar in all three sets:</p>
+      <div class="legend" id="classLegend" style="margin-top:14px"></div>
+      <svg class="chart" id="splitBars" role="img" aria-label="Stacked bars of cover class shares for all land, train, validation and test"></svg>
+      <p style="font-size:14px;color:var(--ink-2)">Class cut points (10 / 40 / 70&nbsp;%) are placeholders until they are agreed with Korotu. Water cells are excluded here.</p>
+    </div>
+  </div>
+
+  <h2 id="eda">What the labels look like</h2>
+  <div class="two">
+    <figure class="panel" style="margin:0">
+      <div class="legend"><span><i class="sw" style="background:var(--c2)"></i>10 m land cells per 5 % cover bin</span><span style="color:var(--muted)">dashed: class cut points</span></div>
+      <svg class="chart" id="hist" role="img" aria-label="Histogram of canopy cover across all land cells"></svg>
+      <figcaption>Canopy cover across all <span id="nland"></span> land cells. Most cells are either fully closed canopy or open, with a long, thin middle.</figcaption>
+    </figure>
+    <div class="col">
+      <ul class="findings" id="findings"></ul>
+    </div>
+  </div>
+
+  <h3>A third-party map against the lidar</h3>
+  <div class="col">
+    <p>ESA WorldCover 2021 is one of the existing products the confidence map will combine. Lining its 10&nbsp;m classes up against the lidar labels gives a first look at where it agrees and where it doesn't.</p>
+  </div>
+  <figure class="panel">
+    <div class="legend" id="classLegend2"></div>
+    <svg class="chart" id="wcBars" role="img" aria-label="Lidar cover class mix within each ESA WorldCover class"></svg>
+    <figcaption id="wccap"></figcaption>
+  </figure>
+
+  <h2 id="pairs">Training pairs</h2>
+  <div class="col">
+    <p>Every labelled cell has Sentinel-2 L2A surface reflectance: 12 bands, the 20 and 60&nbsp;m bands repeated onto the 10&nbsp;m grid. Each site has up to four cloud-free dates from the flight season (<code>data/pairs/stacks/</code>), and the first 17 sites also have a flat table of 4.13 million cells (<code>data/pairs/pixels.parquet</code>) for per-pixel models.</p>
+    <p>Scenes span four processing baselines. The newer ones carry a −0.1 reflectance offset that the AWS copies have already removed, and applying it again put forest red reflectance below zero. With that fixed, dense-forest red, NIR and SWIR agree within 0.003 across baselines.</p>
+    <p>As a first smoke test on the original 17 sites, gradient boosting on the bands plus NDVI, trained on 300k cells from 11 training sites, predicted cover on the held-out sites with these errors:</p>
+  </div>
+  <div class="tablewrap" style="max-width:720px"><table>
+    <thead><tr><th>Held-out sites</th><th class="num">Cells</th><th class="num">MAE</th><th class="num">r</th><th class="num">4-class acc.</th><th class="num">MAE if predicting the mean</th></tr></thead>
+    <tbody><tr><td>Validation (3)</td><td class="num">733k</td><td class="num">0.161</td><td class="num">0.84</td><td class="num">67%</td><td class="num">0.364</td></tr>
+    <tr><td>Test (3)</td><td class="num">726k</td><td class="num">0.123</td><td class="num">0.87</td><td class="num">71%</td><td class="num">0.343</td></tr></tbody>
+  </table></div>
+  <p class="col" style="font-size:15px;color:var(--ink-2)">These pairs carry real signal. The U-Net below cuts the validation error by about a third again. Accuracy uses the placeholder 10 / 40 / 70&nbsp;% cut points.</p>
+
+
+  <h2 id="decisions">Decisions and why</h2>
+  <div class="decisions">
+    <div><b>FRI leaf-on lidar, not the Classified Point Cloud</b><span>The charter named Ontario's Classified Point Cloud. That dataset is mostly from 2009–2019, and leaf-off flights are standard practice in Ontario's provincial mapping, which undercounts deciduous canopy. Its points also have no vegetation class. The FRI lidar is leaf-on, from 2018–2025 (all within the Sentinel-2 era), covers about 452,000 km², and ships a 0.5&nbsp;m height model. <b>The charter's Section 3 should be updated.</b></span></div>
+    <div><b>2 m height threshold</b><span>This matches Canada's national forest structure products ("% of first returns above 2&nbsp;m"). A > 5&nbsp;m band is included because FAO and Canadian forest definitions use 5&nbsp;m trees, so the team can test the choice.</span></div>
+    <div><b>Labels on the Sentinel-2 grid</b><span>Labels are produced directly in WGS84 UTM with 10&nbsp;m cells snapped to 60&nbsp;m, so the S2 side never has to resample imagery. All 49 preview windows lined up with whole S2 pixels.</span></div>
+    <div><b>Flight dates from the files</b><span>Exact flight dates are read from each point-cloud header with a 1&nbsp;KB request. Sites flown outside 1 June – 15 Sept, or across more than 60 days, were rejected (10 candidate blocks).</span></div>
+    <div><b>Continuous labels</b><span>Storing the cover fraction rather than a class keeps the 4-class cut points open, and lets the model be trained as regression or classification.</span></div>
+    <div><b>Verified</b><span>All 1,250 tiles downloaded and decode. 680 random label cells were recomputed independently from the raw height tiles and matched exactly. Four tile formats (three nodata values, and a 2025 batch in a different CRS and pixel size) are handled.</span></div>
+  </div>
+
+  <h2 id="open">Limitations and open questions</h2>
+  <ul class="findings col">
+    <li><b>Ontario managed forest only.</b> No far-north open woodland, no Hudson Bay Lowlands, little farmland edge. A Québec site (1&nbsp;m height model, open data) would make a strong out-of-province test.</li>
+    <li><b>Time gap.</b> The preview scenes are a median of <span id="gapmed"></span> days from the flight (max <span id="gapmax"></span>). The real S2 pipeline should keep the gap small, so harvest or fire between flight and image doesn't corrupt labels.</li>
+    <li><b>Cover is not "forest".</b> Shrubs and regrowth over 2&nbsp;m count as canopy. Whether Korotu's "sparse forest" includes them is a question for Rebecca.</li>
+    <li><b>Water.</b> <span id="waterpct"></span> of cells are open water. Decide whether water is a separate class, part of non-forest, or masked out.</li>
+    <li><b>For Korotu:</b> the density cut points, the height threshold, and whether 10&nbsp;m (Sentinel-2) or sub-metre imagery is the production target.</li>
+  </ul>
+
+  <h2 id="lit">Literature summary</h2>
+  <div class="col"><p>What existing work says about each step, and what this phase took from it.</p></div>
+  <div class="lit">
+    <section>
+      <h3>Lidar as ground truth for canopy cover</h3>
+      <ul>
+        <li>Canada's national forest structure products define cover as the share of first lidar returns above 2&nbsp;m, e.g. the <a href="https://donnees.iriu.ca/en/dataset/76af2d23-93b8-4290-9126-6ee00c98c769" target="_blank" rel="noopener">Forest Percentage Above 2m</a> layer; lidar tools such as <a href="https://lastools.osgeo.org/download/lascanopy_README.txt" target="_blank" rel="noopener">LAStools lascanopy</a> compute it directly.<span class="use">→ our 2 m threshold and per-cell fraction.</span></li>
+        <li>The height cutoff for "canopy" is a choice that depends on forest type: the US Forest Service lidar guide uses 1&nbsp;m for short-stature stands and 3&nbsp;m for mixed conifer (<a href="https://web.archive.org/web/20240721033157/https://fsapps.nwcg.gov/gtac/CourseDownloads/Reimbursables/FY21/LiDAR_Material/LiDARMetrics_Descriptions_2021.pdf" target="_blank" rel="noopener">USFS lidar metrics, archived</a>). Canada's NTEMS uses 2&nbsp;m.<span class="use">→ a second 5 m band; 10 m cells (400 lidar pixels each).</span></li>
+        <li>Ontario's provincial lidar is usually flown leaf-off, which gives better terrain models but undercounts deciduous canopy (<a href="https://arxiv.org/pdf/2606.26194" target="_blank" rel="noopener">2026 preprint</a> citing Geospatial Ontario reports).<span class="use">→ the switch to FRI leaf-on lidar.</span></li>
+      </ul>
+    </section>
+    <section>
+      <h3>Learning cover from Sentinel-2 with lidar labels</h3>
+      <ul>
+        <li>Lang et al. (2019) regressed canopy height from 13-band Sentinel-2 L2A with a CNN trained on airborne lidar references (<a href="https://ar5iv.arxiv.org/html/1904.13270" target="_blank" rel="noopener">arXiv 1904.13270</a>), later scaled to a global 10&nbsp;m map with GEDI.<span class="use">→ the S2 + lidar pairing is established.</span></li>
+        <li>The California Forest Observatory trained U-Nets on Sentinel-1/2 at 10&nbsp;m with structure metrics from USGS lidar, because lidar covered only a small fraction of the state (<a href="https://wifire-data.sdsc.edu/dataset/clm-canopy-cover" target="_blank" rel="noopener">canopy cover product</a>).<span class="use">→ closest precedent to our setup.</span></li>
+        <li>Open-Canopy (CVPR 2025) pairs 87,000&nbsp;km² of French LiDAR HD heights with 1.5&nbsp;m SPOT imagery, with test tiles separated by a 1&nbsp;km buffer (<a href="https://arxiv.org/pdf/2407.09392" target="_blank" rel="noopener">arXiv 2407.09392</a>).<span class="use">→ spatially separated test data; a possible pretraining source.</span></li>
+        <li>Google's AlphaEarth embeddings (64 numbers per 10&nbsp;m pixel) beat earlier features for mapping from sparse labels (<a href="https://arxiv.org/pdf/2507.22291" target="_blank" rel="noopener">arXiv 2507.22291</a>).<span class="use">→ a cheap baseline input for the model team.</span></li>
+      </ul>
+    </section>
+    <section>
+      <h3>Canadian reference data</h3>
+      <ul>
+        <li>NTEMS annual 30&nbsp;m forest land cover 1984–2022 (Hermosilla et al.) and <a href="https://open.canada.ca/data/en/dataset/18e6a919-53fd-41ce-b4e2-44a9707c52dc" target="_blank" rel="noopener">SCANFI</a> 2020 crown closure are models trained on lidar and photo plots.<span class="use">→ third-party maps to combine, not ground truth.</span></li>
+        <li>Bater et al. (2026) released ~15M 30&nbsp;m lidar plots along transects over northern forests, with cover metrics (<a href="https://essd.copernicus.org/articles/18/2075/2026/" target="_blank" rel="noopener">ESSD 18:2075</a>).<span class="use">→ a northern evaluation set if time allows.</span></li>
+        <li>Québec publishes a 1&nbsp;m lidar canopy height model as open data (<a href="https://www.donneesquebec.ca/recherche/dataset/donnees-lidar-du-quebec" target="_blank" rel="noopener">Données Québec</a>).<span class="use">→ out-of-province test region.</span></li>
+      </ul>
+    </section>
+    <section>
+      <h3>Existing maps disagree</h3>
+      <ul>
+        <li>Global forest products differed by up to 70&nbsp;% in forest area across three countries, and higher resolution did not mean higher accuracy (<a href="https://www.frontiersin.org/journals/remote-sensing/articles/10.3389/frsen.2026.1679383/full" target="_blank" rel="noopener">Gapare et al. 2026</a>).<span class="use">→ trust in each product should vary by region.</span></li>
+        <li>Dynamic World, WorldCover and Esri agree on tree area but each has class biases, e.g. WorldCover over-estimates grass (<a href="https://www.pnnl.gov/publications/global-10-m-land-use-land-cover-datasets-comparison-dynamic-world-world-cover-and-esri" target="_blank" rel="noopener">PNNL comparison</a>).<span class="use">→ matches our WorldCover result for shrub and grass cells.</span></li>
+        <li>Forest definitions differ: FAO uses &gt;10&nbsp;% cover over 0.5&nbsp;ha, Canada's UNFCCC reporting uses &gt;25&nbsp;% over 1&nbsp;ha (<a href="https://www150.statcan.gc.ca/n1/pub/16-201-x/2018001/sec-1-eng.htm" target="_blank" rel="noopener">StatCan</a>).<span class="use">→ part of the disagreement between products is definitional.</span></li>
+      </ul>
+    </section>
+    <section>
+      <h3>Combining maps and stating confidence</h3>
+      <ul>
+        <li>IIASA fused eight forest products with geographically weighted regression trained on crowdsourced points; the hybrid reached 93&nbsp;% accuracy, beating every input (<a href="https://pure.iiasa.ac.at/11491" target="_blank" rel="noopener">Schepaschenko et al.</a>).<span class="use">→ the template for the weighted confidence map.</span></li>
+        <li>Bayesian fusion gives each pixel a class probability plus an uncertainty map (<a href="https://doi.org/10.3390/rs6065589" target="_blank" rel="noopener">Xu et al. 2014, Remote Sensing 6:5589</a>).</li>
+        <li>Olofsson et al. (2014) set the standard for accuracy assessment: probability sampling and area-weighted error matrices (<a href="https://doi.org/10.1016/j.rse.2014.02.015" target="_blank" rel="noopener">RSE 148</a>).<span class="use">→ how the final map should be evaluated.</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <h2 id="every-site">Every site</h2>
+  <div class="col">
+    <p>Each card shows the Sentinel-2 scene closest to the lidar flight next to the 10&nbsp;m label for the same 4.9&nbsp;km square. Rivers, roads and cutblocks line up in both, which is a visual check of the grid alignment.</p>
+    <div class="ramp"><span>Cover 0</span><span class="bar"></span><span>1</span></div>
+  </div>
+  <div class="gallery" id="gallery"></div>
+
+  <h3>Site table</h3>
+  <div class="tablewrap"><table id="siteTable"></table></div>
+
+  <h2 id="files">Files and handoff</h2>
+  <div class="col">
+    <p>Everything is in <code>~/Projects/korotu-forest-density/</code> and reruns from the scripts in order. For the Sentinel-2 teammates: <code>data/manifest/sites.geojson</code> has each site's footprint, CRS (<code>epsg_s2</code>), grid bounds and lidar flight dates; <code>s2_preview_scenes.csv</code> lists one cloud-free scene per site as a starting point.</p>
+  </div>
+<pre>scripts/select_sites.py      pick 12 spread-out 5×5 km sites, check flight dates
+scripts/add_sparse_sites.py  add 5 sites chosen for 10–70 % cover
+scripts/expand_sites.py      add 32 training sites, ≥ 0.5° from val/test
+scripts/download_chm.py      fetch CHM tiles (resumable, validated)
+scripts/make_labels.py       10 m labels on the S2 grid → data/labels/&lt;site&gt;_cover10m.tif
+                             band 1 cover_gt2m · band 2 cover_gt5m · band 3 valid_frac
+scripts/context_layers.py    S2 true-colour preview + ESA WorldCover per site
+scripts/eda.py               splits, statistics, figures
+scripts/make_pairs.py        S2 L2A 12-band stacks + pixels.parquet (first 17 sites)
+scripts/make_stacks.py       up to 4 cloud-free S2 dates per site, all 49 sites
+scripts/benchmarks.py        Meta CHM v2, SCANFI v2, NTEMS on the label grid
+scripts/calibrate_benchmarks.py  isotonic recalibration on training sites
+scripts/train_unet.py        U-Net training (≈5 min on an RTX 5070 Ti laptop GPU)
+scripts/ensemble.py          average seeds
+scripts/evaluate.py          scores at 10 m and 30 m
+scripts/final_analysis.py    per-site, imagery-age and confusion checks, figures
+scripts/check_pairs.py       reflectance harmonization + baseline smoke test
+report/build_report.py       builds this page</pre>
+
+  <section class="phase" id="phase2">
+    <div class="eyebrow">Phase 2</div>
+    <h2 style="border-top:0;margin-top:6px;padding-top:0">A canopy-cover model that beats the current maps</h2>
+    <p class="lede col">With the labels in place, phase 2 asked whether a model trained on them can beat the best existing canopy maps for Canada. A U-Net reading only Sentinel-2 does, on 5 of the 6 held-out sites and on the pooled test and validation sets, after about five minutes of training on a laptop GPU.</p>
+  </section>
+  <div class="tiles" id="modelTiles"></div>
+
+  <h2 id="p2-what">What was done</h2>
+  <div class="steps">
+    <div><b>More training data</b><p>32 more training sites (49 in total, 1,219&nbsp;km², 11.9M labelled cells), each at least 0.5° from every validation and test site so the evaluation stays independent.</p></div>
+    <div><b>Several dates per site</b><p>Up to four cloud-free Sentinel-2 scenes from the flight season per site (161 training site-dates). Each date is a different view of the same forest, which works as augmentation, and predictions are averaged across dates.</p></div>
+    <div><b>U-Net, three seeds</b><p>ResNet-34 encoder with ImageNet weights adapted to 12 bands, L1 loss on random 128&nbsp;×&nbsp;128 crops, 8,000 steps. The final model averages three seeds plus four flips.</p></div>
+    <div><b>Fair benchmarks</b><p>Meta and SCANFI are placed on the same 10&nbsp;m grid, scored on the same cells, and also recalibrated to our lidar using training sites only. Choices were made on validation; test was scored once.</p></div>
+  </div>
+  <figure class="panel">
+<pre class="mermaid">
+flowchart LR
+  A["FRI leaf-on lidar<br/>0.5 m heights"] --> B["10 m cover labels<br/>on the S2 grid"]
+  C["Sentinel-2 L2A<br/>up to 4 dates per site"] --> D["U-Net × 3 seeds<br/>43 training sites"]
+  B --> D
+  D --> E["Ensemble<br/>dates + flips + seeds"]
+  E --> F["Score on 6 held-out sites<br/>10 m and 30 m"]
+  G["Meta/WRI CHM v2<br/>SCANFI v2, NTEMS 2022"] --> F
+  E --> H["Ensemble spread<br/>confidence preview"]
+</pre>
+    <figcaption>Phase 2 workflow. Every box is a script in <code>scripts/</code>.</figcaption>
+  </figure>
+
+  <h3>Training</h3>
+  <figure class="panel">
+    <div class="legend" id="curveLegend"></div>
+    <svg class="chart" id="curves" role="img" aria-label="Validation error during training for three seeds, with Meta's validation error as a reference line"></svg>
+    <figcaption>Validation error during training for each seed. The model passes Meta's error (dashed) within the first thousand steps, under a minute of training.</figcaption>
+  </figure>
+
+  <h2 id="model">Results against the current maps</h2>
+  <div class="col">
+    <p>The comparison set is the maps that represent the current state of the art for Canadian canopy cover. <b>Meta/WRI Global Canopy Height v2</b> (2026, ~1&nbsp;m, from sub-metre satellite imagery) is turned into cover with exactly our definition, the share of each 10&nbsp;m cell above 2&nbsp;m. <b>SCANFI v2</b> (2026) is Canada's 30&nbsp;m National Forest Inventory crown-closure product, taken from the 5-yearly layer nearest each flight. <b>NTEMS 2022</b> is Canada's 30&nbsp;m lidar-plot-trained Landsat canopy cover (Matasci et al. 2018 method), which uses the same 2&nbsp;m definition as ours. Each product also appears <i>recalibrated</i>: a monotone map fitted to our lidar on training sites only, so no product loses just because it defines cover differently.</p>
+  </div>
+  <h3>Test sites (scored once)</h3>
+  <div class="tablewrap"><table id="evalTest"></table></div>
+  <h3>Validation sites</h3>
+  <div class="tablewrap"><table id="evalVal"></table></div>
+  <p class="col" style="font-size:14px;color:var(--ink-2)">MAE and RMSE are in cover fraction (0.10 = 10 percentage points). 30&nbsp;m = 3&nbsp;×&nbsp;3 blocks of 10&nbsp;m cells. Accuracy and macro-F1 use the placeholder 10 / 40 / 70&nbsp;% classes. Best value per column in bold.</p>
+
+  <div class="two">
+    <figure class="panel" style="margin:0">
+      <div class="legend" id="binLegend"></div>
+      <svg class="chart" id="binChart" role="img" aria-label="Mean absolute error by true canopy cover on test sites for the model, Meta and SCANFI"></svg>
+      <figcaption>Error by true cover on the test sites. All maps are worst in the middle, where cover is partial; the model's gap is largest in dense and open forest.</figcaption>
+    </figure>
+    <div>
+      <h3 style="margin-top:0">Where the model still gets classes wrong</h3>
+      <p style="font-size:15px;color:var(--ink-2)">Test-site confusion, rows = lidar class, share of each row:</p>
+      <div class="tablewrap"><table id="confTable"></table></div>
+      <p style="font-size:15px;color:var(--ink-2)" id="confNote"></p>
+    </div>
+  </div>
+
+  <h3>Site by site</h3>
+  <div class="two">
+    <figure class="panel" style="margin:0">
+      <div class="legend" id="siteBarLegend"></div>
+      <svg class="chart" id="siteBars" role="img" aria-label="Mean absolute error per held-out site for the model, Meta, SCANFI and NTEMS"></svg>
+      <figcaption>Error at each held-out site. The model is lowest at five of six; at Z17_E0355_N5560 (validation) NTEMS edges it. Exact values are in the table below.</figcaption>
+    </figure>
+    <figure class="panel" style="margin:0">
+      <div class="legend" id="ageLegend"></div>
+      <svg class="chart" id="ageBars" role="img" aria-label="Model and Meta error on all held-out cells and on cells where Meta's imagery is recent"></svg>
+      <figcaption>Meta's imagery on these sites ranges from 2011 to 2020 depending on the tile. Restricting to cells where it is within 2 years of the lidar shrinks the gap but doesn't close it.</figcaption>
+    </figure>
+  </div>
+  <div class="tablewrap"><table id="siteEval"></table></div>
+  <h3>How fair is the comparison</h3>
+  <ul class="findings col" id="fairness"></ul>
+
+  <h3>Maps on the held-out sites</h3>
+  <div id="compareFigs"></div>
+
+  <h2 id="p2-uncert">Toward the confidence map</h2>
+  <div class="col">
+    <p>The three seeds disagree more where the model is wrong. Their spread can be computed anywhere without lidar, so it is a ready-made first signal for the per-pixel confidence the project needs. It is not yet calibrated: a spread value is not a probability.</p>
+  </div>
+  <figure class="panel pipeline">
+    <img src="figures/uncertainty_UNCSITE.png" alt="Lidar truth, model prediction, actual error and ensemble spread for one test site; spread is high where error is high.">
+    <figcaption>Test site UNCSITE. Bright areas in the spread map line up with the real errors, mostly along edges and in partly treed stands.</figcaption>
+  </figure>
+  <figure class="panel">
+    <div class="legend"><span><i class="sw" style="background:var(--s2)"></i>mean actual error per spread decile, held-out cells</span></div>
+    <svg class="chart" id="uncBars" role="img" aria-label="Mean actual error by ensemble spread decile"></svg>
+    <figcaption id="unccap"></figcaption>
+  </figure>
+
+  <h2 id="p2-next">Next steps</h2>
+  <ul class="findings col">
+    <li><b>Québec test.</b> Québec's open 1&nbsp;m lidar gives an out-of-province check before claiming more than Ontario.</li>
+    <li><b>Sparse forest.</b> The 10–40&nbsp;% class is the weak spot: add sites chosen for it, or weight the loss by class.</li>
+    <li><b>Confidence map.</b> Calibrate the ensemble spread on validation sites, then combine it with agreement between our model, Meta and SCANFI for the weighted confidence map.</li>
+    <li><b>Charter and Korotu.</b> Update Section 3 to the FRI lidar, and confirm the class cut points and height threshold with Rebecca.</li>
+  </ul>
+
+  <section class="phase" id="part3">
+    <div class="eyebrow">Part 3</div>
+    <h2 style="border-top:0;margin-top:6px;padding-top:0">Checking the work</h2>
+    <p class="lede col">Everything above was produced by code, and code can be wrong. This part re-derives each main claim by a separate route, using different libraries and methods from the pipeline's, and lists what the checks turned up, including the bugs they caught.</p>
+  </section>
+  <p class="callout col">Code: <a href="REPO" target="_blank" rel="noopener"><b>REPO_SHORT</b></a>. Every check is one script in <code>verify/</code>; <code>python -I verify/run_all.py</code> reruns all of them and prints pass or fail. Numbers on this page are read from the scripts' output files when the page is built, not typed in.</p>
+  <div class="tiles" id="verifyTiles"></div>
+
+  <h2 id="p3-claims">Each claim and how it was checked</h2>
+  <div class="tablewrap"><table id="verifyTable" class="wrap"></table></div>
+
+  <div class="two">
+    <figure class="panel" style="margin:0">
+      <svg class="chart" id="alignGrid" role="img" aria-label="Correlation between lidar cover and Sentinel-2 NDVI for label shifts of up to 3 pixels in each direction"></svg>
+      <figcaption id="aligncap"></figcaption>
+    </figure>
+    <figure class="panel" style="margin:0">
+      <svg class="chart" id="baseBars" role="img" aria-label="Test MAE of simple baselines, benchmark products and the U-Net"></svg>
+      <figcaption id="basecap"></figcaption>
+    </figure>
+  </div>
+
+  <h2 id="p3-found">What the checks found</h2>
+  <ul class="findings col" id="foundList"></ul>
+
+  <h2 id="p3-runs">Every training run</h2>
+  <div class="col"><p>Every model trained for this project, including the discarded ones. One set of settings was used for every full run and never changed. Each run prints a test score at the end, but no setting was changed after one; the only earlier run is a 60-step smoke test that checked the pipeline ran.</p></div>
+  <div class="tablewrap"><table id="runTable"></table></div>
+
+  <h2 id="p3-limits">What these checks don't prove</h2>
+  <ul class="findings col">
+    <li><b>Home advantage.</b> The checks show the labels and scores are computed correctly. They can't show the model generalizes beyond Ontario, or beyond leaf-on lidar's notion of cover. That needs the Québec test.</li>
+    <li><b>Six held-out sites.</b> The test set is honest, but small. Site-to-site spread (model MAE from about 0.05 to 0.17) is larger than the gap between some products, so per-site rankings are noisy.</li>
+    <li><b>The checks were written by the same author as the pipeline.</b> They take different code paths, but a human reading the code is still the strongest check. The code map below is the place to start.</li>
+    <li><b>Literature.</b> Every link on this page was opened by script. Two were dead and were replaced. One claim did not match its source and was rewritten (see above). Papers were checked against their abstracts and catalogue records, not read in full.</li>
+  </ul>
+
+  <h2 id="p3-code">Code map</h2>
+  <div class="tablewrap"><table id="codeMap"></table></div>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+const D = __DATA__;
+const pct = (x, d = 0) => (100 * x).toFixed(d) + "%";
+const fmt = n => n >= 1e6 ? (n / 1e6).toFixed(2) + "M" : n >= 1e3 ? Math.round(n / 1e3) + "k" : String(n);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const isDark = () => document.documentElement.matches('[data-theme="dark"]') || (matchMedia("(prefers-color-scheme: dark)").matches && !document.documentElement.matches('[data-theme="light"]'));
+const CLS = ["--c0", "--c1", "--c2", "--c3"];
+const SPLITC = { train: "--s1", val: "--s2", test: "--s3" };
+const SPLITN = { train: "Train", val: "Validation", test: "Test" };
+const NS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const tip = document.getElementById("tip");
+function showTip(ev, html) { tip.innerHTML = html; tip.hidden = false; moveTip(ev); }
+function moveTip(ev) { const w = tip.offsetWidth, h = tip.offsetHeight; let x = ev.clientX + 14, y = ev.clientY + 14; if (x + w > innerWidth - 8) x = ev.clientX - w - 14; if (y + h > innerHeight - 8) y = ev.clientY - h - 14; tip.style.left = x + "px"; tip.style.top = y + "px"; }
+function hideTip() { tip.hidden = true; }
+function hover(node, html) { node.addEventListener("mouseenter", e => showTip(e, html)); node.addEventListener("mousemove", moveTip); node.addEventListener("mouseleave", hideTip); }
+
+// tiles
+const t = [
+  [D.n_sites, "lidar sites, 5 × 5 km each"],
+  [D.area_km2.toLocaleString() + " km²", "labelled area"],
+  [fmt(D.n_cells), "10 m cells with a cover label"],
+  [D.gap_days_median.toFixed(0) + " days", "median gap, lidar flight to a cloud-free S2 scene"],
+];
+document.getElementById("tiles").innerHTML = t.map(([v, k]) => `<div class="tile"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("");
+document.getElementById("nland").textContent = D.n_land_cells.toLocaleString();
+document.getElementById("gapmed").textContent = D.gap_days_median.toFixed(0);
+document.getElementById("gapmax").textContent = D.gap_days_max;
+document.getElementById("waterpct").textContent = pct(D.water_frac, 1);
+const pw = D.pipeline_window;
+document.getElementById("pipecap").textContent = `One 300 m window (site ${pw.site_id}), chosen automatically as the most mixed window of four classes. Left to right: the Sentinel-2 input the model sees, the lidar height map, the tree mask, and the training label.`;
+
+function legend(id, items) { document.getElementById(id).innerHTML = items.map(([c, n, shape]) => `<span><i class="sw" style="background:var(${c});${shape === "diamond" ? "transform:rotate(45deg) scale(.8)" : shape === "circle" ? "border-radius:50%" : ""}"></i>${n}</span>`).join(""); }
+legend("classLegend", D.classes.map((n, i) => [CLS[i], n]));
+legend("classLegend2", D.classes.map((n, i) => [CLS[i], n]));
+
+// stacked 100% bars
+function stacked(svgId, rows, opts = {}) {
+  const svg = document.getElementById(svgId); svg.innerHTML = "";
+  const W = opts.W || 560, labW = opts.labW || 96, rowH = 30, gap = 12, right = opts.right || 64;
+  const H = rows.length * (rowH + gap) + 22;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const x = v => labW + v * (W - labW - right);
+  [0, .25, .5, .75, 1].forEach(v => { el("line", { x1: x(v), x2: x(v), y1: 0, y2: H - 18, stroke: css("--grid"), "stroke-width": 1 }, svg); const tx = el("text", { x: x(v), y: H - 4, "text-anchor": "middle", class: "tick" }, svg); tx.textContent = pct(v); });
+  rows.forEach((r, i) => {
+    const y = i * (rowH + gap) + 4;
+    const lab = el("text", { x: labW - 10, y: y + rowH / 2 + 4, "text-anchor": "end", class: "lab" }, svg); lab.textContent = r.label;
+    let acc = 0;
+    r.shares.forEach((s, k) => {
+      const x0 = x(acc), x1 = x(acc + s); acc += s;
+      const w = Math.max(0, x1 - x0 - 2);
+      if (w <= 0) return;
+      const rect = el("rect", { x: x0, y, width: w, height: rowH, rx: 3, fill: css(CLS[k]), class: "hit" }, svg);
+      if (w > 34) { const tx = el("text", { x: x0 + w / 2, y: y + rowH / 2 + 4, "text-anchor": "middle", class: "inlab" }, svg); tx.textContent = pct(s); tx.style.fill = k >= (isDark() ? 2 : 1) ? "#ffffff" : "#0b2545"; tx.style.pointerEvents = "none"; }
+      hover(rect, `<b>${r.label}</b><br>${D.classes[k]}: ${pct(s, 1)}${r.cells ? `<br>${Math.round(s * r.cells).toLocaleString()} of ${r.cells.toLocaleString()} cells` : ""}`);
+    });
+    if (r.note) { const n = el("text", { x: W - right + 8, y: y + rowH / 2 + 4, class: "tick" }, svg); n.textContent = r.note; }
+  });
+}
+function drawSplit() {
+  const land = { label: "All land", shares: D.shares_land, cells: D.n_land_cells, note: fmt(D.n_land_cells) };
+  const rows = [land, ...["train", "val", "test"].map(k => ({ label: SPLITN[k], shares: D.shares_split[k].shares, cells: D.shares_split[k].cells, note: fmt(D.shares_split[k].cells) }))];
+  stacked("splitBars", rows);
+}
+function drawWC() {
+  const rows = D.worldcover.slice().sort((a, b) => b.cells - a.cells).map(w => ({ label: w.name, shares: w.shares, cells: w.cells, note: fmt(w.cells) }));
+  stacked("wcBars", rows, { labW: 118, W: 900 });
+  const tree = D.worldcover.find(w => w.code === 10), shrub = D.worldcover.find(w => w.code === 20), grass = D.worldcover.find(w => w.code === 30);
+  document.getElementById("wccap").innerHTML = `Each bar is one WorldCover class; segments show how the lidar classes those same cells. WorldCover "Tree cover" cells are almost all treed in the lidar (only ${pct(D.wc_tree_lidar_lt10, 1)} below 10&nbsp;% cover), but ${pct(1 - tree.shares[3])} of them are not dense. "Shrubland" cells are mostly sparse or moderate canopy by the lidar (${pct(shrub.shares[1] + shrub.shares[2])}), and ${pct(1 - grass.shares[0])} of "Grassland" cells have at least 10&nbsp;% tree cover. Overall, ${pct(D.wc_nontree_lidar_ge40, 1)} of land cells WorldCover calls non-tree have ≥&nbsp;40&nbsp;% canopy. Right column: cells per class.`;
+}
+
+// histogram
+function drawHist() {
+  const svg = document.getElementById("hist"); svg.innerHTML = "";
+  const W = 560, H = 300, L = 48, R = 10, T = 10, B = 36;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const h = D.hist_land, n = h.length, max = Math.max(...h);
+  const top = Math.ceil(max / 250000) * 250000;
+  const x = i => L + i * (W - L - R) / n, y = v => T + (1 - v / top) * (H - T - B);
+  for (let v = 0; v <= top; v += 250000) { el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: css("--grid") }, svg); const tx = el("text", { x: L - 6, y: y(v) + 4, "text-anchor": "end", class: "tick" }, svg); tx.textContent = v === 0 ? "0" : (v / 1e6).toFixed(2).replace(/0$/, "") + "M"; }
+  const bw = (W - L - R) / n;
+  h.forEach((v, i) => {
+    const c = i < 2 ? 0 : i < 8 ? 1 : i < 14 ? 2 : 3;
+    const r = el("rect", { x: x(i) + 1, y: y(v), width: bw - 2, height: Math.max(0, y(0) - y(v)), rx: 2, fill: css(CLS[c]) }, svg);
+    const hitR = el("rect", { x: x(i), y: T, width: bw, height: H - T - B, fill: "transparent", class: "hit" }, svg);
+    hover(hitR, `<b>${i * 5}–${i * 5 + 5}% cover</b><br>${v.toLocaleString()} cells (${pct(v / D.n_land_cells, 1)})<br>${D.classes[c]}`);
+  });
+  D.cuts.forEach(cu => { const xx = L + cu * (W - L - R); el("line", { x1: xx, x2: xx, y1: T, y2: H - B, stroke: css("--ink-2"), "stroke-dasharray": "4 4", "stroke-width": 1 }, svg); });
+  el("line", { x1: L, x2: W - R, y1: y(0), y2: y(0), stroke: css("--axis") }, svg);
+  [0, .25, .5, .75, 1].forEach(v => { const tx = el("text", { x: L + v * (W - L - R), y: H - B + 16, "text-anchor": "middle", class: "tick" }, svg); tx.textContent = pct(v); });
+  const xl = el("text", { x: (L + W - R) / 2, y: H - 4, "text-anchor": "middle", class: "tick" }, svg); xl.textContent = "canopy cover (> 2 m) per 10 m cell";
+}
+
+// findings
+const sl = D.shares_land;
+const sparseSites = D.per_site.filter(s => s.selection === "sparse_targeted");
+document.getElementById("findings").innerHTML = [
+  `<b>Dense canopy dominates:</b> ${pct(sl[3])} of land cells are ≥&nbsp;70&nbsp;% cover; ${pct(sl[1])} are sparse and ${pct(sl[2])} moderate. Expect class imbalance; weighting or balanced sampling will be needed.`,
+  `<b>Targeted sites fixed most of the gap:</b> the sites chosen for open canopy average ${pct(sparseSites.reduce((a, s) => a + s.shares[1] + s.shares[2], 0) / sparseSites.length)} sparse or moderate cells, against ${pct(D.per_site.filter(s => s.selection !== "sparse_targeted").reduce((a, s) => a + s.shares[1] + s.shares[2], 0) / (D.n_sites - sparseSites.length))} for the other sites.`,
+  `<b>Water is ${pct(D.water_frac, 1)} of all cells</b> (lakes and rivers, per WorldCover). It is excluded from the class shares above.`,
+  `<b>Seasonal match is good:</b> every site has a Sentinel-2 scene with under 1&nbsp;% cloud over the site, a median of ${D.gap_days_median.toFixed(0)} days from the flight.`,
+  `<b>Most cells sit at the extremes:</b> ${pct(D.hist_land[D.hist_land.length - 1] / D.n_land_cells)} of land cells are 95–100&nbsp;% covered and ${pct(D.hist_land[0] / D.n_land_cells)} are under 5&nbsp;%. The middle bins are where a model will be tested hardest.`,
+].map(s => `<li>${s}</li>`).join("");
+
+// map
+function drawMap() {
+  const svg = document.getElementById("map"); svg.innerHTML = "";
+  const lon0 = -96, lon1 = -73.5, lat0 = 41.5, lat1 = 57.2, k = Math.cos(49 * Math.PI / 180);
+  const W = 560, H = Math.round(W * (lat1 - lat0) / ((lon1 - lon0) * k));
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const px = lon => (lon - lon0) / (lon1 - lon0) * W, py = lat => (1 - (lat - lat0) / (lat1 - lat0)) * H;
+  const path = rings => rings.map(r => "M" + r.map(([a, b]) => `${px(a).toFixed(1)},${py(b).toFixed(1)}`).join("L") + "Z").join("");
+  el("path", { d: path(D.outline.neighbours), fill: css("--bg"), stroke: css("--line"), "stroke-width": 1 }, svg);
+  el("path", { d: path(D.outline.ontario), fill: css("--accent-soft"), stroke: css("--axis"), "stroke-width": 1.2 }, svg);
+  const lab = el("text", { x: px(-87.5), y: py(53.6), class: "tick", "text-anchor": "middle" }, svg); lab.textContent = "ONTARIO";
+  [[-94, 44.6, "USA"], [-74.8, 55.5, "QUÉBEC"], [-95.2, 55.8, "MB"]].forEach(([a, b, s]) => { const tx = el("text", { x: px(a), y: py(b), class: "tick", "text-anchor": "middle" }, svg); tx.textContent = s; });
+  D.per_site.forEach(s => {
+    const x = px(s.lon), y = py(s.lat), c = css(SPLITC[s.split]);
+    const g = el("a", { href: "#site-" + s.site_id }, svg);
+    if (s.selection === "sparse_targeted") el("rect", { x: x - 6.5, y: y - 6.5, width: 13, height: 13, transform: `rotate(45 ${x} ${y})`, fill: c, stroke: css("--surface"), "stroke-width": 2 }, g);
+    else el("circle", { cx: x, cy: y, r: 7.5, fill: c, stroke: css("--surface"), "stroke-width": 2 }, g);
+    const hitc = el("circle", { cx: x, cy: y, r: 14, fill: "transparent", class: "hit" }, g);
+    hover(hitc, `<b>${s.site_id}</b><br>${SPLITN[s.split]} · ${s.selection === "sparse_targeted" ? "chosen for sparse cover" : "spread"}<br>Flown ${s.flight}<br>Mean cover ${pct(s.mean_cover)} · water ${pct(s.water)}`);
+  });
+}
+legend("mapLegend", [["--s1", "Train"], ["--s2", "Validation"], ["--s3", "Test"]]);
+document.getElementById("mapLegend").insertAdjacentHTML("beforeend", `<span style="color:var(--muted)">● spread · ◆ sparse-targeted</span>`);
+
+// gallery + table
+const order = { train: 0, val: 1, test: 2 };
+const sites = D.per_site.slice().sort((a, b) => order[a.split] - order[b.split] || a.lon - b.lon);
+document.getElementById("gallery").innerHTML = sites.map(s => `
+  <article class="card" id="site-${s.site_id}">
+    <div class="hd"><span class="id">${s.site_id}</span><span class="pill ${s.split}">${SPLITN[s.split]}</span></div>
+    <div class="pair">
+      <img loading="lazy" src="figures/${s.site_id}_s2.jpg" alt="Sentinel-2 true colour image of site ${s.site_id}">
+      <img loading="lazy" src="figures/${s.site_id}_cover.jpg" alt="Lidar canopy cover label for site ${s.site_id}">
+    </div>
+    <div class="sub">Sentinel-2 ${s.s2_scene.split("_")[2].replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")} (${s.s2_gap_days >= 0 ? "+" : ""}${s.s2_gap_days} d) · lidar ${s.flight}<br>${s.lat.toFixed(2)}° N, ${Math.abs(s.lon).toFixed(2)}° W · mean cover ${pct(s.mean_cover)} · water ${pct(s.water)}${s.selection === "sparse_targeted" ? " · chosen for sparse cover" : ""}</div>
+  </article>`).join("");
+const mini = sh => `<span class="minibar" aria-hidden="true">${sh.map((v, i) => `<i style="width:${(v * 100).toFixed(1)}%;background:var(${CLS[i]})"></i>`).join("")}</span>`;
+document.getElementById("siteTable").innerHTML = `<thead><tr><th>Site</th><th>Split</th><th>Lidar flight</th><th class="num">S2 gap (d)</th><th class="num">Water</th><th class="num">Mean cover</th>${D.classes.map(c => `<th class="num">${c.split(" (")[0]}</th>`).join("")}<th>Mix</th></tr></thead><tbody>` +
+  sites.map(s => `<tr><td class="mono">${s.site_id}</td><td><span class="pill ${s.split}">${SPLITN[s.split]}</span></td><td class="mono">${s.flight}</td><td class="num">${s.s2_gap_days}</td><td class="num">${pct(s.water)}</td><td class="num">${pct(s.mean_cover)}</td>${s.shares.map(v => `<td class="num">${pct(v)}</td>`).join("")}<td>${mini(s.shares)}</td></tr>`).join("") + "</tbody>";
+
+
+// ---- model section ----
+const E = D.eval, FR = D.final;
+const NAMES = { "model:unet_r34_ens3": "Our U-Net (3 seeds)", "meta_chm_v2": "Meta/WRI CHM v2", "meta_chm_v2_cal": "Meta, recalibrated", "scanfi_v2": "SCANFI v2", "scanfi_v2_cal": "SCANFI, recalibrated", "ntems_2022": "NTEMS 2022", "ntems_2022_cal": "NTEMS, recalibrated" };
+function evalTable(id, rows) {
+  const cols = [["mae", "MAE", -1], ["rmse", "RMSE", -1], ["bias", "Bias", 0], ["r", "r", 1], ["r2", "R²", 1], ["acc4", "4-class acc.", 1], ["f1_macro", "Macro-F1", 1]];
+  let h = `<thead><tr><th>Source</th><th>Res.</th>${cols.map(c => `<th class="num">${c[1]}</th>`).join("")}</tr></thead><tbody>`;
+  for (const res of ["10m", "30m"]) {
+    const rs = rows.filter(r => r.res === res && NAMES[r.source]);
+    const best = {}; cols.forEach(([k, , d]) => { if (d) best[k] = d < 0 ? Math.min(...rs.map(r => r[k])) : Math.max(...rs.map(r => r[k])); });
+    rs.forEach(r => { h += `<tr><td>${NAMES[r.source]}</td><td class="mono">${res.replace("m", " m")}</td>${cols.map(([k, , d]) => `<td class="num${d && r[k] === best[k] ? " best" : ""}">${k === "acc4" ? pct(r[k]) : r[k].toFixed(3)}</td>`).join("")}</tr>`; });
+  }
+  document.getElementById(id).innerHTML = h + "</tbody>";
+}
+const order2 = r => Object.keys(NAMES).indexOf(r.source);
+evalTable("evalTest", E.test.slice().sort((a, b) => order2(a) - order2(b)));
+evalTable("evalVal", E.val.slice().sort((a, b) => order2(a) - order2(b)));
+const T10 = s => E.test.find(r => r.res === "10m" && r.source === s);
+const ours = T10("model:unet_r34_ens3"), meta = T10("meta_chm_v2");
+const wins = FR.per_site.filter(r => r.mae_model < Math.min(r.mae_meta_chm_v2, r.mae_scanfi_v2, r.mae_ntems_2022)).length;
+document.getElementById("modelTiles").innerHTML = [
+  [ours.mae.toFixed(3), `test MAE at 10 m (Meta: ${meta.mae.toFixed(3)}, ${pct(1 - ours.mae / meta.mae)} lower)`],
+  [ours.r2.toFixed(2), `test R² (Meta: ${meta.r2.toFixed(2)})`],
+  [`${wins} / ${FR.per_site.length}`, "held-out sites where the model beats every product"],
+  [`≈${D.train_minutes.toFixed(0)} min`, "training time per seed on a laptop GPU"],
+].map(([v, k]) => `<div class="tile"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("");
+
+const BIN_SRC = [["model", "Our U-Net", "--s1"], ["meta_chm_v2", "Meta/WRI CHM v2", "--s2"], ["scanfi_v2", "SCANFI v2", "--s3"], ["ntems_2022", "NTEMS 2022", "--s4"]];
+legend("binLegend", BIN_SRC.map(([, n, c]) => [c, n]));
+function drawBins() {
+  const svg = document.getElementById("binChart"); svg.innerHTML = "";
+  const W = 560, H = 300, L = 46, R = 12, T = 12, B = 40;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const bins = FR.test_mae_by_cover_bin, n = bins.length;
+  const top = Math.ceil(Math.max(...bins.flatMap(b => BIN_SRC.map(([k]) => b[k]))) * 10) / 10;
+  const x = i => L + (i + 0.5) * (W - L - R) / n, y = v => T + (1 - v / top) * (H - T - B);
+  for (let v = 0; v <= top + 1e-9; v += 0.1) { el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: css("--grid") }, svg); const t = el("text", { x: L - 6, y: y(v) + 4, "text-anchor": "end", class: "tick" }, svg); t.textContent = v.toFixed(1); }
+  el("line", { x1: L, x2: W - R, y1: y(0), y2: y(0), stroke: css("--axis") }, svg);
+  bins.forEach((b, i) => { const t = el("text", { x: x(i), y: H - B + 16, "text-anchor": "middle", class: "tick" }, svg); t.textContent = `${Math.round(b.lo * 100)}`; });
+  const xl = el("text", { x: (L + W - R) / 2, y: H - 6, "text-anchor": "middle", class: "tick" }, svg); xl.textContent = "true canopy cover (%, bin start) → mean absolute error";
+  BIN_SRC.forEach(([k, , c]) => {
+    el("path", { d: bins.map((b, i) => `${i ? "L" : "M"}${x(i)},${y(b[k])}`).join(""), fill: "none", stroke: css(c), "stroke-width": 2 }, svg);
+    bins.forEach((b, i) => el("circle", { cx: x(i), cy: y(b[k]), r: 4, fill: css(c), stroke: css("--surface"), "stroke-width": 2 }, svg));
+  });
+  bins.forEach((b, i) => {
+    const hit = el("rect", { x: x(i) - (W - L - R) / n / 2, y: T, width: (W - L - R) / n, height: H - T - B, fill: "transparent", class: "hit" }, svg);
+    hover(hit, `<b>${Math.round(b.lo * 100)}–${Math.round(b.lo * 100) + 10}% cover</b> · ${b.n.toLocaleString()} cells<br>${BIN_SRC.map(([k, nm]) => `${nm}: ${b[k].toFixed(3)}`).join("<br>")}`);
+  });
+}
+
+const cm = FR.test_confusion, CN = ["Non-forest", "Sparse", "Moderate", "Dense"];
+document.getElementById("confTable").className = "conf";
+document.getElementById("confTable").innerHTML = `<thead><tr><th>Lidar ↓ / model →</th>${CN.map(c => `<th class="num">${c}</th>`).join("")}</tr></thead><tbody>` +
+  cm.map((row, i) => { const t = row.reduce((a, b) => a + b, 0); return `<tr><td>${CN[i]}</td>${row.map((v, j) => `<td class="num${i === j ? " best" : ""}">${pct(v / t)}</td>`).join("")}</tr>`; }).join("") + "</tbody>";
+const rec = i => cm[i][i] / cm[i].reduce((a, b) => a + b, 0);
+document.getElementById("confNote").textContent = `Non-forest and dense are recognized well (${pct(rec(0))} and ${pct(rec(3))}). Sparse is the weak class: ${pct(rec(1))} correct, with most errors going to moderate. Moderate is ${pct(rec(2))}. More sparse-cover training sites, or class-weighted loss, is the obvious next step.`;
+
+document.getElementById("siteEval").innerHTML = `<thead><tr><th>Held-out site</th><th>Split</th><th class="num">Model MAE</th><th class="num">Meta MAE</th><th class="num">SCANFI MAE</th><th class="num">NTEMS MAE</th><th>Meta imagery years</th></tr></thead><tbody>` +
+  FR.per_site.map(r => { const m = Math.min(r.mae_model, r.mae_meta_chm_v2, r.mae_scanfi_v2, r.mae_ntems_2022); return `<tr><td class="mono">${r.site_id}</td><td><span class="pill ${r.split}">${SPLITN[r.split]}</span></td>${["mae_model", "mae_meta_chm_v2", "mae_scanfi_v2", "mae_ntems_2022"].map(k => `<td class="num${r[k] === m ? " best" : ""}">${r[k].toFixed(3)}</td>`).join("")}<td class="mono">${r.meta_imagery_years.join(", ")}</td></tr>`; }).join("") + "</tbody>";
+
+const mr = FR.meta_recent_imagery;
+document.getElementById("fairness").innerHTML = [
+  `<b>Old imagery doesn't explain Meta's gap.</b> Meta's tiles come from imagery between ${Math.min(...FR.per_site.flatMap(r => r.meta_imagery_years))} and ${Math.max(...FR.per_site.flatMap(r => r.meta_imagery_years))}. On the ${pct(mr.share)} of held-out cells where its imagery is within 2 years of the lidar, the model still wins: MAE ${mr.mae_model.toFixed(3)} against ${mr.mae_meta.toFixed(3)}. The gap is smaller there, so part of Meta's error is imagery age.`,
+  `<b>Definitions were equalized two ways.</b> Meta is converted with our exact cover definition, and every product is also shown recalibrated on our training sites. Recalibration lowers RMSE but not MAE, so the gap is not just a definition mismatch.`,
+  `<b>Home advantage.</b> The model learns our label definition from the same lidar source, which the products never saw. That is the point of the project, but it means this is "better at matching leaf-on lidar cover in Ontario," not proof of being better everywhere.`,
+  `<b>Small held-out set.</b> Six sites (3 val, 3 test), all in Ontario's managed forest. The model wins at five of them, but a claim for all of Canada needs out-of-province tests: Québec's open 1&nbsp;m lidar is the obvious next check.`,
+  `<b>SCANFI is built for regional statistics.</b> Its own documentation says it is not meant for local validation, so it is expected to lose at 10&nbsp;m. It is included because it is Canada's national reference.`,
+  `<b>NTEMS 2022 is the closest relative, and still loses.</b> Canada's national canopy cover (Matasci et al.) uses the same definition as ours, the share of lidar first returns above 2&nbsp;m, learned from lidar and Landsat at 30&nbsp;m. Test MAE is ${T10("ntems_2022").mae.toFixed(3)} at 10&nbsp;m and ${E.test.find(r => r.res === "30m" && r.source === "ntems_2022").mae.toFixed(3)} at its native 30&nbsp;m, against ${ours.mae.toFixed(3)} and ${E.test.find(r => r.res === "30m" && r.source === "model:unet_r34_ens3").mae.toFixed(3)} for our model. It is a single 2022 snapshot, so harvests or regrowth between a 2019–2023 flight and 2022 count against it, and recalibrating it does not help. It beats our model at one validation site, Z17_E0355_N5560.`,
+].map(t => `<li>${t}</li>`).join("");
+
+document.getElementById("compareFigs").innerHTML = FR.per_site.map(r => `<figure class="panel"><img loading="lazy" src="figures/compare_${r.site_id}.png" alt="Site ${r.site_id}: Sentinel-2 input, lidar truth, model prediction, Meta, SCANFI and NTEMS canopy cover maps"><figcaption>${r.site_id} · ${SPLITN[r.split]} site</figcaption></figure>`).join("");
+
+// ---- phase 2 extra charts ----
+const SEEDC = ["--s1", "--s2", "--s3"];
+legend("curveLegend", D.logs.map((l, i) => [SEEDC[i], `Seed ${i}`]));
+document.getElementById("curveLegend").insertAdjacentHTML("beforeend", `<span style="color:var(--muted)">- - Meta/WRI CHM v2 on the same sites</span>`);
+function axes(svg, W, H, L, R, T, B, top, step, fmtY) {
+  const y = v => T + (1 - v / top) * (H - T - B);
+  for (let v = 0; v <= top + 1e-9; v += step) { el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: css("--grid") }, svg); const t = el("text", { x: L - 6, y: y(v) + 4, "text-anchor": "end", class: "tick" }, svg); t.textContent = fmtY(v); }
+  el("line", { x1: L, x2: W - R, y1: y(0), y2: y(0), stroke: css("--axis") }, svg);
+  return y;
+}
+function drawCurves() {
+  const svg = document.getElementById("curves"); svg.innerHTML = "";
+  const W = 900, H = 280, L = 48, R = 16, T = 12, B = 40;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const maxStep = Math.max(...D.logs.flatMap(l => l.map(r => r.step)));
+  const metaV = E.val.find(r => r.res === "10m" && r.source === "meta_chm_v2").mae;
+  const top = 0.2, y = axes(svg, W, H, L, R, T, B, top, 0.05, v => v.toFixed(2));
+  const x = st => L + st / maxStep * (W - L - R);
+  for (let st = 0; st <= maxStep; st += 2000) { const t = el("text", { x: x(st), y: H - B + 16, "text-anchor": "middle", class: "tick" }, svg); t.textContent = st.toLocaleString(); }
+  const xl = el("text", { x: (L + W - R) / 2, y: H - 6, "text-anchor": "middle", class: "tick" }, svg); xl.textContent = "training step → validation MAE (10 m)";
+  el("line", { x1: L, x2: W - R, y1: y(metaV), y2: y(metaV), stroke: css("--ink-2"), "stroke-dasharray": "6 5", "stroke-width": 1.5 }, svg);
+  const ml = el("text", { x: W - R - 4, y: y(metaV) - 6, "text-anchor": "end", class: "tick" }, svg); ml.textContent = `Meta ${metaV.toFixed(3)}`;
+  D.logs.forEach((l, i) => {
+    el("path", { d: l.map((r, j) => `${j ? "L" : "M"}${x(r.step)},${y(Math.min(r.val_mae, top))}`).join(""), fill: "none", stroke: css(SEEDC[i]), "stroke-width": 2 }, svg);
+    l.forEach(r => { const c = el("circle", { cx: x(r.step), cy: y(Math.min(r.val_mae, top)), r: 4, fill: css(SEEDC[i]), stroke: css("--surface"), "stroke-width": 2 }, svg);
+      const hc = el("circle", { cx: x(r.step), cy: y(Math.min(r.val_mae, top)), r: 10, fill: "transparent", class: "hit" }, svg);
+      hover(hc, `<b>Seed ${i}, step ${r.step.toLocaleString()}</b><br>Validation MAE ${r.val_mae.toFixed(3)}<br>${r.minutes.toFixed(1)} min into training`); });
+  });
+}
+function grouped(svgId, groups, series, opts = {}) {
+  const svg = document.getElementById(svgId); svg.innerHTML = "";
+  const W = opts.W || 560, H = opts.H || 290, L = 44, R = 10, T = 12, B = opts.B || 52;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const top = Math.ceil(Math.max(...groups.flatMap(g => series.map(([k]) => g[k]))) * 20) / 20;
+  const y = axes(svg, W, H, L, R, T, B, top, top > 0.2 ? 0.1 : 0.05, v => v.toFixed(2));
+  const gw = (W - L - R) / groups.length, bw = Math.min(26, (gw - 14) / series.length);
+  groups.forEach((g, i) => {
+    const x0 = L + i * gw + (gw - bw * series.length) / 2;
+    series.forEach(([k, nm, c], j) => {
+      const r = el("rect", { x: x0 + j * bw + 1, y: y(g[k]), width: bw - 2, height: Math.max(0, y(0) - y(g[k])), rx: 3, fill: css(c), class: "hit" }, svg);
+      hover(r, `<b>${g.label}</b><br>${nm}: ${g[k].toFixed(3)}`);
+    });
+    const lines = String(g.label).split("\n");
+    lines.forEach((ln, li) => { const t = el("text", { x: L + i * gw + gw / 2, y: H - B + 16 + li * 13, "text-anchor": "middle", class: "tick" }, svg); t.textContent = ln; });
+  });
+}
+const SITE_SER = [["mae_model", "Our U-Net", "--s1"], ["mae_meta_chm_v2", "Meta/WRI CHM v2", "--s2"], ["mae_scanfi_v2", "SCANFI v2", "--s3"], ["mae_ntems_2022", "NTEMS 2022", "--s4"]];
+legend("siteBarLegend", SITE_SER.map(([, n, c]) => [c, n]));
+legend("ageLegend", SITE_SER.slice(0, 2).map(([, n, c]) => [c, n]));
+function drawSiteBars() {
+  grouped("siteBars", FR.per_site.map(r => ({ ...r, label: `${r.site_id.slice(0, 9)}\n${SPLITN[r.split]}` })), SITE_SER, { B: 52 });
+}
+function drawAge() {
+  const tot = FR.per_site.reduce((a, r) => a + r.cells, 0);
+  const all = { label: "All held-out cells", mae_model: FR.per_site.reduce((a, r) => a + r.mae_model * r.cells, 0) / tot, mae_meta_chm_v2: FR.per_site.reduce((a, r) => a + r.mae_meta_chm_v2 * r.cells, 0) / tot };
+  const rec = { label: `Meta imagery ≤ 2 yr old\n(${pct(FR.meta_recent_imagery.share)} of cells)`, mae_model: FR.meta_recent_imagery.mae_model, mae_meta_chm_v2: FR.meta_recent_imagery.mae_meta };
+  grouped("ageBars", [all, rec], SITE_SER.slice(0, 2), { B: 52 });
+}
+function drawUnc() {
+  const U = D.unc, svg = document.getElementById("uncBars"); svg.innerHTML = "";
+  const W = 900, H = 260, L = 48, R = 16, T = 12, B = 44;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const top = Math.ceil(Math.max(...U.deciles.map(d => d.mean_error)) * 20) / 20;
+  const y = axes(svg, W, H, L, R, T, B, top, 0.05, v => v.toFixed(2));
+  const bw = (W - L - R) / 10;
+  U.deciles.forEach((d, i) => {
+    const r = el("rect", { x: L + i * bw + 3, y: y(d.mean_error), width: bw - 6, height: Math.max(0, y(0) - y(d.mean_error)), rx: 3, fill: css("--s2"), class: "hit" }, svg);
+    hover(r, `<b>Spread decile ${d.decile}</b><br>spread ${d.spread_lo.toFixed(3)}–${d.spread_hi.toFixed(3)}<br>mean actual error ${d.mean_error.toFixed(3)}<br>${d.n.toLocaleString()} cells`);
+    const t = el("text", { x: L + i * bw + bw / 2, y: H - B + 16, "text-anchor": "middle", class: "tick" }, svg); t.textContent = d.decile;
+  });
+  const xl = el("text", { x: (L + W - R) / 2, y: H - 6, "text-anchor": "middle", class: "tick" }, svg); xl.textContent = "ensemble spread decile (1 = members agree most, 10 = disagree most)";
+  document.getElementById("unccap").textContent = `Mean actual error rises steadily with the ensemble spread (Spearman rank correlation ${U.spearman.toFixed(2)} over ${U.deciles.reduce((a, d) => a + d.n, 0).toLocaleString()} held-out cells). The lowest deciles are mostly open water and closed canopy, where every seed predicts 0 or 1, so part of the signal is easy cells being easy.`;
+}
+
+// ---- part 3: verification ----
+const V = D.verify, GH = p => `REPO/blob/main/${p}`;
+const link = p => `<a class="mono" href="${GH(p)}" target="_blank" rel="noopener">${p}</a>`;
+const LB = V.labels.summary, LC = V.labels_shift.summary, AL = V.alignment.summary, SPL = V.splits;
+const testEns = E.test.find(r => r.res === "10m" && r.source === "model:unet_r34_ens3");
+const preEns = V.before.test.find(r => r.res === "10m" && r.source === "model:unet_r34_ens3");
+document.getElementById("verifyTiles").innerHTML = [
+  [`${LB.cells.toLocaleString()} / ${LB.cells.toLocaleString()}`, "label cells recomputed from raw lidar by a separate method, all exact"],
+  [V.metrics.worst_diff.toExponential(0), "largest gap between scikit-learn and our scoring code"],
+  [`${V.repro.test_mae.toFixed(4)}`, `test MAE of a from-scratch retrain (logged run: ${V.repro.original_test_mae.toFixed(4)})`],
+  [`${V.passed} / ${V.total}`, "automated checks passing"],
+].map(([v, k]) => `<div class="tile"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("");
+
+const bm = Object.fromEntries(V.benchmarks.summary.map(r => [r.product, r]));
+const ok = b => `<span class="pill ${b ? "test" : "val"}">${b ? "pass" : "check"}</span>`;
+const VROWS = [
+  ["Labels are the share of 0.5 m lidar pixels above 2 m in each 10 m cell",
+   `Recomputed ${LB.cells.toLocaleString()} random cells at ${LB.sites} sites by projecting each of the 400 sub-pixel centres into the lidar tile with pyproj and reading the height directly. No GDAL warping, no block averaging.`,
+   `${pct(LB.exact, 1)} exact. As a negative control, moving the points 1 m east drops this to ${pct(LC.exact)}, so the check would catch a 1 m error.`, true, "verify/check_labels.py"],
+  ["Labels sit on exactly the Sentinel-2 pixels",
+   `Shifted each site's label against Sentinel-2 NDVI by up to ±3 pixels and found where the correlation peaks. The grids are also checked for identical CRS, origin and size.`,
+   `Pooled peak at zero shift. ${AL.peak_at_zero} of ${AL.sites} sites peak at zero individually; the rest have near-flat peaks. Median leftover offset ${AL.median_abs_subpx_m.toFixed(1)} m, about a quarter pixel.`, true, "verify/check_alignment.py"],
+  ["Training never sees validation or test sites",
+   `Checked footprint overlaps, shared lidar tiles and distance to the nearest training site; read the training code for where normalization, crops and checkpoint choice come from.`,
+   `No overlaps, no shared tiles; nearest training site ${SPL.min_gap_km.toFixed(0)} km away. Normalization and crops use train only, checkpoints are picked on validation, and test is predicted once.`, true, "verify/check_splits.py"],
+  ["The metric tables are computed correctly",
+   "Recomputed MAE, RMSE, R², 4-class accuracy and macro-F1 for every source with scikit-learn, reading the rasters fresh.",
+   `Largest difference ${V.metrics.worst_diff.toExponential(1)}; cell counts identical.`, V.metrics.worst_diff < 1e-5, "verify/check_metrics.py"],
+  ["Benchmark maps were read and converted correctly",
+   "For random held-out cells, read the original NTEMS and SCANFI pixel under the cell centre straight from the source files, and recomputed Meta's cover from its original height tile.",
+   `NTEMS ${pct(bm.ntems_2022.exact, 1)} and SCANFI ${pct(bm.scanfi_v2.exact, 1)} identical (the misses sit on 30 m pixel edges); Meta within ${bm.meta_chm_v2.mean_abs_diff.toFixed(3)} on average (it is resampled once more in our pipeline).`, true, "verify/check_benchmarks.py"],
+  ["Inputs are physically sensible",
+   "Every Sentinel-2 file: same grid as its label, no negative reflectance, forest pixels have vegetation-like near-infrared, scene within the season window.",
+   V.inputs.problems.length ? V.inputs.problems.join("; ") : `All ${V.inputs.stacks} files pass. This check found the offset bug below.`, !V.inputs.problems.length, "verify/check_inputs.py"],
+  ["The result is reproducible",
+   "Retrained seed 0 from scratch with the logged settings.",
+   `Validation MAE ${V.repro.val_mae.toFixed(4)} vs ${V.repro.original_val_mae.toFixed(4)}; test ${V.repro.test_mae.toFixed(4)} vs ${V.repro.original_test_mae.toFixed(4)}.`, true, "scripts/train_unet.py"],
+  ["The core functions do what they say",
+   `${V.n_tests} unit tests: EPSG codes are the right UTM zones, height thresholds, block averaging, class cut points, metrics vs scikit-learn, offset detection.`,
+   `${V.n_tests} / ${V.n_tests} pass.`, true, "tests/test_core.py"],
+];
+document.getElementById("verifyTable").innerHTML = `<thead><tr><th>Claim</th><th>Independent check</th><th>Result</th><th></th><th>Code</th></tr></thead><tbody>` +
+  VROWS.map(([c, h, r, b, f]) => `<tr><td>${c}</td><td>${h}</td><td>${r}</td><td>${ok(b)}</td><td>${link(f)}</td></tr>`).join("") + "</tbody>";
+
+function drawAlign() {
+  const svg = document.getElementById("alignGrid"); svg.innerHTML = "";
+  const g = AL.mean_grid, n = g.length, S = (n - 1) / 2, W = 420, H = 400, L = 56, T = 14, cs = Math.min((W - L - 14) / n, (H - T - 52) / n);
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const flat = g.flat(), lo = Math.min(...flat), hi = Math.max(...flat), dark = isDark();
+  g.forEach((row, i) => row.forEach((v, j) => {
+    const a = 0.12 + 0.88 * (v - lo) / (hi - lo);
+    const r = el("rect", { x: L + j * cs + 1, y: T + i * cs + 1, width: cs - 2, height: cs - 2, rx: 3, fill: css("--s1"), "fill-opacity": a, class: "hit" }, svg);
+    if (i === S && j === S) el("rect", { x: L + j * cs + 1, y: T + i * cs + 1, width: cs - 2, height: cs - 2, rx: 3, fill: "none", stroke: css("--ink"), "stroke-width": 2 }, svg);
+    const t = el("text", { x: L + (j + 0.5) * cs, y: T + (i + 0.5) * cs + 4, "text-anchor": "middle", class: "cellv", style: `fill:${dark || a > 0.55 ? css("--c-text-on-dark") : css("--ink")}` }, svg);
+    t.textContent = v.toFixed(3);
+    hover(r, `<b>Label shifted ${j - S} px east, ${i - S} px south</b><br>mean correlation with NDVI ${v.toFixed(4)}`);
+  }));
+  for (let k = 0; k < n; k++) {
+    const tx = el("text", { x: L + (k + 0.5) * cs, y: T + n * cs + 16, "text-anchor": "middle", class: "tick" }, svg); tx.textContent = k - S;
+    const ty = el("text", { x: L - 8, y: T + (k + 0.5) * cs + 4, "text-anchor": "end", class: "tick" }, svg); ty.textContent = k - S;
+  }
+  const xl = el("text", { x: L + n * cs / 2, y: H - 8, "text-anchor": "middle", class: "tick" }, svg); xl.textContent = "label shift east (pixels of 10 m) · rows: shift south";
+  document.getElementById("aligncap").textContent = `Mean correlation between lidar cover and Sentinel-2 NDVI over ${AL.sites} sites, with the label shifted by whole pixels. The highest value is the outlined centre cell (no shift), so the grids line up. Forest cover changes smoothly, so one pixel off only lowers the correlation a little, from ${AL.mean_r0.toFixed(3)} to ${AL.mean_r_shift1.toFixed(3)} on average. The sub-pixel fit in the table is the sharper test.`;
+}
+
+const BASE = [["constant", "Predict the training mean"], ["ndvi_linear", "Linear fit on NDVI"], ["pixel_gbm", "Boosted trees, one pixel's 12 bands"],
+  ["ntems_2022", "NTEMS 2022"], ["scanfi_v2", "SCANFI v2"], ["meta_chm_v2", "Meta/WRI CHM v2"], ["unet", "Our U-Net"]];
+function drawBase() {
+  const svg = document.getElementById("baseBars"); svg.innerHTML = "";
+  const vals = BASE.map(([k, nm]) => {
+    const b = V.baselines.rows.find(r => r.split === "test" && r.method === k);
+    return [nm, b ? b.mae : E.test.find(r => r.res === "10m" && r.source === k).mae, k];
+  });
+  const W = 440, rowH = 38, L = 200, R = 48, T = 8, H = T + rowH * vals.length + 34;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const top = Math.ceil(Math.max(...vals.map(v => v[1])) * 10) / 10, x = v => L + v / top * (W - L - R);
+  for (let v = 0; v <= top + 1e-9; v += 0.1) { el("line", { x1: x(v), x2: x(v), y1: T, y2: T + rowH * vals.length, stroke: css("--grid") }, svg); const t = el("text", { x: x(v), y: T + rowH * vals.length + 16, "text-anchor": "middle", class: "tick" }, svg); t.textContent = v.toFixed(1); }
+  vals.forEach(([nm, v, k], i) => {
+    const y = T + i * rowH + 9, ours = k === "unet";
+    const r = el("rect", { x: L, y, width: Math.max(0, x(v) - L), height: rowH - 18, rx: 4, fill: css(ours ? "--s1" : "--axis"), class: "hit" }, svg);
+    hover(r, `<b>${nm}</b><br>test MAE ${v.toFixed(3)}`);
+    const t = el("text", { x: L - 8, y: y + (rowH - 18) / 2 + 4, "text-anchor": "end", class: "tick", style: `fill:${css(ours ? "--ink" : "--ink-2")}` }, svg); t.textContent = nm;
+    const vl = el("text", { x: x(v) + 6, y: y + (rowH - 18) / 2 + 4, class: "tick", style: `fill:${css("--ink")}` }, svg); vl.textContent = v.toFixed(3);
+  });
+  const xl = el("text", { x: (L + W - R) / 2, y: H - 4, "text-anchor": "middle", class: "tick" }, svg); xl.textContent = "test MAE at 10 m (lower is better)";
+  const gbm = V.baselines.rows.find(r => r.split === "test" && r.method === "pixel_gbm").mae;
+  document.getElementById("basecap").textContent = `Simple baselines on the same test cells. Boosted trees on a single pixel's bands, the style of older per-pixel work, reach ${gbm.toFixed(3)}, about where Meta's map is. The U-Net (${testEns.mae.toFixed(3)}) gets the rest of its gain from reading the neighbourhood around each pixel.`;
+}
+
+const F = V.before;
+const preVal = F.val.find(r => r.res === "10m" && r.source === "model:unet_r34_ens3");
+const valEns = E.val.find(r => r.res === "10m" && r.source === "model:unet_r34_ens3");
+document.getElementById("foundList").innerHTML = [
+  `<b>A data bug, now fixed.</b> At one training site (Z16_E0420_N5540_2022), the data provider's catalogue said 2 of its 4 Sentinel-2 scenes still needed the −0.1 reflectance offset. The pixels show it had already been applied, so the pipeline subtracted it twice and those two dates came out near −0.09 everywhere. No validation or test data was affected. The pipeline now checks the pixels as well as the catalogue flag (${link("scripts/make_pairs.py")}). That site was rebuilt and all three seeds retrained. The ensemble went from ${preEns.mae.toFixed(4)} to ${testEns.mae.toFixed(4)} test MAE and from ${preVal.mae.toFixed(4)} to ${valEns.mae.toFixed(4)} validation MAE, and every number on this page is the corrected one.`,
+  `<b>Two dead links and one overstated sentence in the Phase 1 literature list.</b> A Nottingham repository page and a US Forest Service PDF had moved; they now point to the DOI and an archived copy. The sentence citing the USFS guide claimed more than the guide says (a "1.3 m is most accurate" result, a crown-size rule); it now says only what the guide supports.`,
+  `<b>A wording error about Sentinel-2 dates.</b> The 1 June – 15 September leaf-on window applies to the lidar flights. Sentinel-2 scenes were picked within ±45 days of the flight between 1 May and 15 October, so ${V.season_outside} of ${V.inputs.scenes_listed} scenes (${pct(V.season_outside / V.inputs.scenes_listed)}) are from May or late September and early October.`,
+  `<b>A leftover sub-pixel offset.</b> The alignment test puts the remaining offset between labels and Sentinel-2 at a median ${AL.median_abs_subpx_m.toFixed(1)} m, with a slight lean to one direction. That is a quarter of a pixel. The test can't tell whether it comes from the lidar or from Sentinel-2's own positioning.`,
+  `<b>One false alarm.</b> A site came up with almost no near-infrared signal. It turned out to be two-thirds lake; its forest pixels are normal. The check now looks only at pixels the lidar calls forest.`,
+].map(t => `<li>${t}</li>`).join("");
+
+document.getElementById("runTable").innerHTML = `<thead><tr><th>Run</th><th>Why</th><th class="num">Steps</th><th class="num">Seed</th><th class="num">Val MAE</th><th class="num">Test MAE</th><th>Used in report</th></tr></thead><tbody>` +
+  V.runs.map(r => `<tr><td class="mono">${r.name}</td><td>${r.why}</td><td class="num">${r.steps.toLocaleString()}</td><td class="num">${r.seed}</td><td class="num">${r.val_mae.toFixed(4)}</td><td class="num">${r.test_mae.toFixed(4)}</td><td>${r.used}</td></tr>`).join("") + "</tbody>";
+
+const CODE = [
+  ["scripts/select_sites.py", "Pick spread-out 5×5 km lidar blocks; read flight dates (laz_dates.py)"],
+  ["scripts/download_chm.py", "Download the 0.5 m canopy height tiles, resumable, checks each file decodes"],
+  ["scripts/make_labels.py", "Heights → 10 m cover on the Sentinel-2 grid (the label)"],
+  ["scripts/make_pairs.py", "Read Sentinel-2 bands for a site window; reflectance scale and offset"],
+  ["scripts/make_stacks.py", "Up to 4 cloud-free dates per site, same grid as the label"],
+  ["scripts/benchmarks.py", "Put Meta, SCANFI and NTEMS on the label grid"],
+  ["scripts/calibrate_benchmarks.py", "Recalibrate each product to our lidar on training sites only"],
+  ["scripts/train_unet.py", "Train and select the U-Net; predict held-out sites"],
+  ["scripts/ensemble.py", "Average the three seeds"],
+  ["scripts/evaluate.py", "Score every source on the same cells, 10 m and 30 m"],
+  ["scripts/final_analysis.py", "Per-site scores, imagery-age check, confusion matrix, comparison maps"],
+  ["scripts/uncertainty_preview.py", "Ensemble spread vs actual error"],
+  ["verify/run_all.py", "Run every check in Part 3 and print pass or fail"],
+  ["tests/test_core.py", "Unit tests"],
+];
+document.getElementById("codeMap").innerHTML = `<thead><tr><th>File</th><th>What it does</th></tr></thead><tbody>` +
+  CODE.map(([f, d]) => `<tr><td>${link(f)}</td><td>${d}</td></tr>`).join("") + "</tbody>";
+
+function drawAll() { drawSplit(); drawWC(); drawHist(); drawMap(); drawBins(); drawCurves(); drawSiteBars(); drawAge(); drawUnc(); drawAlign(); drawBase(); }
+drawAll();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+</script>

@@ -1,0 +1,53 @@
+{
+ "rows": [
+  {
+   "split": "val",
+   "method": "constant",
+   "n": 735048,
+   "mae": 0.3631047387593205
+  },
+  {
+   "split": "val",
+   "method": "ndvi_linear",
+   "n": 735048,
+   "mae": 0.2438695346052281
+  },
+  {
+   "split": "val",
+   "method": "pixel_gbm",
+   "n": 735048,
+   "mae": 0.14454670394527572
+  },
+  {
+   "split": "val",
+   "method": "unet",
+   "n": 735048,
+   "mae": 0.10343904793262482
+  },
+  {
+   "split": "test",
+   "method": "constant",
+   "n": 726188,
+   "mae": 0.3428480940429277
+  },
+  {
+   "split": "test",
+   "method": "ndvi_linear",
+   "n": 726188,
+   "mae": 0.23464854795185
+  },
+  {
+   "split": "test",
+   "method": "pixel_gbm",
+   "n": 726188,
+   "mae": 0.14618840673754196
+  },
+  {
+   "split": "test",
+   "method": "unet",
+   "n": 726188,
+   "mae": 0.10628519207239151
+  }
+ ],
+ "train_rows": 1287696
+}

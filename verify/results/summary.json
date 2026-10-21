@@ -1,0 +1,47 @@
+{
+ "checks": [
+  {
+   "name": "inputs: grids match, reflectance plausible",
+   "ok": true
+  },
+  {
+   "name": "labels: independent recompute exact",
+   "ok": true
+  },
+  {
+   "name": "labels: 1 m shift is detected (check has power)",
+   "ok": true
+  },
+  {
+   "name": "alignment: pooled NDVI correlation peaks at zero shift",
+   "ok": true
+  },
+  {
+   "name": "splits: no overlap, no shared tiles",
+   "ok": true
+  },
+  {
+   "name": "splits: training code isolates test",
+   "ok": true
+  },
+  {
+   "name": "metrics: sklearn matches stored results",
+   "ok": true
+  },
+  {
+   "name": "benchmarks: NTEMS/SCANFI match source pixels (>=99%)",
+   "ok": true
+  },
+  {
+   "name": "benchmarks: Meta conversion within 0.01 on average",
+   "ok": true
+  },
+  {
+   "name": "unit tests pass",
+   "ok": true
+  }
+ ],
+ "passed": 10,
+ "total": 10,
+ "n_tests": 16
+}

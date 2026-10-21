@@ -1,0 +1,61 @@
+{
+ "n_sites": 49,
+ "split_counts": {
+  "train": 43,
+  "val": 3,
+  "test": 3
+ },
+ "footprint_overlaps": [],
+ "shared_tiles": [],
+ "nearest_train": [
+  {
+   "site_id": "Z17_E0400_N5110_2021",
+   "split": "val",
+   "nearest_train": "Z17_E0310_N5125_2021",
+   "gap_km": 86.66301671928532,
+   "centre_deg": 1.1765401876296973
+  },
+  {
+   "site_id": "Z18_E0305_N5105_2022",
+   "split": "test",
+   "nearest_train": "Z18_E0325_N5015_2022",
+   "gap_km": 87.3378354116876,
+   "centre_deg": 0.8549914054928984
+  },
+  {
+   "site_id": "Z15_E0690_N5475_2020",
+   "split": "val",
+   "nearest_train": "Z15_E0735_N5410_2019",
+   "gap_km": 71.92668506168717,
+   "centre_deg": 0.8351666223711284
+  },
+  {
+   "site_id": "Z17_E0355_N5560_2019",
+   "split": "val",
+   "nearest_train": "Z17_E0435_N5480_2021",
+   "gap_km": 105.71077059376157,
+   "centre_deg": 1.3352563630837302
+  },
+  {
+   "site_id": "Z16_E0350_N5600_2023",
+   "split": "test",
+   "nearest_train": "Z16_E0390_N5625_2023",
+   "gap_km": 39.95199760027593,
+   "centre_deg": 0.6041173180515751
+  },
+  {
+   "site_id": "Z15_E0415_N5390_2020",
+   "split": "test",
+   "nearest_train": "Z15_E0445_N5490_2023",
+   "gap_km": 98.30696883281057,
+   "centre_deg": 0.9851479461957889
+  }
+ ],
+ "min_gap_km": 39.95199760027593,
+ "code_checks": {
+  "norm_stats_from_train_only": true,
+  "train_crops_from_train_only": true,
+  "checkpoint_selected_on_val": true,
+  "test_predicted_once_after_selection": true
+ }
+}

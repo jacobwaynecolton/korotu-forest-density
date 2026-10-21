@@ -1,0 +1,81 @@
+[
+ {
+  "name": "smoke",
+  "why": "60-step pipeline smoke test (model not kept)",
+  "steps": 60,
+  "seed": 0,
+  "val_mae": 0.1506,
+  "test_mae": 0.1586,
+  "used": "No"
+ },
+ {
+  "name": "unet_r34_before_offset_fix",
+  "why": "First full run, seed 0 (before the offset fix)",
+  "steps": 8000,
+  "seed": 0,
+  "val_mae": 0.10161589831113815,
+  "test_mae": 0.10626490414142609,
+  "used": "Superseded",
+  "minutes": 5.015134811401367
+ },
+ {
+  "name": "unet_r34_s1_before_offset_fix",
+  "why": "Seed 1, same settings (before the offset fix)",
+  "steps": 8000,
+  "seed": 1,
+  "val_mae": 0.1070004403591156,
+  "test_mae": 0.10062497854232788,
+  "used": "Superseded",
+  "minutes": 5.380026920636495
+ },
+ {
+  "name": "unet_r34_s2_before_offset_fix",
+  "why": "Seed 2, same settings (before the offset fix)",
+  "steps": 8000,
+  "seed": 2,
+  "val_mae": 0.10535886883735657,
+  "test_mae": 0.11142641305923462,
+  "used": "Superseded",
+  "minutes": 4.829026293754578
+ },
+ {
+  "name": "unet_r34_repro",
+  "why": "From-scratch rerun of seed 0 on the pre-fix data, to test reproducibility",
+  "steps": 8000,
+  "seed": 0,
+  "val_mae": 0.10161589831113815,
+  "test_mae": 0.10626490414142609,
+  "used": "Check only",
+  "minutes": 4.919232149918874
+ },
+ {
+  "name": "unet_r34",
+  "why": "Seed 0 after the offset fix",
+  "steps": 8000,
+  "seed": 0,
+  "val_mae": 0.10662060976028442,
+  "test_mae": 0.11354687809944153,
+  "used": "Ensemble",
+  "minutes": 4.789537700017293
+ },
+ {
+  "name": "unet_r34_s1",
+  "why": "Seed 1 after the offset fix",
+  "steps": 8000,
+  "seed": 1,
+  "val_mae": 0.10257361829280853,
+  "test_mae": 0.10518588125705719,
+  "used": "Ensemble",
+  "minutes": 4.8095009883244835
+ },
+ {
+  "name": "unet_r34_s2",
+  "why": "Seed 2 after the offset fix",
+  "steps": 8000,
+  "seed": 2,
+  "val_mae": 0.10633479803800583,
+  "test_mae": 0.10871470719575882,
+  "used": "Ensemble",
+  "minutes": 4.844956576824188
+ }
+]

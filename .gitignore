@@ -1,0 +1,15 @@
+.venv/
+data/raw/
+data/labels/
+*.part
+__pycache__/
+data/pairs/
+data/context/
+models/
+data/benchmarks/
+data/predictions/
+models_*.log
+report/template_v*_backup.html
+data/manifest/torch_install.log
+.pytest_cache/
+notebooks/

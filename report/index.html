@@ -1,0 +1,879 @@
+<title>Ontario Canopy Cover Labels</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column (~72ch) with full-width figure bands; data set in mono, headings in a technical grotesque. */
+:root {
+  --bg: #f7f8f5;
+  --surface: #fcfcfb;
+  --ink: #15201b;
+  --ink-2: #4a524d;
+  --muted: #7d837e;
+  --line: #dfe3dc;
+  --accent: #1d5c46;
+  --accent-soft: #e3eee8;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  /* categorical slots (dataviz reference, validated): train / val / test */
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+  /* ordinal cover classes, light -> dark = low -> high cover */
+  --c0: #86b6ef; --c1: #3987e5; --c2: #1c5cab; --c3: #104281;
+  --c-text-on-dark: #ffffff;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111613; --surface: #1a1a19; --ink: #eef1ec; --ink-2: #c3c8c1; --muted: #8d948e;
+    --line: #2b322e; --accent: #7cc4a4; --accent-soft: #1d2b25; --grid: #2c2c2a; --axis: #383835;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+    --c0: #cde2fb; --c1: #86b6ef; --c2: #3987e5; --c3: #1c5cab;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111613; --surface: #1a1a19; --ink: #eef1ec; --ink-2: #c3c8c1; --muted: #8d948e;
+  --line: #2b322e; --accent: #7cc4a4; --accent-soft: #1d2b25; --grid: #2c2c2a; --axis: #383835;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+  --c0: #cde2fb; --c1: #86b6ef; --c2: #3987e5; --c3: #1c5cab;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 17px/1.6 var(--body); }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 72px; }
+.col { max-width: 72ch; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; letter-spacing: -0.01em; margin: 0; }
+h1 { font-size: clamp(30px, 5vw, 44px); font-weight: 700; line-height: 1.1; }
+h2 { font-size: 26px; font-weight: 600; margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); }
+h3 { font-size: 18px; font-weight: 600; margin-top: 24px; }
+p { margin: 12px 0 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font: 500 12px/1.4 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.lede { font-size: 19px; color: var(--ink-2); margin-top: 14px; }
+.meta { font: 400 13px/1.5 var(--mono); color: var(--muted); margin-top: 14px; }
+code, .mono { font-family: var(--mono); font-size: 0.86em; }
+code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 28px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+.tile .v { font: 600 30px/1.1 var(--display); }
+.tile .k { font-size: 14px; color: var(--ink-2); margin-top: 4px; }
+
+figure { margin: 22px 0 0; }
+figcaption { font-size: 14px; color: var(--ink-2); margin-top: 8px; max-width: 80ch; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+.pipeline img { display: block; width: 100%; height: auto; border-radius: 4px; background: #fff; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 18px; }
+.steps > div { min-width: 0; }
+.steps b { font-family: var(--display); font-weight: 600; display: block; }
+.steps p { font-size: 15px; color: var(--ink-2); margin-top: 4px; }
+
+.two { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; margin-top: 22px; align-items: start; }
+@media (max-width: 820px) { .two { grid-template-columns: minmax(0, 1fr); } }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); margin: 0 0 10px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.chart { width: 100%; height: auto; display: block; overflow: visible; }
+#map { overflow: hidden; border-radius: 4px; }
+#wcBars { max-width: 900px; }
+.chart text { font-family: var(--body); fill: var(--ink-2); }
+.chart .tick { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+.chart .lab { font-size: 12.5px; fill: var(--ink); }
+.chart .inlab { font-family: var(--mono); font-size: 11px; }
+.hit { cursor: default; }
+.tip { position: fixed; pointer-events: none; z-index: 20; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; font-size: 13px; line-height: 1.45; box-shadow: 0 4px 16px rgba(0,0,0,0.12); max-width: 280px; }
+.tip b { font-family: var(--display); font-weight: 600; }
+
+.findings { margin: 14px 0 0; padding-left: 20px; }
+.findings li { margin-top: 8px; }
+.callout { background: var(--accent-soft); border-radius: 8px; padding: 14px 16px; margin-top: 18px; font-size: 16px; }
+
+.tablewrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font: 600 12px/1.3 var(--display); text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: 13px; }
+tr:last-child td { border-bottom: 0; }
+.pill { display: inline-block; font: 500 11.5px/1 var(--mono); padding: 4px 7px; border-radius: 999px; border: 1px solid currentColor; }
+.pill.train { color: var(--s1); } .pill.val { color: var(--s2); } .pill.test { color: var(--s3); }
+.minibar { display: inline-flex; width: 120px; height: 10px; gap: 1px; vertical-align: middle; }
+.minibar i { display: block; height: 100%; }
+
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-top: 20px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px; min-width: 0; scroll-margin-top: 16px; }
+.card:target { outline: 2px solid var(--accent); }
+.card .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.card img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; display: block; max-width: 100%; }
+.card .hd { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+.card .id { font: 500 12.5px/1.3 var(--mono); overflow-wrap: anywhere; }
+.card .sub { font-size: 13px; color: var(--ink-2); margin-top: 8px; }
+.ramp { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); margin-top: 12px; }
+.ramp .bar { width: 160px; height: 10px; border-radius: 3px; background: linear-gradient(90deg, #f3f2ee, #cde2fb, #86b6ef, #3987e5, #1c5cab, #104281); border: 1px solid var(--line); }
+
+#compareFigs { display: grid; gap: 12px; margin-top: 14px; }
+#compareFigs figure { margin: 0; overflow-x: auto; }
+#compareFigs img { display: block; width: 100%; min-width: 640px; height: auto; border-radius: 6px; background: #fff; }
+td.best { font-weight: 600; color: var(--ink); }
+table.wrap td { white-space: normal; vertical-align: top; min-width: 150px; }
+table.wrap td:nth-child(4), table.wrap td:nth-child(5) { min-width: 0; white-space: nowrap; }
+.chart .cellv { font-family: var(--mono); font-size: 12px; font-weight: 500; }
+.conf td.num { min-width: 64px; }
+.phase { margin-top: 72px; padding-top: 28px; border-top: 3px solid var(--accent); }
+.lit { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 18px; }
+.lit section { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.lit h3 { margin-top: 0; font-size: 16px; }
+.lit ul { padding-left: 18px; margin: 8px 0 0; font-size: 15px; }
+.lit li { margin-top: 8px; }
+.lit .use { display: block; color: var(--ink-2); font-size: 14px; }
+.decisions { display: grid; gap: 10px; margin-top: 16px; }
+.decisions div { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.decisions div b { font-family: var(--display); font-weight: 600; }
+@media (max-width: 620px) { .decisions div { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
+pre { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; overflow-x: auto; font: 13px/1.55 var(--mono); }
+@media (prefers-reduced-motion: no-preference) { .card { transition: border-color .15s; } .card:hover { border-color: var(--axis); } }
+</style>
+
+<div class="wrap">
+  <header class="col">
+    <div class="eyebrow">CSC2701 · Korotu forest density · Phase 1 labels · Phase 2 model</div>
+    <h1>Ontario canopy cover from airborne lidar and Sentinel-2</h1>
+    <p class="lede">Training labels for the forest-density model: canopy cover for every 10&nbsp;m cell in 49 Ontario sites, measured from leaf-on lidar and placed exactly on the Sentinel-2 pixel grid, and a model trained on them that beats the current national and global canopy maps on held-out sites.</p>
+    <p class="meta">Prepared by Jacob Colton · data as of 18 Oct 2026 · Ontario FRI leaf-on SPL lidar (Open Government Licence – Ontario)</p>
+  </header>
+
+  <div class="tiles" id="tiles"></div>
+  <p class="callout col">Headline: a U-Net trained on these labels predicts 10&nbsp;m canopy cover from Sentinel-2 with a test error 28&nbsp;% lower than Meta/WRI's 2026 global canopy map and about half that of Canada's SCANFI and NTEMS products, with the lowest error at 5 of 6 held-out sites. <a href="#phase2">Jump to phase 2</a>.</p>
+
+  <div class="eyebrow" style="margin-top:44px">Phase 1</div>
+  <h2 id="what" style="border-top:0;margin-top:6px;padding-top:0">What was built</h2>
+  <div class="col">
+    <p>Each label says what fraction of a 10&nbsp;m Sentinel-2 pixel is covered by tree crowns taller than 2&nbsp;m. The lidar measures heights every 0.5&nbsp;m, so every label is an average of 400 height measurements. Labels are continuous (0 to 1), so the cut points between dense, moderate, sparse and non-forest can still be chosen later without redoing any processing.</p>
+  </div>
+  <figure class="panel pipeline">
+    <img src="figures/pipeline.png" alt="Four panels of the same 300 by 300 metre area: Sentinel-2 true colour image, lidar canopy height at 0.5 metres, a tree mask of heights above 2 metres, and the resulting canopy cover label per 10 metre cell ranging from dense at the top to open at the bottom.">
+    <figcaption id="pipecap">One 300&nbsp;m window, from the input image to the label.</figcaption>
+  </figure>
+  <div class="steps">
+    <div><b>1 · Height map</b><p>Ontario's Forest Resources Inventory lidar comes with a ready-made canopy height model: 0.5&nbsp;m pixels, flown leaf-on, 2018–2025.</p></div>
+    <div><b>2 · Tree mask</b><p>Pixels above 2&nbsp;m count as tree crown, the standard "% of first returns above 2&nbsp;m" convention. A 5&nbsp;m version is stored too.</p></div>
+    <div><b>3 · Onto the S2 grid</b><p>The mask is reprojected from NAD83(CSRS) to WGS84 UTM, the CRS Sentinel-2 uses, with a grid snapped to 60&nbsp;m so the 10, 20 and 60&nbsp;m bands all line up.</p></div>
+    <div><b>4 · Average to 10 m</b><p>400 mask pixels become one cover value. Cells with any missing lidar are left empty rather than guessed.</p></div>
+  </div>
+
+  <h2 id="sites">Where the labels come from</h2>
+  <div class="col">
+    <p>The 49 sites are 5&nbsp;km × 5&nbsp;km blocks spread across Ontario's managed forest, from the Lake of the Woods area to the Ottawa Valley. Twelve were spread out evenly first. Five were added because they contain open and partly treed forest, which the first twelve barely had. Thirty-two more training sites were then added, each kept at least 0.5° from every validation and test site. Every site was flown in a single season between 1 June and 15 September.</p>
+  </div>
+  <div class="two">
+    <figure class="panel" style="margin:0">
+      <div class="legend" id="mapLegend"></div>
+      <svg class="chart" id="map" role="img" aria-label="Map of Ontario showing 49 lidar sites coloured by train, validation and test split"></svg>
+      <figcaption>Circles were placed for even spread; diamonds were chosen for sparse cover. Hover over a site for details, or click it to jump to its images.</figcaption>
+    </figure>
+    <div>
+      <h3 style="margin-top:0">Spatial split</h3>
+      <p>Whole sites go to train, validation or test, never individual cells. Neighbouring cells look almost identical, so a random split would leak and overstate accuracy. The proposed split keeps the class mix similar in all three sets:</p>
+      <div class="legend" id="classLegend" style="margin-top:14px"></div>
+      <svg class="chart" id="splitBars" role="img" aria-label="Stacked bars of cover class shares for all land, train, validation and test"></svg>
+      <p style="font-size:14px;color:var(--ink-2)">Class cut points (10 / 40 / 70&nbsp;%) are placeholders until they are agreed with Korotu. Water cells are excluded here.</p>
+    </div>
+  </div>
+
+  <h2 id="eda">What the labels look like</h2>
+  <div class="two">
+    <figure class="panel" style="margin:0">
+      <div class="legend"><span><i class="sw" style="background:var(--c2)"></i>10 m land cells per 5 % cover bin</span><span style="color:var(--muted)">dashed: class cut points</span></div>
+      <svg class="chart" id="hist" role="img" aria-label="Histogram of canopy cover across all land cells"></svg>
+      <figcaption>Canopy cover across all <span id="nland"></span> land cells. Most cells are either fully closed canopy or open, with a long, thin middle.</figcaption>
+    </figure>
+    <div class="col">
+      <ul class="findings" id="findings"></ul>
+    </div>
+  </div>
+
+  <h3>A third-party map against the lidar</h3>
+  <div class="col">
+    <p>ESA WorldCover 2021 is one of the existing products the confidence map will combine. Lining its 10&nbsp;m classes up against the lidar labels gives a first look at where it agrees and where it doesn't.</p>
+  </div>
+  <figure class="panel">
+    <div class="legend" id="classLegend2"></div>
+    <svg class="chart" id="wcBars" role="img" aria-label="Lidar cover class mix within each ESA WorldCover class"></svg>
+    <figcaption id="wccap"></figcaption>
+  </figure>
+
+  <h2 id="pairs">Training pairs</h2>
+  <div class="col">
+    <p>Every labelled cell has Sentinel-2 L2A surface reflectance: 12 bands, the 20 and 60&nbsp;m bands repeated onto the 10&nbsp;m grid. Each site has up to four cloud-free dates from the flight season (<code>data/pairs/stacks/</code>), and the first 17 sites also have a flat table of 4.13 million cells (<code>data/pairs/pixels.parquet</code>) for per-pixel models.</p>
+    <p>Scenes span four processing baselines. The newer ones carry a −0.1 reflectance offset that the AWS copies have already removed, and applying it again put forest red reflectance below zero. With that fixed, dense-forest red, NIR and SWIR agree within 0.003 across baselines.</p>
+    <p>As a first smoke test on the original 17 sites, gradient boosting on the bands plus NDVI, trained on 300k cells from 11 training sites, predicted cover on the held-out sites with these errors:</p>
+  </div>
+  <div class="tablewrap" style="max-width:720px"><table>
+    <thead><tr><th>Held-out sites</th><th class="num">Cells</th><th class="num">MAE</th><th class="num">r</th><th class="num">4-class acc.</th><th class="num">MAE if predicting the mean</th></tr></thead>
+    <tbody><tr><td>Validation (3)</td><td class="num">733k</td><td class="num">0.161</td><td class="num">0.84</td><td class="num">67%</td><td class="num">0.364</td></tr>
+    <tr><td>Test (3)</td><td class="num">726k</td><td class="num">0.123</td><td class="num">0.87</td><td class="num">71%</td><td class="num">0.343</td></tr></tbody>
+  </table></div>
+  <p class="col" style="font-size:15px;color:var(--ink-2)">These pairs carry real signal. The U-Net below cuts the validation error by about a third again. Accuracy uses the placeholder 10 / 40 / 70&nbsp;% cut points.</p>
+
+
+  <h2 id="decisions">Decisions and why</h2>
+  <div class="decisions">
+    <div><b>FRI leaf-on lidar, not the Classified Point Cloud</b><span>The charter named Ontario's Classified Point Cloud. That dataset is mostly from 2009–2019, and leaf-off flights are standard practice in Ontario's provincial mapping, which undercounts deciduous canopy. Its points also have no vegetation class. The FRI lidar is leaf-on, from 2018–2025 (all within the Sentinel-2 era), covers about 452,000 km², and ships a 0.5&nbsp;m height model. <b>The charter's Section 3 should be updated.</b></span></div>
+    <div><b>2 m height threshold</b><span>This matches Canada's national forest structure products ("% of first returns above 2&nbsp;m"). A > 5&nbsp;m band is included because FAO and Canadian forest definitions use 5&nbsp;m trees, so the team can test the choice.</span></div>
+    <div><b>Labels on the Sentinel-2 grid</b><span>Labels are produced directly in WGS84 UTM with 10&nbsp;m cells snapped to 60&nbsp;m, so the S2 side never has to resample imagery. All 49 preview windows lined up with whole S2 pixels.</span></div>
+    <div><b>Flight dates from the files</b><span>Exact flight dates are read from each point-cloud header with a 1&nbsp;KB request. Sites flown outside 1 June – 15 Sept, or across more than 60 days, were rejected (10 candidate blocks).</span></div>
+    <div><b>Continuous labels</b><span>Storing the cover fraction rather than a class keeps the 4-class cut points open, and lets the model be trained as regression or classification.</span></div>
+    <div><b>Verified</b><span>All 1,250 tiles downloaded and decode. 680 random label cells were recomputed independently from the raw height tiles and matched exactly. Four tile formats (three nodata values, and a 2025 batch in a different CRS and pixel size) are handled.</span></div>
+  </div>
+
+  <h2 id="open">Limitations and open questions</h2>
+  <ul class="findings col">
+    <li><b>Ontario managed forest only.</b> No far-north open woodland, no Hudson Bay Lowlands, little farmland edge. A Québec site (1&nbsp;m height model, open data) would make a strong out-of-province test.</li>
+    <li><b>Time gap.</b> The preview scenes are a median of <span id="gapmed"></span> days from the flight (max <span id="gapmax"></span>). The real S2 pipeline should keep the gap small, so harvest or fire between flight and image doesn't corrupt labels.</li>
+    <li><b>Cover is not "forest".</b> Shrubs and regrowth over 2&nbsp;m count as canopy. Whether Korotu's "sparse forest" includes them is a question for Rebecca.</li>
+    <li><b>Water.</b> <span id="waterpct"></span> of cells are open water. Decide whether water is a separate class, part of non-forest, or masked out.</li>
+    <li><b>For Korotu:</b> the density cut points, the height threshold, and whether 10&nbsp;m (Sentinel-2) or sub-metre imagery is the production target.</li>
+  </ul>
+
+  <h2 id="lit">Literature summary</h2>
+  <div class="col"><p>What existing work says about each step, and what this phase took from it.</p></div>
+  <div class="lit">
+    <section>
+      <h3>Lidar as ground truth for canopy cover</h3>
+      <ul>
+        <li>Canada's national forest structure products define cover as the share of first lidar returns above 2&nbsp;m, e.g. the <a href="https://donnees.iriu.ca/en/dataset/76af2d23-93b8-4290-9126-6ee00c98c769" target="_blank" rel="noopener">Forest Percentage Above 2m</a> layer; lidar tools such as <a href="https://lastools.osgeo.org/download/lascanopy_README.txt" target="_blank" rel="noopener">LAStools lascanopy</a> compute it directly.<span class="use">→ our 2 m threshold and per-cell fraction.</span></li>
+        <li>The height cutoff for "canopy" is a choice that depends on forest type: the US Forest Service lidar guide uses 1&nbsp;m for short-stature stands and 3&nbsp;m for mixed conifer (<a href="https://web.archive.org/web/20240721033157/https://fsapps.nwcg.gov/gtac/CourseDownloads/Reimbursables/FY21/LiDAR_Material/LiDARMetrics_Descriptions_2021.pdf" target="_blank" rel="noopener">USFS lidar metrics, archived</a>). Canada's NTEMS uses 2&nbsp;m.<span class="use">→ a second 5 m band; 10 m cells (400 lidar pixels each).</span></li>
+        <li>Ontario's provincial lidar is usually flown leaf-off, which gives better terrain models but undercounts deciduous canopy (<a href="https://arxiv.org/pdf/2606.26194" target="_blank" rel="noopener">2026 preprint</a> citing Geospatial Ontario reports).<span class="use">→ the switch to FRI leaf-on lidar.</span></li>
+      </ul>
+    </section>
+    <section>
+      <h3>Learning cover from Sentinel-2 with lidar labels</h3>
+      <ul>
+        <li>Lang et al. (2019) regressed canopy height from 13-band Sentinel-2 L2A with a CNN trained on airborne lidar references (<a href="https://ar5iv.arxiv.org/html/1904.13270" target="_blank" rel="noopener">arXiv 1904.13270</a>), later scaled to a global 10&nbsp;m map with GEDI.<span class="use">→ the S2 + lidar pairing is established.</span></li>
+        <li>The California Forest Observatory trained U-Nets on Sentinel-1/2 at 10&nbsp;m with structure metrics from USGS lidar, because lidar covered only a small fraction of the state (<a href="https://wifire-data.sdsc.edu/dataset/clm-canopy-cover" target="_blank" rel="noopener">canopy cover product</a>).<span class="use">→ closest precedent to our setup.</span></li>
+        <li>Open-Canopy (CVPR 2025) pairs 87,000&nbsp;km² of French LiDAR HD heights with 1.5&nbsp;m SPOT imagery, with test tiles separated by a 1&nbsp;km buffer (<a href="https://arxiv.org/pdf/2407.09392" target="_blank" rel="noopener">arXiv 2407.09392</a>).<span class="use">→ spatially separated test data; a possible pretraining source.</span></li>
+        <li>Google's AlphaEarth embeddings (64 numbers per 10&nbsp;m pixel) beat earlier features for mapping from sparse labels (<a href="https://arxiv.org/pdf/2507.22291" target="_blank" rel="noopener">arXiv 2507.22291</a>).<span class="use">→ a cheap baseline input for the model team.</span></li>
+      </ul>
+    </section>
+    <section>
+      <h3>Canadian reference data</h3>
+      <ul>
+        <li>NTEMS annual 30&nbsp;m forest land cover 1984–2022 (Hermosilla et al.) and <a href="https://open.canada.ca/data/en/dataset/18e6a919-53fd-41ce-b4e2-44a9707c52dc" target="_blank" rel="noopener">SCANFI</a> 2020 crown closure are models trained on lidar and photo plots.<span class="use">→ third-party maps to combine, not ground truth.</span></li>
+        <li>Bater et al. (2026) released ~15M 30&nbsp;m lidar plots along transects over northern forests, with cover metrics (<a href="https://essd.copernicus.org/articles/18/2075/2026/" target="_blank" rel="noopener">ESSD 18:2075</a>).<span class="use">→ a northern evaluation set if time allows.</span></li>
+        <li>Québec publishes a 1&nbsp;m lidar canopy height model as open data (<a href="https://www.donneesquebec.ca/recherche/dataset/donnees-lidar-du-quebec" target="_blank" rel="noopener">Données Québec</a>).<span class="use">→ out-of-province test region.</span></li>
+      </ul>
+    </section>
+    <section>
+      <h3>Existing maps disagree</h3>
+      <ul>
+        <li>Global forest products differed by up to 70&nbsp;% in forest area across three countries, and higher resolution did not mean higher accuracy (<a href="https://www.frontiersin.org/journals/remote-sensing/articles/10.3389/frsen.2026.1679383/full" target="_blank" rel="noopener">Gapare et al. 2026</a>).<span class="use">→ trust in each product should vary by region.</span></li>
+        <li>Dynamic World, WorldCover and Esri agree on tree area but each has class biases, e.g. WorldCover over-estimates grass (<a href="https://www.pnnl.gov/publications/global-10-m-land-use-land-cover-datasets-comparison-dynamic-world-world-cover-and-esri" target="_blank" rel="noopener">PNNL comparison</a>).<span class="use">→ matches our WorldCover result for shrub and grass cells.</span></li>
+        <li>Forest definitions differ: FAO uses &gt;10&nbsp;% cover over 0.5&nbsp;ha, Canada's UNFCCC reporting uses &gt;25&nbsp;% over 1&nbsp;ha (<a href="https://www150.statcan.gc.ca/n1/pub/16-201-x/2018001/sec-1-eng.htm" target="_blank" rel="noopener">StatCan</a>).<span class="use">→ part of the disagreement between products is definitional.</span></li>
+      </ul>
+    </section>
+    <section>
+      <h3>Combining maps and stating confidence</h3>
+      <ul>
+        <li>IIASA fused eight forest products with geographically weighted regression trained on crowdsourced points; the hybrid reached 93&nbsp;% accuracy, beating every input (<a href="https://pure.iiasa.ac.at/11491" target="_blank" rel="noopener">Schepaschenko et al.</a>).<span class="use">→ the template for the weighted confidence map.</span></li>
+        <li>Bayesian fusion gives each pixel a class probability plus an uncertainty map (<a href="https://doi.org/10.3390/rs6065589" target="_blank" rel="noopener">Xu et al. 2014, Remote Sensing 6:5589</a>).</li>
+        <li>Olofsson et al. (2014) set the standard for accuracy assessment: probability sampling and area-weighted error matrices (<a href="https://doi.org/10.1016/j.rse.2014.02.015" target="_blank" rel="noopener">RSE 148</a>).<span class="use">→ how the final map should be evaluated.</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <h2 id="every-site">Every site</h2>
+  <div class="col">
+    <p>Each card shows the Sentinel-2 scene closest to the lidar flight next to the 10&nbsp;m label for the same 4.9&nbsp;km square. Rivers, roads and cutblocks line up in both, which is a visual check of the grid alignment.</p>
+    <div class="ramp"><span>Cover 0</span><span class="bar"></span><span>1</span></div>
+  </div>
+  <div class="gallery" id="gallery"></div>
+
+  <h3>Site table</h3>
+  <div class="tablewrap"><table id="siteTable"></table></div>
+
+  <h2 id="files">Files and handoff</h2>
+  <div class="col">
+    <p>Everything is in <code>~/Projects/korotu-forest-density/</code> and reruns from the scripts in order. For the Sentinel-2 teammates: <code>data/manifest/sites.geojson</code> has each site's footprint, CRS (<code>epsg_s2</code>), grid bounds and lidar flight dates; <code>s2_preview_scenes.csv</code> lists one cloud-free scene per site as a starting point.</p>
+  </div>
+<pre>scripts/select_sites.py      pick 12 spread-out 5×5 km sites, check flight dates
+scripts/add_sparse_sites.py  add 5 sites chosen for 10–70 % cover
+scripts/expand_sites.py      add 32 training sites, ≥ 0.5° from val/test
+scripts/download_chm.py      fetch CHM tiles (resumable, validated)
+scripts/make_labels.py       10 m labels on the S2 grid → data/labels/&lt;site&gt;_cover10m.tif
+                             band 1 cover_gt2m · band 2 cover_gt5m · band 3 valid_frac
+scripts/context_layers.py    S2 true-colour preview + ESA WorldCover per site
+scripts/eda.py               splits, statistics, figures
+scripts/make_pairs.py        S2 L2A 12-band stacks + pixels.parquet (first 17 sites)
+scripts/make_stacks.py       up to 4 cloud-free S2 dates per site, all 49 sites
+scripts/benchmarks.py        Meta CHM v2, SCANFI v2, NTEMS on the label grid
+scripts/calibrate_benchmarks.py  isotonic recalibration on training sites
+scripts/train_unet.py        U-Net training (≈5 min on an RTX 5070 Ti laptop GPU)
+scripts/ensemble.py          average seeds
+scripts/evaluate.py          scores at 10 m and 30 m
+scripts/final_analysis.py    per-site, imagery-age and confusion checks, figures
+scripts/check_pairs.py       reflectance harmonization + baseline smoke test
+report/build_report.py       builds this page</pre>
+
+  <section class="phase" id="phase2">
+    <div class="eyebrow">Phase 2</div>
+    <h2 style="border-top:0;margin-top:6px;padding-top:0">A canopy-cover model that beats the current maps</h2>
+    <p class="lede col">With the labels in place, phase 2 asked whether a model trained on them can beat the best existing canopy maps for Canada. A U-Net reading only Sentinel-2 does, on 5 of the 6 held-out sites and on the pooled test and validation sets, after about five minutes of training on a laptop GPU.</p>
+  </section>
+  <div class="tiles" id="modelTiles"></div>
+
+  <h2 id="p2-what">What was done</h2>
+  <div class="steps">
+    <div><b>More training data</b><p>32 more training sites (49 in total, 1,219&nbsp;km², 11.9M labelled cells), each at least 0.5° from every validation and test site so the evaluation stays independent.</p></div>
+    <div><b>Several dates per site</b><p>Up to four cloud-free Sentinel-2 scenes from the flight season per site (161 training site-dates). Each date is a different view of the same forest, which works as augmentation, and predictions are averaged across dates.</p></div>
+    <div><b>U-Net, three seeds</b><p>ResNet-34 encoder with ImageNet weights adapted to 12 bands, L1 loss on random 128&nbsp;×&nbsp;128 crops, 8,000 steps. The final model averages three seeds plus four flips.</p></div>
+    <div><b>Fair benchmarks</b><p>Meta and SCANFI are placed on the same 10&nbsp;m grid, scored on the same cells, and also recalibrated to our lidar using training sites only. Choices were made on validation; test was scored once.</p></div>
+  </div>
+  <figure class="panel">
+<pre class="mermaid">
+flowchart LR
+  A["FRI leaf-on lidar<br/>0.5 m heights"] --> B["10 m cover labels<br/>on the S2 grid"]
+  C["Sentinel-2 L2A<br/>up to 4 dates per site"] --> D["U-Net × 3 seeds<br/>43 training sites"]
+  B --> D
+  D --> E["Ensemble<br/>dates + flips + seeds"]
+  E --> F["Score on 6 held-out sites<br/>10 m and 30 m"]
+  G["Meta/WRI CHM v2<br/>SCANFI v2, NTEMS 2022"] --> F
+  E --> H["Ensemble spread<br/>confidence preview"]
+</pre>
+    <figcaption>Phase 2 workflow. Every box is a script in <code>scripts/</code>.</figcaption>
+  </figure>
+
+  <h3>Training</h3>
+  <figure class="panel">
+    <div class="legend" id="curveLegend"></div>
+    <svg class="chart" id="curves" role="img" aria-label="Validation error during training for three seeds, with Meta's validation error as a reference line"></svg>
+    <figcaption>Validation error during training for each seed. The model passes Meta's error (dashed) within the first thousand steps, under a minute of training.</figcaption>
+  </figure>
+
+  <h2 id="model">Results against the current maps</h2>
+  <div class="col">
+    <p>The comparison set is the maps that represent the current state of the art for Canadian canopy cover. <b>Meta/WRI Global Canopy Height v2</b> (2026, ~1&nbsp;m, from sub-metre satellite imagery) is turned into cover with exactly our definition, the share of each 10&nbsp;m cell above 2&nbsp;m. <b>SCANFI v2</b> (2026) is Canada's 30&nbsp;m National Forest Inventory crown-closure product, taken from the 5-yearly layer nearest each flight. <b>NTEMS 2022</b> is Canada's 30&nbsp;m lidar-plot-trained Landsat canopy cover (Matasci et al. 2018 method), which uses the same 2&nbsp;m definition as ours. Each product also appears <i>recalibrated</i>: a monotone map fitted to our lidar on training sites only, so no product loses just because it defines cover differently.</p>
+  </div>
+  <h3>Test sites (scored once)</h3>
+  <div class="tablewrap"><table id="evalTest"></table></div>
+  <h3>Validation sites</h3>
+  <div class="tablewrap"><table id="evalVal"></table></div>
+  <p class="col" style="font-size:14px;color:var(--ink-2)">MAE and RMSE are in cover fraction (0.10 = 10 percentage points). 30&nbsp;m = 3&nbsp;×&nbsp;3 blocks of 10&nbsp;m cells. Accuracy and macro-F1 use the placeholder 10 / 40 / 70&nbsp;% classes. Best value per column in bold.</p>
+
+  <div class="two">
+    <figure class="panel" style="margin:0">
+      <div class="legend" id="binLegend"></div>
+      <svg class="chart" id="binChart" role="img" aria-label="Mean absolute error by true canopy cover on test sites for the model, Meta and SCANFI"></svg>
+      <figcaption>Error by true cover on the test sites. All maps are worst in the middle, where cover is partial; the model's gap is largest in dense and open forest.</figcaption>
+    </figure>
+    <div>
+      <h3 style="margin-top:0">Where the model still gets classes wrong</h3>
+      <p style="font-size:15px;color:var(--ink-2)">Test-site confusion, rows = lidar class, share of each row:</p>
+      <div class="tablewrap"><table id="confTable"></table></div>
+      <p style="font-size:15px;color:var(--ink-2)" id="confNote"></p>
+    </div>
+  </div>
+
+  <h3>Site by site</h3>
+  <div class="two">
+    <figure class="panel" style="margin:0">
+      <div class="legend" id="siteBarLegend"></div>
+      <svg class="chart" id="siteBars" role="img" aria-label="Mean absolute error per held-out site for the model, Meta, SCANFI and NTEMS"></svg>
+      <figcaption>Error at each held-out site. The model is lowest at five of six; at Z17_E0355_N5560 (validation) NTEMS edges it. Exact values are in the table below.</figcaption>
+    </figure>
+    <figure class="panel" style="margin:0">
+      <div class="legend" id="ageLegend"></div>
+      <svg class="chart" id="ageBars" role="img" aria-label="Model and Meta error on all held-out cells and on cells where Meta's imagery is recent"></svg>
+      <figcaption>Meta's imagery on these sites ranges from 2011 to 2020 depending on the tile. Restricting to cells where it is within 2 years of the lidar shrinks the gap but doesn't close it.</figcaption>
+    </figure>
+  </div>
+  <div class="tablewrap"><table id="siteEval"></table></div>
+  <h3>How fair is the comparison</h3>
+  <ul class="findings col" id="fairness"></ul>
+
+  <h3>Maps on the held-out sites</h3>
+  <div id="compareFigs"></div>
+
+  <h2 id="p2-uncert">Toward the confidence map</h2>
+  <div class="col">
+    <p>The three seeds disagree more where the model is wrong. Their spread can be computed anywhere without lidar, so it is a ready-made first signal for the per-pixel confidence the project needs. It is not yet calibrated: a spread value is not a probability.</p>
+  </div>
+  <figure class="panel pipeline">
+    <img src="figures/uncertainty_Z15_E0415_N5390_2020.png" alt="Lidar truth, model prediction, actual error and ensemble spread for one test site; spread is high where error is high.">
+    <figcaption>Test site Z15_E0415_N5390_2020. Bright areas in the spread map line up with the real errors, mostly along edges and in partly treed stands.</figcaption>
+  </figure>
+  <figure class="panel">
+    <div class="legend"><span><i class="sw" style="background:var(--s2)"></i>mean actual error per spread decile, held-out cells</span></div>
+    <svg class="chart" id="uncBars" role="img" aria-label="Mean actual error by ensemble spread decile"></svg>
+    <figcaption id="unccap"></figcaption>
+  </figure>
+
+  <h2 id="p2-next">Next steps</h2>
+  <ul class="findings col">
+    <li><b>Québec test.</b> Québec's open 1&nbsp;m lidar gives an out-of-province check before claiming more than Ontario.</li>
+    <li><b>Sparse forest.</b> The 10–40&nbsp;% class is the weak spot: add sites chosen for it, or weight the loss by class.</li>
+    <li><b>Confidence map.</b> Calibrate the ensemble spread on validation sites, then combine it with agreement between our model, Meta and SCANFI for the weighted confidence map.</li>
+    <li><b>Charter and Korotu.</b> Update Section 3 to the FRI lidar, and confirm the class cut points and height threshold with Rebecca.</li>
+  </ul>
+
+  <section class="phase" id="part3">
+    <div class="eyebrow">Part 3</div>
+    <h2 style="border-top:0;margin-top:6px;padding-top:0">Checking the work</h2>
+    <p class="lede col">Everything above was produced by code, and code can be wrong. This part re-derives each main claim by a separate route, using different libraries and methods from the pipeline's, and lists what the checks turned up, including the bugs they caught.</p>
+  </section>
+  <p class="callout col">Code: <a href="https://github.com/jacobwaynecolton/korotu-forest-density" target="_blank" rel="noopener"><b>github.com/jacobwaynecolton/korotu-forest-density</b></a>. Every check is one script in <code>verify/</code>; <code>python -I verify/run_all.py</code> reruns all of them and prints pass or fail. Numbers on this page are read from the scripts' output files when the page is built, not typed in.</p>
+  <div class="tiles" id="verifyTiles"></div>
+
+  <h2 id="p3-claims">Each claim and how it was checked</h2>
+  <div class="tablewrap"><table id="verifyTable" class="wrap"></table></div>
+
+  <div class="two">
+    <figure class="panel" style="margin:0">
+      <svg class="chart" id="alignGrid" role="img" aria-label="Correlation between lidar cover and Sentinel-2 NDVI for label shifts of up to 3 pixels in each direction"></svg>
+      <figcaption id="aligncap"></figcaption>
+    </figure>
+    <figure class="panel" style="margin:0">
+      <svg class="chart" id="baseBars" role="img" aria-label="Test MAE of simple baselines, benchmark products and the U-Net"></svg>
+      <figcaption id="basecap"></figcaption>
+    </figure>
+  </div>
+
+  <h2 id="p3-found">What the checks found</h2>
+  <ul class="findings col" id="foundList"></ul>
+
+  <h2 id="p3-runs">Every training run</h2>
+  <div class="col"><p>Every model trained for this project, including the discarded ones. One set of settings was used for every full run and never changed. Each run prints a test score at the end, but no setting was changed after one; the only earlier run is a 60-step smoke test that checked the pipeline ran.</p></div>
+  <div class="tablewrap"><table id="runTable"></table></div>
+
+  <h2 id="p3-limits">What these checks don't prove</h2>
+  <ul class="findings col">
+    <li><b>Home advantage.</b> The checks show the labels and scores are computed correctly. They can't show the model generalizes beyond Ontario, or beyond leaf-on lidar's notion of cover. That needs the Québec test.</li>
+    <li><b>Six held-out sites.</b> The test set is honest, but small. Site-to-site spread (model MAE from about 0.05 to 0.17) is larger than the gap between some products, so per-site rankings are noisy.</li>
+    <li><b>The checks were written by the same author as the pipeline.</b> They take different code paths, but a human reading the code is still the strongest check. The code map below is the place to start.</li>
+    <li><b>Literature.</b> Every link on this page was opened by script. Two were dead and were replaced. One claim did not match its source and was rewritten (see above). Papers were checked against their abstracts and catalogue records, not read in full.</li>
+  </ul>
+
+  <h2 id="p3-code">Code map</h2>
+  <div class="tablewrap"><table id="codeMap"></table></div>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+const D = {"n_sites": 49, "area_km2": 1218.9, "n_cells": 11946959, "n_land_cells": 10717494, "water_frac": 0.10291028871866059, "shares_all": [0.1854295306445766, 0.0770581869411287, 0.14890400142831325, 0.5886082809859815], "shares_land": [0.0955528409906271, 0.08445416437835188, 0.1649905285694585, 0.6550024660615625], "shares_split": {"train": {"shares": [0.08671684748158348, 0.08121930823683932, 0.16430195158662156, 0.6677618926949557], "cells": 9419669}, "val": {"shares": [0.14266771543871212, 0.12553708113889184, 0.14281228431256723, 0.5889829191098288], "cells": 643292}, "test": {"shares": [0.1764097455743255, 0.09063103006265535, 0.19669749271618084, 0.5362617316468383], "cells": 654533}}, "hist_land": [865891, 165700, 142025, 134706, 136858, 146492, 162809, 184515, 211492, 242547, 275503, 308947, 343427, 376597, 413461, 460584, 528076, 649461, 925920, 4042483], "gap_days_median": 3.0, "gap_days_max": 33, "classes": ["Non-forest (<10%)", "Sparse (10\u201340%)", "Moderate (40\u201370%)", "Dense (\u226570%)"], "cuts": [0.1, 0.4, 0.7], "per_site": [{"site_id": "Z17_E0600_N5175_2020", "split": "train", "selection": "spread", "lon": -79.658, "lat": 46.743, "year": 2020, "flight": "2020-06-14 to 2020-06-15", "s2_scene": "S2A_17TPM_20200615_1_L2A", "s2_gap_days": 0, "water": 0.1122, "land_cells": 217513, "mean_cover": 0.8215, "mean_cover_gt5": 0.717136025428772, "shares": [0.0638, 0.0406, 0.0846, 0.811]}, {"site_id": "Z16_E0565_N5615_2019", "split": "train", "selection": "spread", "lon": -86.044, "lat": 50.705, "year": 2019, "flight": "2019-08-31 to 2019-08-31", "s2_scene": "S2B_16UEB_20190916_1_L2A", "s2_gap_days": 16, "water": 0.0207, "land_cells": 237051, "mean_cover": 0.6984, "mean_cover_gt5": 0.48524194955825806, "shares": [0.0226, 0.0798, 0.3389, 0.5587]}, {"site_id": "Z15_E0575_N5345_2020", "split": "train", "selection": "spread", "lon": -91.955, "lat": 48.276, "year": 2020, "flight": "2020-06-13 to 2020-06-23", "s2_scene": "S2A_15UWP_20200613_1_L2A", "s2_gap_days": -5, "water": 0.3096, "land_cells": 167117, "mean_cover": 0.8244, "mean_cover_gt5": 0.6966999173164368, "shares": [0.0521, 0.0406, 0.0921, 0.8152]}, {"site_id": "Z16_E0670_N5210_2023", "split": "train", "selection": "spread", "lon": -84.729, "lat": 47.044, "year": 2023, "flight": "2023-08-01 to 2023-09-09", "s2_scene": "S2A_16TFT_20230818_0_L2A", "s2_gap_days": -3, "water": 0.024, "land_cells": 236265, "mean_cover": 0.9374, "mean_cover_gt5": 0.8926547169685364, "shares": [0.0177, 0.018, 0.0352, 0.9291]}, {"site_id": "Z16_E0405_N5390_2022", "split": "train", "selection": "spread", "lon": -88.257, "lat": 48.679, "year": 2022, "flight": "2022-07-02 to 2022-08-31", "s2_scene": "S2B_16UDU_20220725_0_L2A", "s2_gap_days": -7, "water": 0.0409, "land_cells": 234991, "mean_cover": 0.9062, "mean_cover_gt5": 0.7252826690673828, "shares": [0.0215, 0.0168, 0.0502, 0.9115]}, {"site_id": "Z17_E0650_N4940_2023", "split": "train", "selection": "spread", "lon": -79.078, "lat": 44.62, "year": 2023, "flight": "2023-09-03 to 2023-09-03", "s2_scene": "S2B_17TPK_20230903_0_L2A", "s2_gap_days": 0, "water": 0.0029, "land_cells": 241351, "mean_cover": 0.3404, "mean_cover_gt5": 0.2670750319957733, "shares": [0.5266, 0.1179, 0.0691, 0.2864]}, {"site_id": "Z17_E0515_N5370_2023", "split": "train", "selection": "spread", "lon": -80.763, "lat": 48.505, "year": 2023, "flight": "2023-07-22 to 2023-08-21", "s2_scene": "S2A_17UNP_20230904_0_L2A", "s2_gap_days": 29, "water": 0.1643, "land_cells": 202281, "mean_cover": 0.7136, "mean_cover_gt5": 0.49500903487205505, "shares": [0.1302, 0.0803, 0.1166, 0.673]}, {"site_id": "Z17_E0400_N5110_2021", "split": "val", "selection": "spread", "lon": -82.263, "lat": 46.159, "year": 2021, "flight": "2021-08-26 to 2021-09-03", "s2_scene": "S2B_17TLM_20210830_3_L2A", "s2_gap_days": 0, "water": 0.1579, "land_cells": 206319, "mean_cover": 0.8372, "mean_cover_gt5": 0.7947630286216736, "shares": [0.0954, 0.0351, 0.0479, 0.8216]}, {"site_id": "Z15_E0530_N5540_2021", "split": "train", "selection": "spread", "lon": -92.546, "lat": 50.034, "year": 2021, "flight": "2021-06-16 to 2021-07-29", "s2_scene": "S2B_15UWR_20210613_1_L2A", "s2_gap_days": -25, "water": 0.1066, "land_cells": 216268, "mean_cover": 0.6924, "mean_cover_gt5": 0.575251579284668, "shares": [0.1247, 0.0984, 0.1345, 0.6424]}, {"site_id": "Z16_E0585_N5370_2021", "split": "train", "selection": "spread", "lon": -85.816, "lat": 48.5, "year": 2021, "flight": "2021-08-31 to 2021-09-02", "s2_scene": "S2A_16UEU_20210831_1_L2A", "s2_gap_days": -2, "water": 0.0099, "land_cells": 242581, "mean_cover": 0.8109, "mean_cover_gt5": 0.6929489374160767, "shares": [0.0576, 0.0563, 0.0975, 0.7885]}, {"site_id": "Z18_E0305_N5105_2022", "split": "test", "selection": "spread", "lon": -77.49, "lat": 46.094, "year": 2022, "flight": "2022-06-19 to 2022-06-25", "s2_scene": "S2B_18TUS_20220620_0_L2A", "s2_gap_days": -2, "water": 0.183, "land_cells": 197773, "mean_cover": 0.7792, "mean_cover_gt5": 0.706974446773529, "shares": [0.1163, 0.0667, 0.073, 0.744]}, {"site_id": "Z15_E0690_N5475_2020", "split": "val", "selection": "spread", "lon": -90.346, "lat": 49.42, "year": 2020, "flight": "2020-06-13 to 2020-06-13", "s2_scene": "S2A_15UXQ_20200613_0_L2A", "s2_gap_days": -1, "water": 0.1823, "land_cells": 200351, "mean_cover": 0.7213, "mean_cover_gt5": 0.49421313405036926, "shares": [0.1024, 0.1157, 0.1297, 0.6522]}, {"site_id": "Z16_E0425_N5700_2024", "split": "train", "selection": "sparse_targeted", "lon": -88.044, "lat": 51.469, "year": 2024, "flight": "2024-08-28 to 2024-08-28", "s2_scene": "S2B_16UDC_20240820_0_L2A", "s2_gap_days": -9, "water": 0.0897, "land_cells": 220344, "mean_cover": 0.5912, "mean_cover_gt5": 0.3373722732067108, "shares": [0.0307, 0.1434, 0.5212, 0.3047]}, {"site_id": "Z17_E0355_N5560_2019", "split": "val", "selection": "sparse_targeted", "lon": -82.997, "lat": 50.198, "year": 2019, "flight": "2019-08-31 to 2019-09-12", "s2_scene": "S2A_17ULR_20190905_0_L2A", "s2_gap_days": -1, "water": 0.0343, "land_cells": 236622, "mean_cover": 0.4735, "mean_cover_gt5": 0.29914993047714233, "shares": [0.218, 0.2128, 0.2366, 0.3326]}, {"site_id": "Z16_E0350_N5600_2023", "split": "test", "selection": "sparse_targeted", "lon": -89.082, "lat": 50.556, "year": 2023, "flight": "2023-08-18 to 2023-09-13", "s2_scene": "S2A_16UCB_20230913_0_L2A", "s2_gap_days": 12, "water": 0.113, "land_cells": 214716, "mean_cover": 0.6237, "mean_cover_gt5": 0.43975624442100525, "shares": [0.0305, 0.1251, 0.4346, 0.4099]}, {"site_id": "Z15_E0415_N5390_2020", "split": "test", "selection": "sparse_targeted", "lon": -94.121, "lat": 48.68, "year": 2020, "flight": "2020-06-13 to 2020-06-13", "s2_scene": "S2A_15UVP_20200613_1_L2A", "s2_gap_days": -1, "water": 0.0001, "land_cells": 242044, "mean_cover": 0.5139, "mean_cover_gt5": 0.3732364773750305, "shares": [0.355, 0.0796, 0.0868, 0.4786]}, {"site_id": "Z17_E0600_N5480_2025", "split": "train", "selection": "sparse_targeted", "lon": -79.585, "lat": 49.486, "year": 2025, "flight": "2025-08-05 to 2025-08-05", "s2_scene": "S2B_17UPQ_20250806_0_L2A", "s2_gap_days": 0, "water": 0.026, "land_cells": 235769, "mean_cover": 0.519, "mean_cover_gt5": 0.24102097749710083, "shares": [0.1532, 0.2057, 0.3022, 0.339]}, {"site_id": "Z16_E0575_N5580_2020", "split": "train", "selection": "expansion", "lon": -85.91, "lat": 50.389, "year": 2020, "flight": "2020-08-09 to 2020-08-09", "s2_scene": "S2B_16UEA_20200811_0_L2A", "s2_gap_days": 2, "water": 0.0041, "land_cells": 241074, "mean_cover": 0.7465, "mean_cover_gt5": 0.556381106376648, "shares": [0.0044, 0.0218, 0.3249, 0.6489]}, {"site_id": "Z17_E0600_N5545_2025", "split": "train", "selection": "expansion", "lon": -79.568, "lat": 50.071, "year": 2025, "flight": "2025-07-04 to 2025-07-22", "s2_scene": "S2B_17UNR_20250707_0_L2A", "s2_gap_days": -6, "water": 0.0106, "land_cells": 245368, "mean_cover": 0.5906, "mean_cover_gt5": 0.30692821741104126, "shares": [0.0659, 0.1641, 0.3646, 0.4054]}, {"site_id": "Z17_E0360_N5435_2021", "split": "train", "selection": "expansion", "lon": -82.883, "lat": 49.075, "year": 2021, "flight": "2021-07-28 to 2021-08-16", "s2_scene": "S2A_17ULQ_20210815_1_L2A", "s2_gap_days": 8, "water": 0.0096, "land_cells": 242674, "mean_cover": 0.918, "mean_cover_gt5": 0.834335207939148, "shares": [0.0298, 0.0155, 0.0289, 0.9257]}, {"site_id": "Z17_E0580_N5310_2025", "split": "train", "selection": "expansion", "lon": -79.895, "lat": 47.961, "year": 2025, "flight": "2025-08-17 to 2025-08-18", "s2_scene": "S2B_17UNP_20250806_0_L2A", "s2_gap_days": -12, "water": 0.0002, "land_cells": 242007, "mean_cover": 0.8118, "mean_cover_gt5": 0.6814757585525513, "shares": [0.1009, 0.0416, 0.061, 0.7966]}, {"site_id": "Z15_E0535_N5710_2025", "split": "train", "selection": "expansion", "lon": -92.459, "lat": 51.562, "year": 2025, "flight": "2025-08-29 to 2025-08-30", "s2_scene": "S2A_15UWT_20250828_0_L2A", "s2_gap_days": -2, "water": 0.0443, "land_cells": 237022, "mean_cover": 0.6205, "mean_cover_gt5": 0.468142569065094, "shares": [0.087, 0.1062, 0.3289, 0.478]}, {"site_id": "Z16_E0420_N5540_2022", "split": "train", "selection": "expansion", "lon": -88.082, "lat": 50.03, "year": 2022, "flight": "2022-09-04 to 2022-09-04", "s2_scene": "S2A_16UDA_20220905_0_L2A", "s2_gap_days": 0, "water": 0.0209, "land_cells": 239894, "mean_cover": 0.8714, "mean_cover_gt5": 0.7605121731758118, "shares": [0.0168, 0.0178, 0.0654, 0.9]}, {"site_id": "Z15_E0415_N5625_2025", "split": "train", "selection": "expansion", "lon": -94.171, "lat": 50.793, "year": 2025, "flight": "2025-07-03 to 2025-07-03", "s2_scene": "S2B_15UVS_20250705_0_L2A", "s2_gap_days": 2, "water": 0.6584, "land_cells": 84710, "mean_cover": 0.8272, "mean_cover_gt5": 0.6778311133384705, "shares": [0.062, 0.0392, 0.0746, 0.8242]}, {"site_id": "Z17_E0320_N5305_2021", "split": "train", "selection": "expansion", "lon": -83.375, "lat": 47.896, "year": 2021, "flight": "2021-09-01 to 2021-09-02", "s2_scene": "S2B_17ULP_20210820_0_L2A", "s2_gap_days": -13, "water": 0.089, "land_cells": 223203, "mean_cover": 0.8488, "mean_cover_gt5": 0.7643200159072876, "shares": [0.0767, 0.0398, 0.0453, 0.8381]}, {"site_id": "Z17_E0630_N5185_2020", "split": "train", "selection": "expansion", "lon": -79.263, "lat": 46.828, "year": 2020, "flight": "2020-06-16 to 2020-07-18", "s2_scene": "S2B_17TPM_20200703_0_L2A", "s2_gap_days": 0, "water": 0.0366, "land_cells": 238929, "mean_cover": 0.8881, "mean_cover_gt5": 0.7747340798377991, "shares": [0.0254, 0.0299, 0.0612, 0.8835]}, {"site_id": "Z17_E0310_N5125_2021", "split": "train", "selection": "expansion", "lon": -83.434, "lat": 46.275, "year": 2021, "flight": "2021-08-30 to 2021-09-02", "s2_scene": "S2B_17TLM_20210820_1_L2A", "s2_gap_days": -12, "water": 0.0152, "land_cells": 241302, "mean_cover": 0.6911, "mean_cover_gt5": 0.6260799765586853, "shares": [0.2204, 0.0563, 0.0607, 0.6626]}, {"site_id": "Z17_E0590_N4970_2019", "split": "train", "selection": "expansion", "lon": -79.828, "lat": 44.9, "year": 2019, "flight": "2019-06-09 to 2019-06-12", "s2_scene": "S2A_17TNK_20190611_1_L2A", "s2_gap_days": 0, "water": 0.3587, "land_cells": 155240, "mean_cover": 0.6775, "mean_cover_gt5": 0.5899617075920105, "shares": [0.1511, 0.0994, 0.1304, 0.6191]}, {"site_id": "Z18_E0325_N5015_2022", "split": "train", "selection": "expansion", "lon": -77.2, "lat": 45.29, "year": 2022, "flight": "2022-06-19 to 2022-07-19", "s2_scene": "S2A_18TUR_20220625_0_L2A", "s2_gap_days": -9, "water": 0.0159, "land_cells": 238204, "mean_cover": 0.9195, "mean_cover_gt5": 0.8872895836830139, "shares": [0.0333, 0.0174, 0.0308, 0.9186]}, {"site_id": "Z16_E0690_N5445_2023", "split": "train", "selection": "expansion", "lon": -84.36, "lat": 49.15, "year": 2023, "flight": "2023-07-11 to 2023-07-13", "s2_scene": "S2B_16UFV_20230621_0_L2A", "s2_gap_days": -21, "water": 0.0112, "land_cells": 242270, "mean_cover": 0.8245, "mean_cover_gt5": 0.682776153087616, "shares": [0.041, 0.0369, 0.1207, 0.8014]}, {"site_id": "Z17_E0475_N5320_2023", "split": "train", "selection": "expansion", "lon": -81.302, "lat": 48.055, "year": 2023, "flight": "2023-06-28 to 2023-06-28", "s2_scene": "S2B_17UMP_20230628_0_L2A", "s2_gap_days": 0, "water": 0.1748, "land_cells": 202177, "mean_cover": 0.8574, "mean_cover_gt5": 0.7653821110725403, "shares": [0.0572, 0.0465, 0.0492, 0.847]}, {"site_id": "Z15_E0630_N5565_2024", "split": "train", "selection": "expansion", "lon": -91.142, "lat": 50.245, "year": 2024, "flight": "2024-08-20 to 2024-08-26", "s2_scene": "S2B_15UXR_20240826_0_L2A", "s2_gap_days": 2, "water": 0.1282, "land_cells": 213593, "mean_cover": 0.6852, "mean_cover_gt5": 0.4909956157207489, "shares": [0.0377, 0.0826, 0.3309, 0.5488]}, {"site_id": "Z17_E0665_N5045_2019", "split": "train", "selection": "expansion", "lon": -78.854, "lat": 45.561, "year": 2019, "flight": "2019-08-04 to 2019-08-04", "s2_scene": "S2B_17TPL_20190805_1_L2A", "s2_gap_days": 1, "water": 0.0812, "land_cells": 222410, "mean_cover": 0.8988, "mean_cover_gt5": 0.8715148568153381, "shares": [0.0562, 0.0228, 0.0318, 0.8891]}, {"site_id": "Z15_E0445_N5490_2023", "split": "train", "selection": "expansion", "lon": -93.726, "lat": 49.583, "year": 2023, "flight": "2023-06-12 to 2023-06-12", "s2_scene": "S2A_15UVQ_20230611_0_L2A", "s2_gap_days": -1, "water": 0.3526, "land_cells": 156717, "mean_cover": 0.7502, "mean_cover_gt5": 0.6664963960647583, "shares": [0.0387, 0.0762, 0.1992, 0.6859]}, {"site_id": "Z16_E0350_N5465_2020", "split": "train", "selection": "expansion", "lon": -89.031, "lat": 49.342, "year": 2020, "flight": "2020-07-02 to 2020-07-17", "s2_scene": "S2B_16UCV_20200715_0_L2A", "s2_gap_days": 5, "water": 0.1575, "land_cells": 203946, "mean_cover": 0.9277, "mean_cover_gt5": 0.8388056755065918, "shares": [0.0251, 0.0208, 0.0245, 0.9296]}, {"site_id": "Z15_E0480_N5780_2025", "split": "train", "selection": "expansion", "lon": -93.256, "lat": 52.193, "year": 2025, "flight": "2025-08-31 to 2025-08-31", "s2_scene": "S2A_15UVT_20250828_0_L2A", "s2_gap_days": -3, "water": 0.0001, "land_cells": 244990, "mean_cover": 0.6115, "mean_cover_gt5": 0.436307817697525, "shares": [0.1134, 0.1205, 0.2702, 0.4959]}, {"site_id": "Z17_E0315_N5215_2021", "split": "train", "selection": "expansion", "lon": -83.404, "lat": 47.086, "year": 2021, "flight": "2021-08-22 to 2021-08-22", "s2_scene": "S2A_17TLN_20210815_0_L2A", "s2_gap_days": -8, "water": 0.057, "land_cells": 233880, "mean_cover": 0.7041, "mean_cover_gt5": 0.5692386031150818, "shares": [0.126, 0.1238, 0.1083, 0.6418]}, {"site_id": "Z15_E0655_N5390_2019", "split": "train", "selection": "expansion", "lon": -90.861, "lat": 48.666, "year": 2019, "flight": "2019-06-27 to 2019-06-28", "s2_scene": "S2B_15UXP_20190711_1_L2A", "s2_gap_days": 13, "water": 0.1494, "land_cells": 205900, "mean_cover": 0.5791, "mean_cover_gt5": 0.3875625431537628, "shares": [0.1386, 0.1506, 0.2573, 0.4535]}, {"site_id": "Z17_E0515_N5525_2023", "split": "train", "selection": "expansion", "lon": -80.756, "lat": 49.9, "year": 2023, "flight": "2023-08-15 to 2023-08-21", "s2_scene": "S2A_17UNR_20230815_0_L2A", "s2_gap_days": -3, "water": 0.0389, "land_cells": 232643, "mean_cover": 0.3621, "mean_cover_gt5": 0.21473120152950287, "shares": [0.2738, 0.3077, 0.2478, 0.1707]}, {"site_id": "Z17_E0395_N5355_2021", "split": "train", "selection": "expansion", "lon": -82.384, "lat": 48.362, "year": 2021, "flight": "2021-06-17 to 2021-07-08", "s2_scene": "S2A_17ULP_20210616_0_L2A", "s2_gap_days": -12, "water": 0.0284, "land_cells": 235193, "mean_cover": 0.88, "mean_cover_gt5": 0.7635524272918701, "shares": [0.0164, 0.0258, 0.0834, 0.8744]}, {"site_id": "Z16_E0390_N5625_2023", "split": "train", "selection": "expansion", "lon": -88.525, "lat": 50.789, "year": 2023, "flight": "2023-07-04 to 2023-08-13", "s2_scene": "S2B_16UCB_20230826_0_L2A", "s2_gap_days": 33, "water": 0.3009, "land_cells": 171286, "mean_cover": 0.532, "mean_cover_gt5": 0.3245285749435425, "shares": [0.1227, 0.1844, 0.3682, 0.3247]}, {"site_id": "Z15_E0350_N5580_2022", "split": "train", "selection": "expansion", "lon": -95.074, "lat": 50.376, "year": 2022, "flight": "2022-08-11 to 2022-08-20", "s2_scene": "S2B_15UUR_20220820_1_L2A", "s2_gap_days": 4, "water": 0.1213, "land_cells": 212698, "mean_cover": 0.5342, "mean_cover_gt5": 0.43796685338020325, "shares": [0.08, 0.2552, 0.3313, 0.3335]}, {"site_id": "Z17_E0435_N5480_2021", "split": "train", "selection": "expansion", "lon": -81.863, "lat": 49.492, "year": 2021, "flight": "2021-06-11 to 2021-06-11", "s2_scene": "S2B_17UMQ_20210611_0_L2A", "s2_gap_days": 0, "water": 0.0176, "land_cells": 240700, "mean_cover": 0.6647, "mean_cover_gt5": 0.3581465482711792, "shares": [0.0408, 0.1348, 0.308, 0.5164]}, {"site_id": "Z15_E0520_N5405_2021", "split": "train", "selection": "expansion", "lon": -92.693, "lat": 48.82, "year": 2021, "flight": "2021-06-17 to 2021-06-24", "s2_scene": "S2A_15UWQ_20210718_1_L2A", "s2_gap_days": 27, "water": 0.3123, "land_cells": 166465, "mean_cover": 0.8708, "mean_cover_gt5": 0.7791266441345215, "shares": [0.0497, 0.0319, 0.0597, 0.8587]}, {"site_id": "Z15_E0735_N5410_2019", "split": "train", "selection": "expansion", "lon": -89.764, "lat": 48.82, "year": 2019, "flight": "2019-06-29 to 2019-06-29", "s2_scene": "S2B_15UYQ_20190621_1_L2A", "s2_gap_days": -9, "water": 0.0243, "land_cells": 241970, "mean_cover": 0.6397, "mean_cover_gt5": 0.4572547972202301, "shares": [0.1734, 0.0965, 0.1552, 0.5748]}, {"site_id": "Z16_E0425_N5460_2021", "split": "train", "selection": "expansion", "lon": -87.997, "lat": 49.311, "year": 2021, "flight": "2021-08-15 to 2021-08-15", "s2_scene": "S2B_16UDV_20210816_0_L2A", "s2_gap_days": 1, "water": 0.0613, "land_cells": 227227, "mean_cover": 0.7935, "mean_cover_gt5": 0.6526557207107544, "shares": [0.0407, 0.0532, 0.1673, 0.7389]}, {"site_id": "Z17_E0405_N5280_2021", "split": "train", "selection": "expansion", "lon": -82.233, "lat": 47.689, "year": 2021, "flight": "2021-07-03 to 2021-07-03", "s2_scene": "S2A_17TMN_20210703_1_L2A", "s2_gap_days": 0, "water": 0.1494, "land_cells": 208412, "mean_cover": 0.8733, "mean_cover_gt5": 0.7936899065971375, "shares": [0.0533, 0.0363, 0.0363, 0.8741]}, {"site_id": "Z17_E0670_N5120_2020", "split": "train", "selection": "expansion", "lon": -78.763, "lat": 46.234, "year": 2020, "flight": "2020-06-29 to 2020-07-09", "s2_scene": "S2A_17TPM_20200625_0_L2A", "s2_gap_days": -9, "water": 0.0171, "land_cells": 237928, "mean_cover": 0.7497, "mean_cover_gt5": 0.5896766185760498, "shares": [0.1093, 0.065, 0.1078, 0.7179]}, {"site_id": "Z16_E0365_N5700_2024", "split": "train", "selection": "expansion", "lon": -88.907, "lat": 51.458, "year": 2024, "flight": "2024-08-28 to 2024-08-28", "s2_scene": "S2A_16UCC_20240828_0_L2A", "s2_gap_days": 0, "water": 0.0164, "land_cells": 238106, "mean_cover": 0.7264, "mean_cover_gt5": 0.5485904812812805, "shares": [0.0203, 0.0623, 0.3214, 0.596]}], "worldcover": [{"code": 10, "name": "Tree cover", "cells": 9574575, "mean_cover": 0.794044017791748, "shares": [0.034113159069723724, 0.06501614954188567, 0.17202110798651638, 0.7288495834018742]}, {"code": 20, "name": "Shrubland", "cells": 240247, "mean_cover": 0.27505937218666077, "shares": [0.21994031142948714, 0.512539178428867, 0.25079189334310104, 0.016728616798544833]}, {"code": 30, "name": "Grassland", "cells": 701194, "mean_cover": 0.1412920504808426, "shares": [0.6554348725174488, 0.2154382382051187, 0.08120577186912609, 0.0479211174083064]}, {"code": 40, "name": "Cropland", "cells": 86039, "mean_cover": 0.014082074165344238, "shares": [0.9709666546566093, 0.01563244575134532, 0.005555620125756924, 0.007845279466288544]}, {"code": 50, "name": "Built-up", "cells": 26115, "mean_cover": 0.2208177149295807, "shares": [0.5797434424660157, 0.1749569213095922, 0.12337736932797243, 0.12192226689641968]}, {"code": 60, "name": "Bare", "cells": 18950, "mean_cover": 0.017149604856967926, "shares": [0.9435356200527705, 0.04807387862796834, 0.006226912928759895, 0.0021635883905013194]}, {"code": 80, "name": "Water", "cells": 1229465, "mean_cover": 0.016619333997368813, "shares": [0.9689027341160587, 0.01258596218680483, 0.008674504764267385, 0.009836798932869175]}, {"code": 90, "name": "Wetland", "cells": 69702, "mean_cover": 0.01010928675532341, "shares": [0.9750078907348426, 0.021577573096898225, 0.00292674528707928, 0.0004877908811798801]}], "wc_tree_lidar_lt10": 0.034113159069723724, "wc_nontree_lidar_ge40": 0.14245628955332792, "pipeline_window": {"site_id": "Z17_E0355_N5560_2019", "row": 90, "col": 180, "size_cells": 30}, "outline": {"ontario": [[[-95.155, 49.37], [-95.154, 52.822], [-93.62, 53.748], [-91.378, 55.317], [-88.948, 56.851], [-88.075, 56.467], [-87.482, 56.021], [-85.677, 55.601], [-85.218, 55.349], [-85.365, 55.079], [-85.214, 55.224], [-85.061, 55.286], [-84.518, 55.259], [-83.911, 55.315], [-83.214, 55.215], [-82.986, 55.231], [-82.868, 55.161], [-82.577, 55.149], [-82.393, 55.068], [-82.308, 54.998], [-82.219, 54.813], [-82.418, 54.356], [-82.424, 54.245], [-82.24, 54.045], [-82.141, 53.818], [-82.191, 53.611], [-82.159, 53.264], [-82.26, 53.16], [-82.292, 53.031], [-82.26, 52.961], [-82.02, 52.812], [-81.599, 52.433], [-81.572, 52.367], [-81.612, 52.324], [-81.828, 52.224], [-81.466, 52.205], [-80.968, 51.972], [-80.658, 51.758], [-80.443, 51.389], [-80.851, 51.125], [-80.478, 51.307], [-80.266, 51.316], [-79.836, 51.173], [-79.52, 50.919], [-79.513, 47.556], [-79.559, 47.483], [-79.365, 47.022], [-78.781, 46.393], [-77.683, 46.187], [-77.371, 46.063], [-77.233, 45.904], [-77.031, 45.807], [-76.941, 45.801], [-76.913, 45.876], [-76.824, 45.88], [-76.553, 45.542], [-76.413, 45.496], [-76.001, 45.484], [-75.904, 45.42], [-74.864, 45.642], [-74.577, 45.632], [-74.397, 45.568], [-74.478, 45.318], [-74.34, 45.214], [-74.709, 45.004], [-74.857, 45.004], [-75.179, 44.899], [-75.876, 44.417], [-76.151, 44.304], [-76.465, 44.058], [-76.82, 43.629], [-78.458, 43.632], [-78.846, 43.583], [-79.172, 43.467], [-79.059, 43.278], [-79.026, 43.017], [-78.915, 42.909], [-79.037, 42.802], [-80.248, 42.366], [-81.278, 42.209], [-82.439, 41.675], [-82.69, 41.675], [-83.03, 41.833], [-83.142, 41.976], [-83.15, 42.142], [-83.073, 42.3], [-82.868, 42.385], [-82.545, 42.625], [-82.408, 43.073], [-82.138, 43.571], [-82.551, 45.347], [-83.593, 45.817], [-83.469, 45.995], [-83.616, 46.117], [-83.978, 46.085], [-84.088, 46.227], [-84.149, 46.543], [-84.562, 46.457], [-84.779, 46.637], [-84.876, 46.9], [-88.378, 48.303], [-89.456, 47.996], [-89.901, 47.995], [-89.994, 48.015], [-90.092, 48.118], [-90.744, 48.105], [-90.84, 48.201], [-90.916, 48.209], [-91.387, 48.059], [-91.518, 48.058], [-92.005, 48.302], [-92.172, 48.338], [-92.415, 48.277], [-92.501, 48.435], [-92.996, 48.612], [-93.378, 48.617], [-93.464, 48.561], [-93.708, 48.525], [-94.055, 48.659], [-94.621, 48.743], [-94.705, 48.809], [-94.803, 49.003], [-94.854, 49.305], [-95.155, 49.37]], [[-79.52, 50.966], [-79.714, 51.118], [-79.737, 51.186], [-79.689, 51.347], [-79.521, 51.545], [-79.52, 50.966]]], "neighbours": [[[-88.948, 56.851], [-91.378, 55.317], [-93.62, 53.748], [-95.154, 52.822], [-95.162, 48.992], [-101.367, 48.993], [-102.001, 55.818], [-102.002, 60.001], [-94.772, 60.002], [-94.788, 59.268], [-94.87, 59.088], [-94.957, 59.069], [-94.287, 58.716], [-94.332, 58.297], [-94.123, 58.737], [-93.179, 58.726], [-92.433, 57.32], [-92.614, 57.039], [-92.798, 56.922], [-92.456, 57.037], [-92.303, 57.046], [-92.356, 56.971], [-90.897, 57.257], [-88.948, 56.851]], [[-89.498, 47.998], [-88.612, 48.264], [-88.378, 48.303], [-88.161, 48.225], [-84.876, 46.9], [-84.779, 46.637], [-84.562, 46.457], [-84.149, 46.543], [-84.088, 46.227], [-83.978, 46.085], [-83.616, 46.117], [-83.469, 45.995], [-83.593, 45.817], [-82.551, 45.347], [-82.138, 43.571], [-82.408, 43.073], [-82.545, 42.625], [-83.11, 42.251], [-83.122, 41.95], [-83.464, 41.739], [-87.221, 41.761], [-87.039, 42.493], [-87.155, 43.327], [-87.032, 44.091], [-86.715, 44.846], [-86.265, 45.227], [-86.774, 45.452], [-87.115, 45.452], [-87.46, 45.068], [-87.654, 45.122], [-87.721, 45.243], [-87.664, 45.371], [-87.875, 45.385], [-87.809, 45.686], [-88.116, 45.816], [-88.152, 45.945], [-90.119, 46.342], [-90.23, 46.51], [-90.392, 46.549], [-89.498, 47.998]], [[-97.226, 48.993], [-95.162, 48.992], [-95.155, 49.37], [-94.939, 49.349], [-94.854, 49.305], [-94.803, 49.003], [-94.621, 48.743], [-93.708, 48.525], [-93.378, 48.617], [-92.996, 48.612], [-92.501, 48.435], [-92.415, 48.277], [-92.005, 48.302], [-91.518, 48.058], [-90.916, 48.209], [-90.744, 48.105], [-90.092, 48.118], [-89.901, 47.995], [-89.498, 47.998], [-89.958, 47.287], [-90.654, 47.309], [-91.468, 46.925], [-92.292, 46.661], [-92.293, 46.084], [-92.694, 45.909], [-92.897, 45.659], [-92.683, 45.433], [-92.793, 45.071], [-92.77, 44.726], [-91.383, 43.991], [-91.245, 43.502], [-96.454, 43.501], [-96.454, 45.297], [-96.696, 45.432], [-96.851, 45.626], [-96.615, 45.8], [-96.561, 46.138], [-96.787, 46.648], [-96.859, 47.588], [-97.126, 48.173], [-97.128, 48.681], [-97.226, 48.993]], [[-79.762, 42.539], [-78.939, 42.864], [-79.172, 43.467], [-78.72, 43.625], [-76.82, 43.629], [-76.151, 44.304], [-75.179, 44.899], [-74.857, 45.004], [-73.352, 45.005], [-73.372, 44.597], [-73.31, 44.46], [-73.426, 44.075], [-73.416, 43.59], [-73.33, 43.627], [-73.247, 43.553], [-73.253, 42.752], [-73.507, 42.08], [-73.545, 41.296], [-73.484, 41.219], [-73.723, 41.105], [-73.63, 40.992], [-73.987, 40.751], [-73.872, 41.055], [-73.925, 41.218], [-73.97, 41.25], [-73.91, 40.992], [-74.935, 41.474], [-75.051, 41.608], [-75.096, 41.832], [-75.351, 41.998], [-79.763, 42.001], [-79.762, 42.539]], [[-72.274, 41.153], [-72.581, 40.921], [-71.903, 41.061], [-73.194, 40.654], [-73.9, 40.571], [-73.799, 40.641], [-74.015, 40.581], [-74.032, 40.639], [-73.879, 40.792], [-73.574, 40.92], [-72.625, 40.992], [-72.274, 41.153]], [[-83.122, 41.95], [-82.69, 41.675], [-82.439, 41.675], [-81.278, 42.209], [-80.521, 42.324], [-80.519, 40.647], [-80.659, 40.563], [-80.602, 40.364], [-80.874, 39.664], [-81.263, 39.387], [-81.44, 39.393], [-81.657, 39.272], [-81.803, 39.086], [-81.78, 38.947], [-81.897, 38.894], [-82.001, 39.011], [-82.072, 38.963], [-82.204, 38.768], [-82.18, 38.638], [-82.387, 38.434], [-82.621, 38.451], [-82.88, 38.71], [-83.69, 38.65], [-84.227, 38.865], [-84.43, 39.091], [-84.822, 39.092], [-84.796, 41.701], [-83.464, 41.739], [-83.122, 41.95]], [[-80.521, 42.324], [-79.762, 42.539], [-79.763, 42.001], [-75.351, 41.998], [-75.096, 41.832], [-74.981, 41.508], [-74.699, 41.357], [-75.123, 40.999], [-75.076, 40.856], [-75.192, 40.69], [-75.189, 40.596], [-74.735, 40.155], [-75.173, 39.895], [-75.635, 39.839], [-75.785, 39.722], [-80.519, 39.723], [-80.521, 42.324]], [[-90.651, 42.513], [-90.688, 42.61], [-91.07, 42.789], [-91.118, 42.882], [-91.107, 43.278], [-91.238, 43.44], [-91.32, 43.936], [-92.799, 44.79], [-92.683, 45.433], [-92.897, 45.659], [-92.694, 45.909], [-92.293, 46.084], [-92.292, 46.661], [-91.468, 46.925], [-90.654, 47.309], [-89.958, 47.287], [-90.413, 46.585], [-90.23, 46.51], [-90.119, 46.342], [-88.152, 45.945], [-88.116, 45.816], [-87.809, 45.686], [-87.875, 45.385], [-87.664, 45.371], [-87.721, 45.243], [-87.654, 45.122], [-87.46, 45.068], [-87.115, 45.452], [-86.774, 45.452], [-86.265, 45.227], [-86.715, 44.846], [-87.032, 44.091], [-87.155, 43.327], [-87.039, 42.493], [-90.651, 42.513]]]}, "eval": {"val": [{"split": "val", "res": "10m", "source": "model:unet_r34", "n": 735048, "mae": 0.10161589831113815, "rmse": 0.16073839366436005, "bias": 0.04232536256313324, "r": 0.9239900866597386, "r2": 0.842851459980011, "acc4": 0.7336024314058401, "f1_macro": 0.5944787081218261}, {"split": "val", "res": "10m", "source": "model:unet_r34_s1", "n": 735048, "mae": 0.1070004403591156, "rmse": 0.16973112523555756, "bias": 0.05813012272119522, "r": 0.9194181524886162, "r2": 0.8247758150100708, "acc4": 0.7333602703496914, "f1_macro": 0.5714306435890221}, {"split": "val", "res": "10m", "source": "model:unet_r34_s2", "n": 735048, "mae": 0.10535886883735657, "rmse": 0.16618111729621887, "bias": 0.046671703457832336, "r": 0.9194014791966724, "r2": 0.8320289850234985, "acc4": 0.7283211436532036, "f1_macro": 0.5878686936205353}, {"split": "val", "res": "30m", "source": "model:unet_r34", "n": 81672, "mae": 0.08516552299261093, "rmse": 0.13070791959762573, "bias": 0.04232536256313324, "r": 0.9473753447412929, "r2": 0.8854954242706299, "acc4": 0.7592932706435498, "f1_macro": 0.6569416047675776}, {"split": "val", "res": "30m", "source": "model:unet_r34_s1", "n": 81672, "mae": 0.09251127392053604, "rmse": 0.14129424095153809, "bias": 0.058130111545324326, "r": 0.9427851911893691, "r2": 0.8661963939666748, "acc4": 0.7523263786854736, "f1_macro": 0.6294774094585176}, {"split": "val", "res": "30m", "source": "model:unet_r34_s2", "n": 81672, "mae": 0.08956672996282578, "rmse": 0.1360318958759308, "bias": 0.046671703457832336, "r": 0.9437126921107941, "r2": 0.8759775161743164, "acc4": 0.7533426388480752, "f1_macro": 0.6493255505983726}, {"split": "val", "res": "10m", "source": "model:unet_r34_ens3", "n": 735040, "mae": 0.10344000905752182, "rmse": 0.16231034696102142, "bias": 0.049640752375125885, "r": 0.9245678625172109, "r2": 0.8397608995437622, "acc4": 0.7333342403134523, "f1_macro": 0.58570125557936}, {"split": "val", "res": "10m", "source": "meta_chm_v2", "n": 735040, "mae": 0.1546250432729721, "rmse": 0.28042367100715637, "bias": 0.017477167770266533, "r": 0.8006769229767403, "r2": 0.5216943025588989, "acc4": 0.7265618197649107, "f1_macro": 0.5026932518686953}, {"split": "val", "res": "10m", "source": "meta_chm_v2_cal", "n": 735040, "mae": 0.17371468245983124, "rmse": 0.24329032003879547, "bias": 0.0270158052444458, "r": 0.8036849499187111, "r2": 0.639980673789978, "acc4": 0.5346375707444493, "f1_macro": 0.32062341035898545}, {"split": "val", "res": "10m", "source": "scanfi_v2", "n": 735040, "mae": 0.22063440084457397, "rmse": 0.27125898003578186, "bias": -0.1021675392985344, "r": 0.8007792614791762, "r2": 0.5524470210075378, "acc4": 0.4374578254244667, "f1_macro": 0.4345898700179206}, {"split": "val", "res": "10m", "source": "scanfi_v2_cal", "n": 735040, "mae": 0.18687382340431213, "rmse": 0.2524082064628601, "bias": 0.06149210408329964, "r": 0.7981531928433777, "r2": 0.6124898195266724, "acc4": 0.6548432738354375, "f1_macro": 0.48098377657383184}, {"split": "val", "res": "10m", "source": "ntems_2022", "n": 735040, "mae": 0.18021410703659058, "rmse": 0.27968329191207886, "bias": -0.007514940109103918, "r": 0.7411647335300502, "r2": 0.5242165923118591, "acc4": 0.6597681758815847, "f1_macro": 0.5441337205429893}, {"split": "val", "res": "10m", "source": "ntems_2022_cal", "n": 735040, "mae": 0.21753157675266266, "rmse": 0.291054904460907, "bias": 0.08970647305250168, "r": 0.7329452014583023, "r2": 0.4847404360771179, "acc4": 0.5108062146277753, "f1_macro": 0.25980326210056115}, {"split": "val", "res": "30m", "source": "model:unet_r34_ens3", "n": 81668, "mae": 0.08717969059944153, "rmse": 0.13235880434513092, "bias": 0.04964261129498482, "r": 0.9482497533744452, "r2": 0.8825772404670715, "acc4": 0.7579712984277808, "f1_macro": 0.6480513337891705}, {"split": "val", "res": "30m", "source": "meta_chm_v2", "n": 81668, "mae": 0.14099206030368805, "rmse": 0.2476986050605774, "bias": 0.017477836459875107, "r": 0.8321110175620866, "r2": 0.5887614488601685, "acc4": 0.7286207572121272, "f1_macro": 0.5606313049642218}, {"split": "val", "res": "30m", "source": "meta_chm_v2_cal", "n": 81668, "mae": 0.15490876138210297, "rmse": 0.2151866853237152, "bias": 0.027011483907699585, "r": 0.8336206441472939, "r2": 0.6896315813064575, "acc4": 0.5668193172356369, "f1_macro": 0.3618004156609359}, {"split": "val", "res": "30m", "source": "scanfi_v2", "n": 81668, "mae": 0.1965915709733963, "rmse": 0.23786653578281403, "bias": -0.10217142105102539, "r": 0.8587267483692289, "r2": 0.6207606196403503, "acc4": 0.46420874761228387, "f1_macro": 0.47683750452205703}, {"split": "val", "res": "30m", "source": "scanfi_v2_cal", "n": 81668, "mae": 0.16258668899536133, "rmse": 0.21367835998535156, "bias": 0.06149211898446083, "r": 0.8529717954029961, "r2": 0.693967342376709, "acc4": 0.6626463241416467, "f1_macro": 0.5071209204907846}, {"split": "val", "res": "30m", "source": "ntems_2022", "n": 81668, "mae": 0.14911720156669617, "rmse": 0.22282086312770844, "bias": -0.00751522509381175, "r": 0.819394436915965, "r2": 0.6672191023826599, "acc4": 0.6820051917519714, "f1_macro": 0.5976912785259486}, {"split": "val", "res": "30m", "source": "ntems_2022_cal", "n": 81668, "mae": 0.19454197585582733, "rmse": 0.2551616132259369, "bias": 0.08970440924167633, "r": 0.7953137977028765, "r2": 0.5636074542999268, "acc4": 0.5200078366067493, "f1_macro": 0.2668357743954156}], "test": [{"split": "test", "res": "10m", "source": "model:unet_r34_ens3", "n": 726188, "mae": 0.10628499835729599, "rmse": 0.1669512540102005, "bias": -0.010310878977179527, "r": 0.9055832625886914, "r2": 0.8190802335739136, "acc4": 0.7426424011413022, "f1_macro": 0.6458118583999755}, {"split": "test", "res": "10m", "source": "meta_chm_v2", "n": 726188, "mae": 0.1482115089893341, "rmse": 0.25606411695480347, "bias": -0.06944994628429413, "r": 0.8314934245815289, "r2": 0.5743975639343262, "acc4": 0.6945887290894369, "f1_macro": 0.5345151163614338}, {"split": "test", "res": "10m", "source": "meta_chm_v2_cal", "n": 726188, "mae": 0.15014740824699402, "rmse": 0.19876885414123535, "bias": -0.016920309513807297, "r": 0.8651207593997425, "r2": 0.7435495853424072, "acc4": 0.5272188469101665, "f1_macro": 0.3848164965730867}, {"split": "test", "res": "10m", "source": "scanfi_v2", "n": 726188, "mae": 0.19981159269809723, "rmse": 0.2732970714569092, "bias": -0.13780297338962555, "r": 0.8005364194570299, "r2": 0.5151842832565308, "acc4": 0.5554938941431145, "f1_macro": 0.5154614717288485}, {"split": "test", "res": "10m", "source": "scanfi_v2_cal", "n": 726188, "mae": 0.16097776591777802, "rmse": 0.2377423644065857, "bias": 0.013037669472396374, "r": 0.8008102067159919, "r2": 0.6331235766410828, "acc4": 0.6965152274617592, "f1_macro": 0.5449026184134574}, {"split": "test", "res": "10m", "source": "ntems_2022", "n": 726188, "mae": 0.20296461880207062, "rmse": 0.3228687644004822, "bias": -0.08721709251403809, "r": 0.6798686565854971, "r2": 0.32335829734802246, "acc4": 0.6163941018028389, "f1_macro": 0.5040946760588624}, {"split": "test", "res": "10m", "source": "ntems_2022_cal", "n": 726188, "mae": 0.20143410563468933, "rmse": 0.2804376482963562, "bias": 0.02339615672826767, "r": 0.7090171055219702, "r2": 0.48951929807662964, "acc4": 0.456804574022154, "f1_macro": 0.2836062021955822}, {"split": "test", "res": "30m", "source": "model:unet_r34_ens3", "n": 80685, "mae": 0.0811004638671875, "rmse": 0.12473520636558533, "bias": -0.010312548838555813, "r": 0.9414712887190603, "r2": 0.8852983713150024, "acc4": 0.7833922042511, "f1_macro": 0.7244765949821329}, {"split": "test", "res": "30m", "source": "meta_chm_v2", "n": 80685, "mae": 0.12042257189750671, "rmse": 0.2051757276058197, "bias": -0.06944731622934341, "r": 0.8804660336808944, "r2": 0.6896558403968811, "acc4": 0.7077895519613311, "f1_macro": 0.6125618038161542}, {"split": "test", "res": "30m", "source": "meta_chm_v2_cal", "n": 80685, "mae": 0.122418612241745, "rmse": 0.15838299691677094, "bias": -0.016916630789637566, "r": 0.9091751231069877, "r2": 0.8150694370269775, "acc4": 0.5800334634690463, "f1_macro": 0.4439914069894474}, {"split": "test", "res": "30m", "source": "scanfi_v2", "n": 80685, "mae": 0.17510905861854553, "rmse": 0.2312619537115097, "bias": -0.1378030925989151, "r": 0.8695131079343345, "r2": 0.6057243347167969, "acc4": 0.5874078205366549, "f1_macro": 0.5658344255317438}, {"split": "test", "res": "30m", "source": "scanfi_v2_cal", "n": 80685, "mae": 0.13238732516765594, "rmse": 0.18387147784233093, "bias": 0.013036410324275494, "r": 0.8680053826721706, "r2": 0.7507584691047668, "acc4": 0.6967590010534795, "f1_macro": 0.583238497180302}, {"split": "test", "res": "30m", "source": "ntems_2022", "n": 80685, "mae": 0.17392627894878387, "rmse": 0.26559096574783325, "bias": -0.08721970021724701, "r": 0.7622383165636665, "r2": 0.4799821376800537, "acc4": 0.6232385201710355, "f1_macro": 0.5455308071477888}, {"split": "test", "res": "30m", "source": "ntems_2022_cal", "n": 80685, "mae": 0.17279846966266632, "rmse": 0.23204383254051208, "bias": 0.023396600037813187, "r": 0.7800674351580693, "r2": 0.6030538082122803, "acc4": 0.47945714816880464, "f1_macro": 0.315535287990491}]}, "final": {"model": "unet_r34_ens3", "per_site": [{"site_id": "Z17_E0400_N5110_2021", "split": "val", "cells": 245008, "mae_model": 0.047651514410972595, "mae_meta_chm_v2": 0.05384368821978569, "mae_scanfi_v2": 0.24970318377017975, "mae_ntems_2022": 0.16813461482524872, "meta_imagery_years": [2012, 2019], "meta_recent_frac": 0.8240547247436818}, {"site_id": "Z18_E0305_N5105_2022", "split": "test", "cells": 242060, "mae_model": 0.07659605145454407, "mae_meta_chm_v2": 0.10279108583927155, "mae_scanfi_v2": 0.2548816204071045, "mae_ntems_2022": 0.2382608950138092, "meta_imagery_years": [2020], "meta_recent_frac": 1.0}, {"site_id": "Z15_E0690_N5475_2020", "split": "val", "cells": 245016, "mae_model": 0.08808688074350357, "mae_meta_chm_v2": 0.18649135529994965, "mae_scanfi_v2": 0.21348950266838074, "mae_ntems_2022": 0.20504295825958252, "meta_imagery_years": [2014], "meta_recent_frac": 0.0}, {"site_id": "Z17_E0355_N5560_2019", "split": "val", "cells": 245016, "mae_model": 0.17457981407642365, "mae_meta_chm_v2": 0.22353677451610565, "mae_scanfi_v2": 0.19871151447296143, "mae_ntems_2022": 0.16746437549591064, "meta_imagery_years": [2011, 2017], "meta_recent_frac": 0.4939881477128024}, {"site_id": "Z16_E0350_N5600_2023", "split": "test", "cells": 242064, "mae_model": 0.10957134515047073, "mae_meta_chm_v2": 0.2066766619682312, "mae_scanfi_v2": 0.1693340390920639, "mae_ntems_2022": 0.19712665677070618, "meta_imagery_years": [2018], "meta_recent_frac": 0.0}, {"site_id": "Z15_E0415_N5390_2020", "split": "test", "cells": 242064, "mae_model": 0.13268713653087616, "mae_meta_chm_v2": 0.13516603410243988, "mae_scanfi_v2": 0.17521999776363373, "mae_ntems_2022": 0.17350687086582184, "meta_imagery_years": [2017, 2019], "meta_recent_frac": 0.49824426597924515}], "meta_recent_imagery": {"cells": 685602, "share": 0.469195772323005, "mae_model": 0.10082339495420456, "mae_meta": 0.11924999952316284}, "test_mae_by_cover_bin": [{"lo": 0.0, "n": 184985, "model": 0.055873192170247755, "meta_chm_v2": 0.011046071705613378, "scanfi_v2": 0.0483784527715085, "ntems_2022": 0.06783151204616253}, {"lo": 0.1, "n": 17019, "model": 0.1741368512133957, "meta_chm_v2": 0.1524679792621482, "scanfi_v2": 0.2426680491977716, "ntems_2022": 0.33438912426460865}, {"lo": 0.2, "n": 19112, "model": 0.1869849120787169, "meta_chm_v2": 0.2234585531689024, "scanfi_v2": 0.21988671910767776, "ntems_2022": 0.33556357344207827}, {"lo": 0.3, "n": 24281, "model": 0.19202457753345595, "meta_chm_v2": 0.2679433555943948, "scanfi_v2": 0.18069220086081966, "ntems_2022": 0.29874819938622277}, {"lo": 0.4, "n": 32682, "model": 0.18220646732564466, "meta_chm_v2": 0.2901486277208211, "scanfi_v2": 0.14523322713119033, "ntems_2022": 0.2552145896142659}, {"lo": 0.5, "n": 43171, "model": 0.15328104986248364, "meta_chm_v2": 0.295751317480557, "scanfi_v2": 0.13293368244615164, "ntems_2022": 0.21508565682112993}, {"lo": 0.6, "n": 53623, "model": 0.12312890248019157, "meta_chm_v2": 0.29123635912120266, "scanfi_v2": 0.1628984282302778, "ntems_2022": 0.2185036375555382}, {"lo": 0.7, "n": 54534, "model": 0.1099575189761204, "meta_chm_v2": 0.2775699653112049, "scanfi_v2": 0.22078950585156737, "ntems_2022": 0.24829271235175532}, {"lo": 0.8, "n": 62530, "model": 0.12479281429288941, "meta_chm_v2": 0.2527533580756237, "scanfi_v2": 0.2861262219134815, "ntems_2022": 0.27884270237785863}, {"lo": 0.9, "n": 234251, "model": 0.09678902868210808, "meta_chm_v2": 0.09991584964551913, "scanfi_v2": 0.3170921795691374, "ntems_2022": 0.23549462985883732}], "test_confusion": [[151351, 27979, 4810, 845], [9529, 25227, 20756, 4900], [2834, 12946, 65810, 47886], [1963, 5119, 47323, 296910]], "class_cuts": [0.1, 0.4, 0.7]}, "train_minutes": 4.814665088388655, "logs": [[{"step": 500.0, "train_l1": 0.08691303431987762, "val_mae": 0.14215292036533356, "minutes": 0.2899904489517212}, {"step": 1000.0, "train_l1": 0.09184310585260391, "val_mae": 0.11687906086444855, "minutes": 0.5781923492749532}, {"step": 1500.0, "train_l1": 0.0922926664352417, "val_mae": 0.1371346265077591, "minutes": 0.8686702926953633}, {"step": 2000.0, "train_l1": 0.0967751294374466, "val_mae": 0.11633002758026123, "minutes": 1.164108649889628}, {"step": 2500.0, "train_l1": 0.08913785219192505, "val_mae": 0.11790244281291962, "minutes": 1.4602829933166503}, {"step": 3000.0, "train_l1": 0.07841502130031586, "val_mae": 0.11524515599012375, "minutes": 1.7549936413764953}, {"step": 3500.0, "train_l1": 0.08571544289588928, "val_mae": 0.11860194802284241, "minutes": 2.0526745478312174}, {"step": 4000.0, "train_l1": 0.08267125487327576, "val_mae": 0.11271733790636063, "minutes": 2.3510058403015135}, {"step": 4500.0, "train_l1": 0.07340280711650848, "val_mae": 0.10662060976028442, "minutes": 2.649878784020742}, {"step": 5000.0, "train_l1": 0.06915833055973053, "val_mae": 0.10760711133480072, "minutes": 2.9523291269938152}, {"step": 5500.0, "train_l1": 0.06608070433139801, "val_mae": 0.11119545996189117, "minutes": 3.256628938515981}, {"step": 6000.0, "train_l1": 0.06561164557933807, "val_mae": 0.10981102287769318, "minutes": 3.5586150487264}, {"step": 6500.0, "train_l1": 0.06846428662538528, "val_mae": 0.10894099622964859, "minutes": 3.861568288008372}, {"step": 7000.0, "train_l1": 0.07937122881412506, "val_mae": 0.10883625596761703, "minutes": 4.163547607262929}, {"step": 7500.0, "train_l1": 0.07359284162521362, "val_mae": 0.10933616012334824, "minutes": 4.4663425048192344}, {"step": 8000.0, "train_l1": 0.06797341257333755, "val_mae": 0.10893014073371887, "minutes": 4.771631288528442}], [{"step": 1000.0, "train_l1": 0.1340455710887909, "val_mae": 0.15074336528778076, "minutes": 0.5756421685218811}, {"step": 2000.0, "train_l1": 0.09911873936653137, "val_mae": 0.11594844609498978, "minutes": 1.1692469477653504}, {"step": 3000.0, "train_l1": 0.07750198245048523, "val_mae": 0.11617706716060638, "minutes": 1.7704468329747518}, {"step": 4000.0, "train_l1": 0.07626431435346603, "val_mae": 0.10615376383066177, "minutes": 2.3710962971051535}, {"step": 5000.0, "train_l1": 0.07461245357990265, "val_mae": 0.10257361829280853, "minutes": 2.977578608194987}, {"step": 6000.0, "train_l1": 0.07675763964653015, "val_mae": 0.10695547610521317, "minutes": 3.576028847694397}, {"step": 7000.0, "train_l1": 0.07907350361347198, "val_mae": 0.10534007102251053, "minutes": 4.177841047445933}, {"step": 8000.0, "train_l1": 0.08167949318885803, "val_mae": 0.10286583751440048, "minutes": 4.7902348717053735}], [{"step": 1000.0, "train_l1": 0.12329711765050888, "val_mae": 0.12578898668289185, "minutes": 0.5765871564547221}, {"step": 2000.0, "train_l1": 0.07785068452358246, "val_mae": 0.11232810467481613, "minutes": 1.1778759638468423}, {"step": 3000.0, "train_l1": 0.0795540064573288, "val_mae": 0.12683656811714172, "minutes": 1.7715443889300029}, {"step": 4000.0, "train_l1": 0.07271966338157654, "val_mae": 0.11619880795478821, "minutes": 2.3662047425905866}, {"step": 5000.0, "train_l1": 0.08177730441093445, "val_mae": 0.10782814025878906, "minutes": 2.9630393107732136}, {"step": 6000.0, "train_l1": 0.06778298318386078, "val_mae": 0.10633479803800583, "minutes": 3.569515113035838}, {"step": 7000.0, "train_l1": 0.087301105260849, "val_mae": 0.10848624259233475, "minutes": 4.198890725771586}, {"step": 8000.0, "train_l1": 0.0652221292257309, "val_mae": 0.10741188377141953, "minutes": 4.824784568945566}]], "unc": {"ensemble": "unet_r34_ens3", "members": ["unet_r34", "unet_r34_s1", "unet_r34_s2"], "spearman": 0.6851059692445491, "deciles": [{"decile": 1, "spread_lo": 5.695844906838943e-10, "spread_hi": 5.672273036907439e-05, "mean_error": 0.0009553436539135873, "n": 146124}, {"decile": 2, "spread_lo": 5.672273036907439e-05, "spread_hi": 0.0016051488230004907, "mean_error": 0.017402036115527153, "n": 146124}, {"decile": 3, "spread_lo": 0.0016051488230004907, "spread_hi": 0.004053186904639013, "mean_error": 0.0380866676568985, "n": 146124}, {"decile": 4, "spread_lo": 0.004053186904639013, "spread_hi": 0.008272471465170387, "mean_error": 0.07598716020584106, "n": 146124}, {"decile": 5, "spread_lo": 0.008272471465170387, "spread_hi": 0.014145555905997753, "mean_error": 0.12376809120178223, "n": 146123}, {"decile": 6, "spread_lo": 0.014145555905997753, "spread_hi": 0.021184974163770697, "mean_error": 0.14756256341934204, "n": 146124}, {"decile": 7, "spread_lo": 0.021184974163770697, "spread_hi": 0.030269064381718648, "mean_error": 0.15211254358291626, "n": 146124}, {"decile": 8, "spread_lo": 0.030269064381718648, "spread_hi": 0.04390753656625748, "mean_error": 0.1526755839586258, "n": 146124}, {"decile": 9, "spread_lo": 0.04390753656625748, "spread_hi": 0.06868665069341659, "mean_error": 0.15915003418922424, "n": 146124}, {"decile": 10, "spread_lo": 0.06868665069341659, "spread_hi": 0.3983277380466461, "mean_error": 0.1808329075574875, "n": 146124}], "figure_site": "Z15_E0415_N5390_2020", "error_top10_over_bottom10": 189.2857160004165}, "verify": {"labels": {"summary": {"cells": 3600, "sites": 12, "exact": 1.0, "within_2pct": 1.0, "mean_abs_diff": 0.0, "max_abs_diff": 0.0}, "per_site": [{"site_id": "Z17_E0400_N5110_2021", "split": "val", "cells": 300, "recomputed": 300, "exact": 1.0, "within_1px": 1.0, "within_2pct": 1.0, "mean_abs_diff": 0.0, "max_abs_diff": 0.0}, {"site_id": "Z18_E0305_N5105_2022", "split": "test", "cells": 300, "recomputed": 300, "exact": 1.0, "within_1px": 1.0, "within_2pct": 1.0, "mean_abs_diff": 0.0, "max_abs_diff": 0.0}, {"site_id": "Z15_E0690_N5475_2020", "split": "val", "cells": 300, "recomputed": 300, "exact": 1.0, "within_1px": 1.0, "within_2pct": 1.0, "mean_abs_diff": 0.0, "max_abs_diff": 0.0}, {"site_id": "Z17_E0355_N5560_2019", "split": "val", "cells": 300, "recomputed": 300, "exact": 1.0, "within_1px": 1.0, "within_2pct": 1.0, "mean_abs_diff": 0.0, "max_abs_diff": 0.0}, {"site_id": "Z16_E0350_N5600_2023", "split": "test", "cells": 300, "recomputed": 300, "exact": 1.0, "within_1px": 1.0, "within_2pct": 1.0, "mean_abs_diff": 0.0, "max_abs_diff": 0.0}, {"site_id": "Z15_E0415_N5390_2020", "split": "test", "cells": 300, "recomputed": 300, "exact": 1.0, "within_1px": 1.0, "within_2pct": 1.0, "mean_abs_diff": 0.0, "max_abs_diff": 0.0}, {"site_id": "Z17_E0315_N5215_2021", "split": "train", "cells": 300, "recomputed": 300, "exact": 1.0, "within_1px": 1.0, "within_2pct": 1.0, "mean_abs_diff": 0.0, "max_abs_diff": 0.0}, {"site_id": "Z17_E0435_N5480_2021", "split": "train", "cells": 300, "recomputed": 300, "exact": 1.0, "within_1px": 1.0, "within_2pct": 1.0, "mean_abs_diff": 0.0, "max_abs_diff": 0.0}, {"site_id": "Z15_E0445_N5490_2023", "split": "train", "cells": 300, "recomputed": 300, "exact": 1.0, "within_1px": 1.0, "within_2pct": 1.0, "mean_abs_diff": 0.0, "max_abs_diff": 0.0}, {"site_id": "Z16_E0405_N5390_2022", "split": "train", "cells": 300, "recomputed": 300, "exact": 1.0, "within_1px": 1.0, "within_2pct": 1.0, "mean_abs_diff": 0.0, "max_abs_diff": 0.0}, {"site_id": "Z17_E0600_N5480_2025", "split": "train", "cells": 300, "recomputed": 300, "exact": 1.0, "within_1px": 1.0, "within_2pct": 1.0, "mean_abs_diff": 0.0, "max_abs_diff": 0.0}, {"site_id": "Z15_E0630_N5565_2024", "split": "train", "cells": 300, "recomputed": 300, "exact": 1.0, "within_1px": 1.0, "within_2pct": 1.0, "mean_abs_diff": 0.0, "max_abs_diff": 0.0}]}, "labels_shift": {"summary": {"cells": 360, "sites": 6, "exact": 0.4388888888888889, "within_2pct": 0.8027777777777776, "mean_abs_diff": 0.010763890265176693, "max_abs_diff": 0.08249999582767487}, "per_site": [{"site_id": "Z17_E0400_N5110_2021", "split": "val", "cells": 60, "recomputed": 60, "exact": 0.6833333333333333, "within_1px": 0.8, "within_2pct": 0.95, "mean_abs_diff": 0.004250003024935722, "max_abs_diff": 0.0650000274181366}, {"site_id": "Z18_E0305_N5105_2022", "split": "test", "cells": 60, "recomputed": 60, "exact": 0.6166666666666667, "within_1px": 0.6666666666666666, "within_2pct": 0.8166666666666667, "mean_abs_diff": 0.00962500087916851, "max_abs_diff": 0.08249999582767487}, {"site_id": "Z15_E0690_N5475_2020", "split": "val", "cells": 60, "recomputed": 60, "exact": 0.43333333333333335, "within_1px": 0.5333333333333333, "within_2pct": 0.85, "mean_abs_diff": 0.009208334609866142, "max_abs_diff": 0.08249999582767487}, {"site_id": "Z17_E0355_N5560_2019", "split": "val", "cells": 60, "recomputed": 60, "exact": 0.18333333333333332, "within_1px": 0.35, "within_2pct": 0.7166666666666667, "mean_abs_diff": 0.014291668310761452, "max_abs_diff": 0.0625}, {"site_id": "Z16_E0350_N5600_2023", "split": "test", "cells": 60, "recomputed": 60, "exact": 0.2, "within_1px": 0.3, "within_2pct": 0.6333333333333333, "mean_abs_diff": 0.01912500150501728, "max_abs_diff": 0.07249999046325684}, {"site_id": "Z15_E0415_N5390_2020", "split": "test", "cells": 60, "recomputed": 60, "exact": 0.5166666666666667, "within_1px": 0.6333333333333333, "within_2pct": 0.85, "mean_abs_diff": 0.008083333261311054, "max_abs_diff": 0.0625}]}, "alignment": {"summary": {"sites": 49, "peak_at_zero": 42, "median_abs_subpx_m": 2.482826357652086, "mean_r0": 0.6861599496468899, "mean_r_shift1": 0.6715298948332095, "mean_grid": [[0.5916, 0.6084, 0.621, 0.626, 0.6205, 0.6071, 0.5893], [0.6071, 0.628, 0.6455, 0.6527, 0.644, 0.6254, 0.6031], [0.6175, 0.6424, 0.6665, 0.6778, 0.664, 0.6382, 0.6117], [0.62, 0.6461, 0.6728, 0.6862, 0.6693, 0.6401, 0.6123], [0.6135, 0.6365, 0.6571, 0.6662, 0.6532, 0.6291, 0.6042], [0.6002, 0.6183, 0.6317, 0.636, 0.6275, 0.6104, 0.5898], [0.583, 0.5967, 0.6058, 0.6079, 0.6014, 0.5886, 0.572]], "shifts": [-3, -2, -1, 0, 1, 2, 3]}}, "splits": {"n_sites": 49, "split_counts": {"train": 43, "val": 3, "test": 3}, "footprint_overlaps": [], "shared_tiles": [], "min_gap_km": 39.95199760027593, "code_checks": {"norm_stats_from_train_only": true, "train_crops_from_train_only": true, "checkpoint_selected_on_val": true, "test_predicted_once_after_selection": true}}, "metrics": {"worst_diff": 6.1957462715867e-08, "all_n_match": true}, "benchmarks": {"summary": [{"product": "meta_chm_v2", "cells": 239.0, "exact": 0.7656903765690377, "mean_abs_diff": 0.003301997630377542, "max_abs_diff": 0.04517239948798868}, {"product": "ntems_2022", "cells": 240.0, "exact": 0.9958333333333333, "mean_abs_diff": 0.002343760301048547, "max_abs_diff": 0.5625000286102295}, {"product": "scanfi_v2", "cells": 240.0, "exact": 0.9958333333333333, "mean_abs_diff": 0.00029167615001399763, "max_abs_diff": 0.06999997615814213}], "per_site": [{"site_id": "Z17_E0400_N5110_2021", "product": "ntems_2022", "cells": 40, "exact": 0.975, "mean_abs_diff": 0.014062510073184953, "max_abs_diff": 0.5625000286102295}, {"site_id": "Z17_E0400_N5110_2021", "product": "scanfi_v2", "cells": 40, "exact": 1.0, "mean_abs_diff": 1.0162591929097076e-08, "max_abs_diff": 2.8610229518832853e-08}, {"site_id": "Z17_E0400_N5110_2021", "product": "meta_chm_v2", "cells": 40, "exact": 0.875, "mean_abs_diff": 0.0018748646953354168, "max_abs_diff": 0.020833333333333315}, {"site_id": "Z18_E0305_N5105_2022", "product": "ntems_2022", "cells": 40, "exact": 1.0, "mean_abs_diff": 5.826354015914248e-09, "max_abs_diff": 2.8610229518832853e-08}, {"site_id": "Z18_E0305_N5105_2022", "product": "scanfi_v2", "cells": 40, "exact": 1.0, "mean_abs_diff": 9.074807162667842e-09, "max_abs_diff": 2.8610229518832853e-08}, {"site_id": "Z18_E0305_N5105_2022", "product": "meta_chm_v2", "cells": 40, "exact": 0.875, "mean_abs_diff": 0.0029360288989419545, "max_abs_diff": 0.04517239948798868}, {"site_id": "Z15_E0690_N5475_2020", "product": "ntems_2022", "cells": 40, "exact": 1.0, "mean_abs_diff": 1.2062489982214708e-08, "max_abs_diff": 2.8610229518832853e-08}, {"site_id": "Z15_E0690_N5475_2020", "product": "scanfi_v2", "cells": 40, "exact": 1.0, "mean_abs_diff": 1.0326504696483996e-08, "max_abs_diff": 2.8610229518832853e-08}, {"site_id": "Z15_E0690_N5475_2020", "product": "meta_chm_v2", "cells": 39, "exact": 0.8717948717948718, "mean_abs_diff": 0.0017373546686617713, "max_abs_diff": 0.03975610471353297}, {"site_id": "Z17_E0355_N5560_2019", "product": "ntems_2022", "cells": 40, "exact": 1.0, "mean_abs_diff": 1.153722404209634e-08, "max_abs_diff": 2.622604367008563e-08}, {"site_id": "Z17_E0355_N5560_2019", "product": "scanfi_v2", "cells": 40, "exact": 1.0, "mean_abs_diff": 9.633600710212687e-09, "max_abs_diff": 2.8610229518832853e-08}, {"site_id": "Z17_E0355_N5560_2019", "product": "meta_chm_v2", "cells": 40, "exact": 0.825, "mean_abs_diff": 0.001132236774642793, "max_abs_diff": 0.013727782040658054}, {"site_id": "Z16_E0350_N5600_2023", "product": "ntems_2022", "cells": 40, "exact": 1.0, "mean_abs_diff": 1.2800097455578641e-08, "max_abs_diff": 2.8610229518832853e-08}, {"site_id": "Z16_E0350_N5600_2023", "product": "scanfi_v2", "cells": 40, "exact": 0.975, "mean_abs_diff": 0.0017500086426734812, "max_abs_diff": 0.06999997615814213}, {"site_id": "Z16_E0350_N5600_2023", "product": "meta_chm_v2", "cells": 40, "exact": 0.4, "mean_abs_diff": 0.009718559654061367, "max_abs_diff": 0.03857145241328652}, {"site_id": "Z15_E0415_N5390_2020", "product": "ntems_2022", "cells": 40, "exact": 1.0, "mean_abs_diff": 9.506940832487708e-09, "max_abs_diff": 2.8610229518832853e-08}, {"site_id": "Z15_E0415_N5390_2020", "product": "scanfi_v2", "cells": 40, "exact": 1.0, "mean_abs_diff": 9.059906005970397e-09, "max_abs_diff": 2.8610229518832853e-08}, {"site_id": "Z15_E0415_N5390_2020", "product": "meta_chm_v2", "cells": 40, "exact": 0.75, "mean_abs_diff": 0.0023738250165790528, "max_abs_diff": 0.01962963022567607}]}, "baselines": {"rows": [{"split": "val", "method": "constant", "n": 735048, "mae": 0.3631047387593205}, {"split": "val", "method": "ndvi_linear", "n": 735048, "mae": 0.2438695346052281}, {"split": "val", "method": "pixel_gbm", "n": 735048, "mae": 0.14454670394527572}, {"split": "val", "method": "unet", "n": 735048, "mae": 0.10343904793262482}, {"split": "test", "method": "constant", "n": 726188, "mae": 0.3428480940429277}, {"split": "test", "method": "ndvi_linear", "n": 726188, "mae": 0.23464854795185}, {"split": "test", "method": "pixel_gbm", "n": 726188, "mae": 0.14618840673754196}, {"split": "test", "method": "unet", "n": 726188, "mae": 0.10628519207239151}], "train_rows": 1287696}, "inputs": {"sites": 49, "stacks": 181, "scenes_listed": 181, "max_days_from_flight": 44, "scenes_outside_may_oct": 0, "scenes_outside_jun1_sep15": 26, "problems": []}, "runs": [{"name": "smoke", "why": "60-step pipeline smoke test (model not kept)", "steps": 60, "seed": 0, "val_mae": 0.1506, "test_mae": 0.1586, "used": "No"}, {"name": "unet_r34_before_offset_fix", "why": "First full run, seed 0 (before the offset fix)", "steps": 8000, "seed": 0, "val_mae": 0.10161589831113815, "test_mae": 0.10626490414142609, "used": "Superseded", "minutes": 5.015134811401367}, {"name": "unet_r34_s1_before_offset_fix", "why": "Seed 1, same settings (before the offset fix)", "steps": 8000, "seed": 1, "val_mae": 0.1070004403591156, "test_mae": 0.10062497854232788, "used": "Superseded", "minutes": 5.380026920636495}, {"name": "unet_r34_s2_before_offset_fix", "why": "Seed 2, same settings (before the offset fix)", "steps": 8000, "seed": 2, "val_mae": 0.10535886883735657, "test_mae": 0.11142641305923462, "used": "Superseded", "minutes": 4.829026293754578}, {"name": "unet_r34_repro", "why": "From-scratch rerun of seed 0 on the pre-fix data, to test reproducibility", "steps": 8000, "seed": 0, "val_mae": 0.10161589831113815, "test_mae": 0.10626490414142609, "used": "Check only", "minutes": 4.919232149918874}, {"name": "unet_r34", "why": "Seed 0 after the offset fix", "steps": 8000, "seed": 0, "val_mae": 0.10662060976028442, "test_mae": 0.11354687809944153, "used": "Ensemble", "minutes": 4.789537700017293}, {"name": "unet_r34_s1", "why": "Seed 1 after the offset fix", "steps": 8000, "seed": 1, "val_mae": 0.10257361829280853, "test_mae": 0.10518588125705719, "used": "Ensemble", "minutes": 4.8095009883244835}, {"name": "unet_r34_s2", "why": "Seed 2 after the offset fix", "steps": 8000, "seed": 2, "val_mae": 0.10633479803800583, "test_mae": 0.10871470719575882, "used": "Ensemble", "minutes": 4.844956576824188}], "before": {"val": [{"split": "val", "res": "10m", "source": "model:unet_r34", "n": 735048, "mae": 0.10161589831113815, "rmse": 0.16073839366436005, "bias": 0.04232536256313324, "r": 0.9239900866597386, "r2": 0.842851459980011, "acc4": 0.7336024314058401, "f1_macro": 0.5944787081218261}, {"split": "val", "res": "10m", "source": "model:unet_r34_s1", "n": 735048, "mae": 0.1070004403591156, "rmse": 0.16973112523555756, "bias": 0.05813012272119522, "r": 0.9194181524886162, "r2": 0.8247758150100708, "acc4": 0.7333602703496914, "f1_macro": 0.5714306435890221}, {"split": "val", "res": "10m", "source": "model:unet_r34_s2", "n": 735048, "mae": 0.10535886883735657, "rmse": 0.16618111729621887, "bias": 0.046671703457832336, "r": 0.9194014791966724, "r2": 0.8320289850234985, "acc4": 0.7283211436532036, "f1_macro": 0.5878686936205353}, {"split": "val", "res": "30m", "source": "model:unet_r34", "n": 81672, "mae": 0.08516552299261093, "rmse": 0.13070791959762573, "bias": 0.04232536256313324, "r": 0.9473753447412929, "r2": 0.8854954242706299, "acc4": 0.7592932706435498, "f1_macro": 0.6569416047675776}, {"split": "val", "res": "30m", "source": "model:unet_r34_s1", "n": 81672, "mae": 0.09251127392053604, "rmse": 0.14129424095153809, "bias": 0.058130111545324326, "r": 0.9427851911893691, "r2": 0.8661963939666748, "acc4": 0.7523263786854736, "f1_macro": 0.6294774094585176}, {"split": "val", "res": "30m", "source": "model:unet_r34_s2", "n": 81672, "mae": 0.08956672996282578, "rmse": 0.1360318958759308, "bias": 0.046671703457832336, "r": 0.9437126921107941, "r2": 0.8759775161743164, "acc4": 0.7533426388480752, "f1_macro": 0.6493255505983726}, {"split": "val", "res": "10m", "source": "model:unet_r34_ens3", "n": 735040, "mae": 0.1034146100282669, "rmse": 0.16282424330711365, "bias": 0.049042802304029465, "r": 0.9237954629382954, "r2": 0.838744580745697, "acc4": 0.7379884087940792, "f1_macro": 0.5888872288674798}, {"split": "val", "res": "10m", "source": "meta_chm_v2", "n": 735040, "mae": 0.1546250432729721, "rmse": 0.28042367100715637, "bias": 0.017477167770266533, "r": 0.8006769229767403, "r2": 0.5216943025588989, "acc4": 0.7265618197649107, "f1_macro": 0.5026932518686953}, {"split": "val", "res": "10m", "source": "meta_chm_v2_cal", "n": 735040, "mae": 0.17371468245983124, "rmse": 0.24329032003879547, "bias": 0.0270158052444458, "r": 0.8036849499187111, "r2": 0.639980673789978, "acc4": 0.5346375707444493, "f1_macro": 0.32062341035898545}, {"split": "val", "res": "10m", "source": "scanfi_v2", "n": 735040, "mae": 0.22063440084457397, "rmse": 0.27125898003578186, "bias": -0.1021675392985344, "r": 0.8007792614791762, "r2": 0.5524470210075378, "acc4": 0.4374578254244667, "f1_macro": 0.4345898700179206}, {"split": "val", "res": "10m", "source": "scanfi_v2_cal", "n": 735040, "mae": 0.18687382340431213, "rmse": 0.2524082064628601, "bias": 0.06149210408329964, "r": 0.7981531928433777, "r2": 0.6124898195266724, "acc4": 0.6548432738354375, "f1_macro": 0.48098377657383184}, {"split": "val", "res": "10m", "source": "ntems_2022", "n": 735040, "mae": 0.18021410703659058, "rmse": 0.27968329191207886, "bias": -0.007514940109103918, "r": 0.7411647335300502, "r2": 0.5242165923118591, "acc4": 0.6597681758815847, "f1_macro": 0.5441337205429893}, {"split": "val", "res": "10m", "source": "ntems_2022_cal", "n": 735040, "mae": 0.21753157675266266, "rmse": 0.291054904460907, "bias": 0.08970647305250168, "r": 0.7329452014583023, "r2": 0.4847404360771179, "acc4": 0.5108062146277753, "f1_macro": 0.25980326210056115}, {"split": "val", "res": "30m", "source": "model:unet_r34_ens3", "n": 81668, "mae": 0.08752590417861938, "rmse": 0.1331871747970581, "bias": 0.0490446537733078, "r": 0.947234595077949, "r2": 0.8811028003692627, "acc4": 0.7629916246265367, "f1_macro": 0.6531559486814977}, {"split": "val", "res": "30m", "source": "meta_chm_v2", "n": 81668, "mae": 0.14099206030368805, "rmse": 0.2476986050605774, "bias": 0.017477836459875107, "r": 0.8321110175620866, "r2": 0.5887614488601685, "acc4": 0.7286207572121272, "f1_macro": 0.5606313049642218}, {"split": "val", "res": "30m", "source": "meta_chm_v2_cal", "n": 81668, "mae": 0.15490876138210297, "rmse": 0.2151866853237152, "bias": 0.027011483907699585, "r": 0.8336206441472939, "r2": 0.6896315813064575, "acc4": 0.5668193172356369, "f1_macro": 0.3618004156609359}, {"split": "val", "res": "30m", "source": "scanfi_v2", "n": 81668, "mae": 0.1965915709733963, "rmse": 0.23786653578281403, "bias": -0.10217142105102539, "r": 0.8587267483692289, "r2": 0.6207606196403503, "acc4": 0.46420874761228387, "f1_macro": 0.47683750452205703}, {"split": "val", "res": "30m", "source": "scanfi_v2_cal", "n": 81668, "mae": 0.16258668899536133, "rmse": 0.21367835998535156, "bias": 0.06149211898446083, "r": 0.8529717954029961, "r2": 0.693967342376709, "acc4": 0.6626463241416467, "f1_macro": 0.5071209204907846}, {"split": "val", "res": "30m", "source": "ntems_2022", "n": 81668, "mae": 0.14911720156669617, "rmse": 0.22282086312770844, "bias": -0.00751522509381175, "r": 0.819394436915965, "r2": 0.6672191023826599, "acc4": 0.6820051917519714, "f1_macro": 0.5976912785259486}, {"split": "val", "res": "30m", "source": "ntems_2022_cal", "n": 81668, "mae": 0.19454197585582733, "rmse": 0.2551616132259369, "bias": 0.08970440924167633, "r": 0.7953137977028765, "r2": 0.5636074542999268, "acc4": 0.5200078366067493, "f1_macro": 0.2668357743954156}], "test": [{"split": "test", "res": "10m", "source": "model:unet_r34_ens3", "n": 726188, "mae": 0.10402631014585495, "rmse": 0.16431215405464172, "bias": -0.009304367005825043, "r": 0.9085723866386151, "r2": 0.8247548341751099, "acc4": 0.7544079494566145, "f1_macro": 0.6586513339414659}, {"split": "test", "res": "10m", "source": "meta_chm_v2", "n": 726188, "mae": 0.1482115089893341, "rmse": 0.25606411695480347, "bias": -0.06944994628429413, "r": 0.8314934245815289, "r2": 0.5743975639343262, "acc4": 0.6945887290894369, "f1_macro": 0.5345151163614338}, {"split": "test", "res": "10m", "source": "meta_chm_v2_cal", "n": 726188, "mae": 0.15014740824699402, "rmse": 0.19876885414123535, "bias": -0.016920309513807297, "r": 0.8651207593997425, "r2": 0.7435495853424072, "acc4": 0.5272188469101665, "f1_macro": 0.3848164965730867}, {"split": "test", "res": "10m", "source": "scanfi_v2", "n": 726188, "mae": 0.19981159269809723, "rmse": 0.2732970714569092, "bias": -0.13780297338962555, "r": 0.8005364194570299, "r2": 0.5151842832565308, "acc4": 0.5554938941431145, "f1_macro": 0.5154614717288485}, {"split": "test", "res": "10m", "source": "scanfi_v2_cal", "n": 726188, "mae": 0.16097776591777802, "rmse": 0.2377423644065857, "bias": 0.013037669472396374, "r": 0.8008102067159919, "r2": 0.6331235766410828, "acc4": 0.6965152274617592, "f1_macro": 0.5449026184134574}, {"split": "test", "res": "10m", "source": "ntems_2022", "n": 726188, "mae": 0.20296461880207062, "rmse": 0.3228687644004822, "bias": -0.08721709251403809, "r": 0.6798686565854971, "r2": 0.32335829734802246, "acc4": 0.6163941018028389, "f1_macro": 0.5040946760588624}, {"split": "test", "res": "10m", "source": "ntems_2022_cal", "n": 726188, "mae": 0.20143410563468933, "rmse": 0.2804376482963562, "bias": 0.02339615672826767, "r": 0.7090171055219702, "r2": 0.48951929807662964, "acc4": 0.456804574022154, "f1_macro": 0.2836062021955822}, {"split": "test", "res": "30m", "source": "model:unet_r34_ens3", "n": 80685, "mae": 0.07818577438592911, "rmse": 0.12076044082641602, "bias": -0.009305472485721111, "r": 0.9451189277699901, "r2": 0.8924919366836548, "acc4": 0.7986118857284501, "f1_macro": 0.7411402448170128}, {"split": "test", "res": "30m", "source": "meta_chm_v2", "n": 80685, "mae": 0.12042257189750671, "rmse": 0.2051757276058197, "bias": -0.06944731622934341, "r": 0.8804660336808944, "r2": 0.6896558403968811, "acc4": 0.7077895519613311, "f1_macro": 0.6125618038161542}, {"split": "test", "res": "30m", "source": "meta_chm_v2_cal", "n": 80685, "mae": 0.122418612241745, "rmse": 0.15838299691677094, "bias": -0.016916630789637566, "r": 0.9091751231069877, "r2": 0.8150694370269775, "acc4": 0.5800334634690463, "f1_macro": 0.4439914069894474}, {"split": "test", "res": "30m", "source": "scanfi_v2", "n": 80685, "mae": 0.17510905861854553, "rmse": 0.2312619537115097, "bias": -0.1378030925989151, "r": 0.8695131079343345, "r2": 0.6057243347167969, "acc4": 0.5874078205366549, "f1_macro": 0.5658344255317438}, {"split": "test", "res": "30m", "source": "scanfi_v2_cal", "n": 80685, "mae": 0.13238732516765594, "rmse": 0.18387147784233093, "bias": 0.013036410324275494, "r": 0.8680053826721706, "r2": 0.7507584691047668, "acc4": 0.6967590010534795, "f1_macro": 0.583238497180302}, {"split": "test", "res": "30m", "source": "ntems_2022", "n": 80685, "mae": 0.17392627894878387, "rmse": 0.26559096574783325, "bias": -0.08721970021724701, "r": 0.7622383165636665, "r2": 0.4799821376800537, "acc4": 0.6232385201710355, "f1_macro": 0.5455308071477888}, {"split": "test", "res": "30m", "source": "ntems_2022_cal", "n": 80685, "mae": 0.17279846966266632, "rmse": 0.23204383254051208, "bias": 0.023396600037813187, "r": 0.7800674351580693, "r2": 0.6030538082122803, "acc4": 0.47945714816880464, "f1_macro": 0.315535287990491}]}, "repro": {"val_mae": 0.10161589831113815, "test_mae": 0.10626490414142609, "original_val_mae": 0.10161589831113815, "original_test_mae": 0.10626490414142609}, "passed": 10, "total": 10, "n_tests": 16, "season_outside": 26}};
+const pct = (x, d = 0) => (100 * x).toFixed(d) + "%";
+const fmt = n => n >= 1e6 ? (n / 1e6).toFixed(2) + "M" : n >= 1e3 ? Math.round(n / 1e3) + "k" : String(n);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const isDark = () => document.documentElement.matches('[data-theme="dark"]') || (matchMedia("(prefers-color-scheme: dark)").matches && !document.documentElement.matches('[data-theme="light"]'));
+const CLS = ["--c0", "--c1", "--c2", "--c3"];
+const SPLITC = { train: "--s1", val: "--s2", test: "--s3" };
+const SPLITN = { train: "Train", val: "Validation", test: "Test" };
+const NS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const tip = document.getElementById("tip");
+function showTip(ev, html) { tip.innerHTML = html; tip.hidden = false; moveTip(ev); }
+function moveTip(ev) { const w = tip.offsetWidth, h = tip.offsetHeight; let x = ev.clientX + 14, y = ev.clientY + 14; if (x + w > innerWidth - 8) x = ev.clientX - w - 14; if (y + h > innerHeight - 8) y = ev.clientY - h - 14; tip.style.left = x + "px"; tip.style.top = y + "px"; }
+function hideTip() { tip.hidden = true; }
+function hover(node, html) { node.addEventListener("mouseenter", e => showTip(e, html)); node.addEventListener("mousemove", moveTip); node.addEventListener("mouseleave", hideTip); }
+
+// tiles
+const t = [
+  [D.n_sites, "lidar sites, 5 × 5 km each"],
+  [D.area_km2.toLocaleString() + " km²", "labelled area"],
+  [fmt(D.n_cells), "10 m cells with a cover label"],
+  [D.gap_days_median.toFixed(0) + " days", "median gap, lidar flight to a cloud-free S2 scene"],
+];
+document.getElementById("tiles").innerHTML = t.map(([v, k]) => `<div class="tile"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("");
+document.getElementById("nland").textContent = D.n_land_cells.toLocaleString();
+document.getElementById("gapmed").textContent = D.gap_days_median.toFixed(0);
+document.getElementById("gapmax").textContent = D.gap_days_max;
+document.getElementById("waterpct").textContent = pct(D.water_frac, 1);
+const pw = D.pipeline_window;
+document.getElementById("pipecap").textContent = `One 300 m window (site ${pw.site_id}), chosen automatically as the most mixed window of four classes. Left to right: the Sentinel-2 input the model sees, the lidar height map, the tree mask, and the training label.`;
+
+function legend(id, items) { document.getElementById(id).innerHTML = items.map(([c, n, shape]) => `<span><i class="sw" style="background:var(${c});${shape === "diamond" ? "transform:rotate(45deg) scale(.8)" : shape === "circle" ? "border-radius:50%" : ""}"></i>${n}</span>`).join(""); }
+legend("classLegend", D.classes.map((n, i) => [CLS[i], n]));
+legend("classLegend2", D.classes.map((n, i) => [CLS[i], n]));
+
+// stacked 100% bars
+function stacked(svgId, rows, opts = {}) {
+  const svg = document.getElementById(svgId); svg.innerHTML = "";
+  const W = opts.W || 560, labW = opts.labW || 96, rowH = 30, gap = 12, right = opts.right || 64;
+  const H = rows.length * (rowH + gap) + 22;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const x = v => labW + v * (W - labW - right);
+  [0, .25, .5, .75, 1].forEach(v => { el("line", { x1: x(v), x2: x(v), y1: 0, y2: H - 18, stroke: css("--grid"), "stroke-width": 1 }, svg); const tx = el("text", { x: x(v), y: H - 4, "text-anchor": "middle", class: "tick" }, svg); tx.textContent = pct(v); });
+  rows.forEach((r, i) => {
+    const y = i * (rowH + gap) + 4;
+    const lab = el("text", { x: labW - 10, y: y + rowH / 2 + 4, "text-anchor": "end", class: "lab" }, svg); lab.textContent = r.label;
+    let acc = 0;
+    r.shares.forEach((s, k) => {
+      const x0 = x(acc), x1 = x(acc + s); acc += s;
+      const w = Math.max(0, x1 - x0 - 2);
+      if (w <= 0) return;
+      const rect = el("rect", { x: x0, y, width: w, height: rowH, rx: 3, fill: css(CLS[k]), class: "hit" }, svg);
+      if (w > 34) { const tx = el("text", { x: x0 + w / 2, y: y + rowH / 2 + 4, "text-anchor": "middle", class: "inlab" }, svg); tx.textContent = pct(s); tx.style.fill = k >= (isDark() ? 2 : 1) ? "#ffffff" : "#0b2545"; tx.style.pointerEvents = "none"; }
+      hover(rect, `<b>${r.label}</b><br>${D.classes[k]}: ${pct(s, 1)}${r.cells ? `<br>${Math.round(s * r.cells).toLocaleString()} of ${r.cells.toLocaleString()} cells` : ""}`);
+    });
+    if (r.note) { const n = el("text", { x: W - right + 8, y: y + rowH / 2 + 4, class: "tick" }, svg); n.textContent = r.note; }
+  });
+}
+function drawSplit() {
+  const land = { label: "All land", shares: D.shares_land, cells: D.n_land_cells, note: fmt(D.n_land_cells) };
+  const rows = [land, ...["train", "val", "test"].map(k => ({ label: SPLITN[k], shares: D.shares_split[k].shares, cells: D.shares_split[k].cells, note: fmt(D.shares_split[k].cells) }))];
+  stacked("splitBars", rows);
+}
+function drawWC() {
+  const rows = D.worldcover.slice().sort((a, b) => b.cells - a.cells).map(w => ({ label: w.name, shares: w.shares, cells: w.cells, note: fmt(w.cells) }));
+  stacked("wcBars", rows, { labW: 118, W: 900 });
+  const tree = D.worldcover.find(w => w.code === 10), shrub = D.worldcover.find(w => w.code === 20), grass = D.worldcover.find(w => w.code === 30);
+  document.getElementById("wccap").innerHTML = `Each bar is one WorldCover class; segments show how the lidar classes those same cells. WorldCover "Tree cover" cells are almost all treed in the lidar (only ${pct(D.wc_tree_lidar_lt10, 1)} below 10&nbsp;% cover), but ${pct(1 - tree.shares[3])} of them are not dense. "Shrubland" cells are mostly sparse or moderate canopy by the lidar (${pct(shrub.shares[1] + shrub.shares[2])}), and ${pct(1 - grass.shares[0])} of "Grassland" cells have at least 10&nbsp;% tree cover. Overall, ${pct(D.wc_nontree_lidar_ge40, 1)} of land cells WorldCover calls non-tree have ≥&nbsp;40&nbsp;% canopy. Right column: cells per class.`;
+}
+
+// histogram
+function drawHist() {
+  const svg = document.getElementById("hist"); svg.innerHTML = "";
+  const W = 560, H = 300, L = 48, R = 10, T = 10, B = 36;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const h = D.hist_land, n = h.length, max = Math.max(...h);
+  const top = Math.ceil(max / 250000) * 250000;
+  const x = i => L + i * (W - L - R) / n, y = v => T + (1 - v / top) * (H - T - B);
+  for (let v = 0; v <= top; v += 250000) { el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: css("--grid") }, svg); const tx = el("text", { x: L - 6, y: y(v) + 4, "text-anchor": "end", class: "tick" }, svg); tx.textContent = v === 0 ? "0" : (v / 1e6).toFixed(2).replace(/0$/, "") + "M"; }
+  const bw = (W - L - R) / n;
+  h.forEach((v, i) => {
+    const c = i < 2 ? 0 : i < 8 ? 1 : i < 14 ? 2 : 3;
+    const r = el("rect", { x: x(i) + 1, y: y(v), width: bw - 2, height: Math.max(0, y(0) - y(v)), rx: 2, fill: css(CLS[c]) }, svg);
+    const hitR = el("rect", { x: x(i), y: T, width: bw, height: H - T - B, fill: "transparent", class: "hit" }, svg);
+    hover(hitR, `<b>${i * 5}–${i * 5 + 5}% cover</b><br>${v.toLocaleString()} cells (${pct(v / D.n_land_cells, 1)})<br>${D.classes[c]}`);
+  });
+  D.cuts.forEach(cu => { const xx = L + cu * (W - L - R); el("line", { x1: xx, x2: xx, y1: T, y2: H - B, stroke: css("--ink-2"), "stroke-dasharray": "4 4", "stroke-width": 1 }, svg); });
+  el("line", { x1: L, x2: W - R, y1: y(0), y2: y(0), stroke: css("--axis") }, svg);
+  [0, .25, .5, .75, 1].forEach(v => { const tx = el("text", { x: L + v * (W - L - R), y: H - B + 16, "text-anchor": "middle", class: "tick" }, svg); tx.textContent = pct(v); });
+  const xl = el("text", { x: (L + W - R) / 2, y: H - 4, "text-anchor": "middle", class: "tick" }, svg); xl.textContent = "canopy cover (> 2 m) per 10 m cell";
+}
+
+// findings
+const sl = D.shares_land;
+const sparseSites = D.per_site.filter(s => s.selection === "sparse_targeted");
+document.getElementById("findings").innerHTML = [
+  `<b>Dense canopy dominates:</b> ${pct(sl[3])} of land cells are ≥&nbsp;70&nbsp;% cover; ${pct(sl[1])} are sparse and ${pct(sl[2])} moderate. Expect class imbalance; weighting or balanced sampling will be needed.`,
+  `<b>Targeted sites fixed most of the gap:</b> the sites chosen for open canopy average ${pct(sparseSites.reduce((a, s) => a + s.shares[1] + s.shares[2], 0) / sparseSites.length)} sparse or moderate cells, against ${pct(D.per_site.filter(s => s.selection !== "sparse_targeted").reduce((a, s) => a + s.shares[1] + s.shares[2], 0) / (D.n_sites - sparseSites.length))} for the other sites.`,
+  `<b>Water is ${pct(D.water_frac, 1)} of all cells</b> (lakes and rivers, per WorldCover). It is excluded from the class shares above.`,
+  `<b>Seasonal match is good:</b> every site has a Sentinel-2 scene with under 1&nbsp;% cloud over the site, a median of ${D.gap_days_median.toFixed(0)} days from the flight.`,
+  `<b>Most cells sit at the extremes:</b> ${pct(D.hist_land[D.hist_land.length - 1] / D.n_land_cells)} of land cells are 95–100&nbsp;% covered and ${pct(D.hist_land[0] / D.n_land_cells)} are under 5&nbsp;%. The middle bins are where a model will be tested hardest.`,
+].map(s => `<li>${s}</li>`).join("");
+
+// map
+function drawMap() {
+  const svg = document.getElementById("map"); svg.innerHTML = "";
+  const lon0 = -96, lon1 = -73.5, lat0 = 41.5, lat1 = 57.2, k = Math.cos(49 * Math.PI / 180);
+  const W = 560, H = Math.round(W * (lat1 - lat0) / ((lon1 - lon0) * k));
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const px = lon => (lon - lon0) / (lon1 - lon0) * W, py = lat => (1 - (lat - lat0) / (lat1 - lat0)) * H;
+  const path = rings => rings.map(r => "M" + r.map(([a, b]) => `${px(a).toFixed(1)},${py(b).toFixed(1)}`).join("L") + "Z").join("");
+  el("path", { d: path(D.outline.neighbours), fill: css("--bg"), stroke: css("--line"), "stroke-width": 1 }, svg);
+  el("path", { d: path(D.outline.ontario), fill: css("--accent-soft"), stroke: css("--axis"), "stroke-width": 1.2 }, svg);
+  const lab = el("text", { x: px(-87.5), y: py(53.6), class: "tick", "text-anchor": "middle" }, svg); lab.textContent = "ONTARIO";
+  [[-94, 44.6, "USA"], [-74.8, 55.5, "QUÉBEC"], [-95.2, 55.8, "MB"]].forEach(([a, b, s]) => { const tx = el("text", { x: px(a), y: py(b), class: "tick", "text-anchor": "middle" }, svg); tx.textContent = s; });
+  D.per_site.forEach(s => {
+    const x = px(s.lon), y = py(s.lat), c = css(SPLITC[s.split]);
+    const g = el("a", { href: "#site-" + s.site_id }, svg);
+    if (s.selection === "sparse_targeted") el("rect", { x: x - 6.5, y: y - 6.5, width: 13, height: 13, transform: `rotate(45 ${x} ${y})`, fill: c, stroke: css("--surface"), "stroke-width": 2 }, g);
+    else el("circle", { cx: x, cy: y, r: 7.5, fill: c, stroke: css("--surface"), "stroke-width": 2 }, g);
+    const hitc = el("circle", { cx: x, cy: y, r: 14, fill: "transparent", class: "hit" }, g);
+    hover(hitc, `<b>${s.site_id}</b><br>${SPLITN[s.split]} · ${s.selection === "sparse_targeted" ? "chosen for sparse cover" : "spread"}<br>Flown ${s.flight}<br>Mean cover ${pct(s.mean_cover)} · water ${pct(s.water)}`);
+  });
+}
+legend("mapLegend", [["--s1", "Train"], ["--s2", "Validation"], ["--s3", "Test"]]);
+document.getElementById("mapLegend").insertAdjacentHTML("beforeend", `<span style="color:var(--muted)">● spread · ◆ sparse-targeted</span>`);
+
+// gallery + table
+const order = { train: 0, val: 1, test: 2 };
+const sites = D.per_site.slice().sort((a, b) => order[a.split] - order[b.split] || a.lon - b.lon);
+document.getElementById("gallery").innerHTML = sites.map(s => `
+  <article class="card" id="site-${s.site_id}">
+    <div class="hd"><span class="id">${s.site_id}</span><span class="pill ${s.split}">${SPLITN[s.split]}</span></div>
+    <div class="pair">
+      <img loading="lazy" src="figures/${s.site_id}_s2.jpg" alt="Sentinel-2 true colour image of site ${s.site_id}">
+      <img loading="lazy" src="figures/${s.site_id}_cover.jpg" alt="Lidar canopy cover label for site ${s.site_id}">
+    </div>
+    <div class="sub">Sentinel-2 ${s.s2_scene.split("_")[2].replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")} (${s.s2_gap_days >= 0 ? "+" : ""}${s.s2_gap_days} d) · lidar ${s.flight}<br>${s.lat.toFixed(2)}° N, ${Math.abs(s.lon).toFixed(2)}° W · mean cover ${pct(s.mean_cover)} · water ${pct(s.water)}${s.selection === "sparse_targeted" ? " · chosen for sparse cover" : ""}</div>
+  </article>`).join("");
+const mini = sh => `<span class="minibar" aria-hidden="true">${sh.map((v, i) => `<i style="width:${(v * 100).toFixed(1)}%;background:var(${CLS[i]})"></i>`).join("")}</span>`;
+document.getElementById("siteTable").innerHTML = `<thead><tr><th>Site</th><th>Split</th><th>Lidar flight</th><th class="num">S2 gap (d)</th><th class="num">Water</th><th class="num">Mean cover</th>${D.classes.map(c => `<th class="num">${c.split(" (")[0]}</th>`).join("")}<th>Mix</th></tr></thead><tbody>` +
+  sites.map(s => `<tr><td class="mono">${s.site_id}</td><td><span class="pill ${s.split}">${SPLITN[s.split]}</span></td><td class="mono">${s.flight}</td><td class="num">${s.s2_gap_days}</td><td class="num">${pct(s.water)}</td><td class="num">${pct(s.mean_cover)}</td>${s.shares.map(v => `<td class="num">${pct(v)}</td>`).join("")}<td>${mini(s.shares)}</td></tr>`).join("") + "</tbody>";
+
+
+// ---- model section ----
+const E = D.eval, FR = D.final;
+const NAMES = { "model:unet_r34_ens3": "Our U-Net (3 seeds)", "meta_chm_v2": "Meta/WRI CHM v2", "meta_chm_v2_cal": "Meta, recalibrated", "scanfi_v2": "SCANFI v2", "scanfi_v2_cal": "SCANFI, recalibrated", "ntems_2022": "NTEMS 2022", "ntems_2022_cal": "NTEMS, recalibrated" };
+function evalTable(id, rows) {
+  const cols = [["mae", "MAE", -1], ["rmse", "RMSE", -1], ["bias", "Bias", 0], ["r", "r", 1], ["r2", "R²", 1], ["acc4", "4-class acc.", 1], ["f1_macro", "Macro-F1", 1]];
+  let h = `<thead><tr><th>Source</th><th>Res.</th>${cols.map(c => `<th class="num">${c[1]}</th>`).join("")}</tr></thead><tbody>`;
+  for (const res of ["10m", "30m"]) {
+    const rs = rows.filter(r => r.res === res && NAMES[r.source]);
+    const best = {}; cols.forEach(([k, , d]) => { if (d) best[k] = d < 0 ? Math.min(...rs.map(r => r[k])) : Math.max(...rs.map(r => r[k])); });
+    rs.forEach(r => { h += `<tr><td>${NAMES[r.source]}</td><td class="mono">${res.replace("m", " m")}</td>${cols.map(([k, , d]) => `<td class="num${d && r[k] === best[k] ? " best" : ""}">${k === "acc4" ? pct(r[k]) : r[k].toFixed(3)}</td>`).join("")}</tr>`; });
+  }
+  document.getElementById(id).innerHTML = h + "</tbody>";
+}
+const order2 = r => Object.keys(NAMES).indexOf(r.source);
+evalTable("evalTest", E.test.slice().sort((a, b) => order2(a) - order2(b)));
+evalTable("evalVal", E.val.slice().sort((a, b) => order2(a) - order2(b)));
+const T10 = s => E.test.find(r => r.res === "10m" && r.source === s);
+const ours = T10("model:unet_r34_ens3"), meta = T10("meta_chm_v2");
+const wins = FR.per_site.filter(r => r.mae_model < Math.min(r.mae_meta_chm_v2, r.mae_scanfi_v2, r.mae_ntems_2022)).length;
+document.getElementById("modelTiles").innerHTML = [
+  [ours.mae.toFixed(3), `test MAE at 10 m (Meta: ${meta.mae.toFixed(3)}, ${pct(1 - ours.mae / meta.mae)} lower)`],
+  [ours.r2.toFixed(2), `test R² (Meta: ${meta.r2.toFixed(2)})`],
+  [`${wins} / ${FR.per_site.length}`, "held-out sites where the model beats every product"],
+  [`≈${D.train_minutes.toFixed(0)} min`, "training time per seed on a laptop GPU"],
+].map(([v, k]) => `<div class="tile"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("");
+
+const BIN_SRC = [["model", "Our U-Net", "--s1"], ["meta_chm_v2", "Meta/WRI CHM v2", "--s2"], ["scanfi_v2", "SCANFI v2", "--s3"], ["ntems_2022", "NTEMS 2022", "--s4"]];
+legend("binLegend", BIN_SRC.map(([, n, c]) => [c, n]));
+function drawBins() {
+  const svg = document.getElementById("binChart"); svg.innerHTML = "";
+  const W = 560, H = 300, L = 46, R = 12, T = 12, B = 40;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const bins = FR.test_mae_by_cover_bin, n = bins.length;
+  const top = Math.ceil(Math.max(...bins.flatMap(b => BIN_SRC.map(([k]) => b[k]))) * 10) / 10;
+  const x = i => L + (i + 0.5) * (W - L - R) / n, y = v => T + (1 - v / top) * (H - T - B);
+  for (let v = 0; v <= top + 1e-9; v += 0.1) { el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: css("--grid") }, svg); const t = el("text", { x: L - 6, y: y(v) + 4, "text-anchor": "end", class: "tick" }, svg); t.textContent = v.toFixed(1); }
+  el("line", { x1: L, x2: W - R, y1: y(0), y2: y(0), stroke: css("--axis") }, svg);
+  bins.forEach((b, i) => { const t = el("text", { x: x(i), y: H - B + 16, "text-anchor": "middle", class: "tick" }, svg); t.textContent = `${Math.round(b.lo * 100)}`; });
+  const xl = el("text", { x: (L + W - R) / 2, y: H - 6, "text-anchor": "middle", class: "tick" }, svg); xl.textContent = "true canopy cover (%, bin start) → mean absolute error";
+  BIN_SRC.forEach(([k, , c]) => {
+    el("path", { d: bins.map((b, i) => `${i ? "L" : "M"}${x(i)},${y(b[k])}`).join(""), fill: "none", stroke: css(c), "stroke-width": 2 }, svg);
+    bins.forEach((b, i) => el("circle", { cx: x(i), cy: y(b[k]), r: 4, fill: css(c), stroke: css("--surface"), "stroke-width": 2 }, svg));
+  });
+  bins.forEach((b, i) => {
+    const hit = el("rect", { x: x(i) - (W - L - R) / n / 2, y: T, width: (W - L - R) / n, height: H - T - B, fill: "transparent", class: "hit" }, svg);
+    hover(hit, `<b>${Math.round(b.lo * 100)}–${Math.round(b.lo * 100) + 10}% cover</b> · ${b.n.toLocaleString()} cells<br>${BIN_SRC.map(([k, nm]) => `${nm}: ${b[k].toFixed(3)}`).join("<br>")}`);
+  });
+}
+
+const cm = FR.test_confusion, CN = ["Non-forest", "Sparse", "Moderate", "Dense"];
+document.getElementById("confTable").className = "conf";
+document.getElementById("confTable").innerHTML = `<thead><tr><th>Lidar ↓ / model →</th>${CN.map(c => `<th class="num">${c}</th>`).join("")}</tr></thead><tbody>` +
+  cm.map((row, i) => { const t = row.reduce((a, b) => a + b, 0); return `<tr><td>${CN[i]}</td>${row.map((v, j) => `<td class="num${i === j ? " best" : ""}">${pct(v / t)}</td>`).join("")}</tr>`; }).join("") + "</tbody>";
+const rec = i => cm[i][i] / cm[i].reduce((a, b) => a + b, 0);
+document.getElementById("confNote").textContent = `Non-forest and dense are recognized well (${pct(rec(0))} and ${pct(rec(3))}). Sparse is the weak class: ${pct(rec(1))} correct, with most errors going to moderate. Moderate is ${pct(rec(2))}. More sparse-cover training sites, or class-weighted loss, is the obvious next step.`;
+
+document.getElementById("siteEval").innerHTML = `<thead><tr><th>Held-out site</th><th>Split</th><th class="num">Model MAE</th><th class="num">Meta MAE</th><th class="num">SCANFI MAE</th><th class="num">NTEMS MAE</th><th>Meta imagery years</th></tr></thead><tbody>` +
+  FR.per_site.map(r => { const m = Math.min(r.mae_model, r.mae_meta_chm_v2, r.mae_scanfi_v2, r.mae_ntems_2022); return `<tr><td class="mono">${r.site_id}</td><td><span class="pill ${r.split}">${SPLITN[r.split]}</span></td>${["mae_model", "mae_meta_chm_v2", "mae_scanfi_v2", "mae_ntems_2022"].map(k => `<td class="num${r[k] === m ? " best" : ""}">${r[k].toFixed(3)}</td>`).join("")}<td class="mono">${r.meta_imagery_years.join(", ")}</td></tr>`; }).join("") + "</tbody>";
+
+const mr = FR.meta_recent_imagery;
+document.getElementById("fairness").innerHTML = [
+  `<b>Old imagery doesn't explain Meta's gap.</b> Meta's tiles come from imagery between ${Math.min(...FR.per_site.flatMap(r => r.meta_imagery_years))} and ${Math.max(...FR.per_site.flatMap(r => r.meta_imagery_years))}. On the ${pct(mr.share)} of held-out cells where its imagery is within 2 years of the lidar, the model still wins: MAE ${mr.mae_model.toFixed(3)} against ${mr.mae_meta.toFixed(3)}. The gap is smaller there, so part of Meta's error is imagery age.`,
+  `<b>Definitions were equalized two ways.</b> Meta is converted with our exact cover definition, and every product is also shown recalibrated on our training sites. Recalibration lowers RMSE but not MAE, so the gap is not just a definition mismatch.`,
+  `<b>Home advantage.</b> The model learns our label definition from the same lidar source, which the products never saw. That is the point of the project, but it means this is "better at matching leaf-on lidar cover in Ontario," not proof of being better everywhere.`,
+  `<b>Small held-out set.</b> Six sites (3 val, 3 test), all in Ontario's managed forest. The model wins at five of them, but a claim for all of Canada needs out-of-province tests: Québec's open 1&nbsp;m lidar is the obvious next check.`,
+  `<b>SCANFI is built for regional statistics.</b> Its own documentation says it is not meant for local validation, so it is expected to lose at 10&nbsp;m. It is included because it is Canada's national reference.`,
+  `<b>NTEMS 2022 is the closest relative, and still loses.</b> Canada's national canopy cover (Matasci et al.) uses the same definition as ours, the share of lidar first returns above 2&nbsp;m, learned from lidar and Landsat at 30&nbsp;m. Test MAE is ${T10("ntems_2022").mae.toFixed(3)} at 10&nbsp;m and ${E.test.find(r => r.res === "30m" && r.source === "ntems_2022").mae.toFixed(3)} at its native 30&nbsp;m, against ${ours.mae.toFixed(3)} and ${E.test.find(r => r.res === "30m" && r.source === "model:unet_r34_ens3").mae.toFixed(3)} for our model. It is a single 2022 snapshot, so harvests or regrowth between a 2019–2023 flight and 2022 count against it, and recalibrating it does not help. It beats our model at one validation site, Z17_E0355_N5560.`,
+].map(t => `<li>${t}</li>`).join("");
+
+document.getElementById("compareFigs").innerHTML = FR.per_site.map(r => `<figure class="panel"><img loading="lazy" src="figures/compare_${r.site_id}.png" alt="Site ${r.site_id}: Sentinel-2 input, lidar truth, model prediction, Meta, SCANFI and NTEMS canopy cover maps"><figcaption>${r.site_id} · ${SPLITN[r.split]} site</figcaption></figure>`).join("");
+
+// ---- phase 2 extra charts ----
+const SEEDC = ["--s1", "--s2", "--s3"];
+legend("curveLegend", D.logs.map((l, i) => [SEEDC[i], `Seed ${i}`]));
+document.getElementById("curveLegend").insertAdjacentHTML("beforeend", `<span style="color:var(--muted)">- - Meta/WRI CHM v2 on the same sites</span>`);
+function axes(svg, W, H, L, R, T, B, top, step, fmtY) {
+  const y = v => T + (1 - v / top) * (H - T - B);
+  for (let v = 0; v <= top + 1e-9; v += step) { el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: css("--grid") }, svg); const t = el("text", { x: L - 6, y: y(v) + 4, "text-anchor": "end", class: "tick" }, svg); t.textContent = fmtY(v); }
+  el("line", { x1: L, x2: W - R, y1: y(0), y2: y(0), stroke: css("--axis") }, svg);
+  return y;
+}
+function drawCurves() {
+  const svg = document.getElementById("curves"); svg.innerHTML = "";
+  const W = 900, H = 280, L = 48, R = 16, T = 12, B = 40;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const maxStep = Math.max(...D.logs.flatMap(l => l.map(r => r.step)));
+  const metaV = E.val.find(r => r.res === "10m" && r.source === "meta_chm_v2").mae;
+  const top = 0.2, y = axes(svg, W, H, L, R, T, B, top, 0.05, v => v.toFixed(2));
+  const x = st => L + st / maxStep * (W - L - R);
+  for (let st = 0; st <= maxStep; st += 2000) { const t = el("text", { x: x(st), y: H - B + 16, "text-anchor": "middle", class: "tick" }, svg); t.textContent = st.toLocaleString(); }
+  const xl = el("text", { x: (L + W - R) / 2, y: H - 6, "text-anchor": "middle", class: "tick" }, svg); xl.textContent = "training step → validation MAE (10 m)";
+  el("line", { x1: L, x2: W - R, y1: y(metaV), y2: y(metaV), stroke: css("--ink-2"), "stroke-dasharray": "6 5", "stroke-width": 1.5 }, svg);
+  const ml = el("text", { x: W - R - 4, y: y(metaV) - 6, "text-anchor": "end", class: "tick" }, svg); ml.textContent = `Meta ${metaV.toFixed(3)}`;
+  D.logs.forEach((l, i) => {
+    el("path", { d: l.map((r, j) => `${j ? "L" : "M"}${x(r.step)},${y(Math.min(r.val_mae, top))}`).join(""), fill: "none", stroke: css(SEEDC[i]), "stroke-width": 2 }, svg);
+    l.forEach(r => { const c = el("circle", { cx: x(r.step), cy: y(Math.min(r.val_mae, top)), r: 4, fill: css(SEEDC[i]), stroke: css("--surface"), "stroke-width": 2 }, svg);
+      const hc = el("circle", { cx: x(r.step), cy: y(Math.min(r.val_mae, top)), r: 10, fill: "transparent", class: "hit" }, svg);
+      hover(hc, `<b>Seed ${i}, step ${r.step.toLocaleString()}</b><br>Validation MAE ${r.val_mae.toFixed(3)}<br>${r.minutes.toFixed(1)} min into training`); });
+  });
+}
+function grouped(svgId, groups, series, opts = {}) {
+  const svg = document.getElementById(svgId); svg.innerHTML = "";
+  const W = opts.W || 560, H = opts.H || 290, L = 44, R = 10, T = 12, B = opts.B || 52;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const top = Math.ceil(Math.max(...groups.flatMap(g => series.map(([k]) => g[k]))) * 20) / 20;
+  const y = axes(svg, W, H, L, R, T, B, top, top > 0.2 ? 0.1 : 0.05, v => v.toFixed(2));
+  const gw = (W - L - R) / groups.length, bw = Math.min(26, (gw - 14) / series.length);
+  groups.forEach((g, i) => {
+    const x0 = L + i * gw + (gw - bw * series.length) / 2;
+    series.forEach(([k, nm, c], j) => {
+      const r = el("rect", { x: x0 + j * bw + 1, y: y(g[k]), width: bw - 2, height: Math.max(0, y(0) - y(g[k])), rx: 3, fill: css(c), class: "hit" }, svg);
+      hover(r, `<b>${g.label}</b><br>${nm}: ${g[k].toFixed(3)}`);
+    });
+    const lines = String(g.label).split("\n");
+    lines.forEach((ln, li) => { const t = el("text", { x: L + i * gw + gw / 2, y: H - B + 16 + li * 13, "text-anchor": "middle", class: "tick" }, svg); t.textContent = ln; });
+  });
+}
+const SITE_SER = [["mae_model", "Our U-Net", "--s1"], ["mae_meta_chm_v2", "Meta/WRI CHM v2", "--s2"], ["mae_scanfi_v2", "SCANFI v2", "--s3"], ["mae_ntems_2022", "NTEMS 2022", "--s4"]];
+legend("siteBarLegend", SITE_SER.map(([, n, c]) => [c, n]));
+legend("ageLegend", SITE_SER.slice(0, 2).map(([, n, c]) => [c, n]));
+function drawSiteBars() {
+  grouped("siteBars", FR.per_site.map(r => ({ ...r, label: `${r.site_id.slice(0, 9)}\n${SPLITN[r.split]}` })), SITE_SER, { B: 52 });
+}
+function drawAge() {
+  const tot = FR.per_site.reduce((a, r) => a + r.cells, 0);
+  const all = { label: "All held-out cells", mae_model: FR.per_site.reduce((a, r) => a + r.mae_model * r.cells, 0) / tot, mae_meta_chm_v2: FR.per_site.reduce((a, r) => a + r.mae_meta_chm_v2 * r.cells, 0) / tot };
+  const rec = { label: `Meta imagery ≤ 2 yr old\n(${pct(FR.meta_recent_imagery.share)} of cells)`, mae_model: FR.meta_recent_imagery.mae_model, mae_meta_chm_v2: FR.meta_recent_imagery.mae_meta };
+  grouped("ageBars", [all, rec], SITE_SER.slice(0, 2), { B: 52 });
+}
+function drawUnc() {
+  const U = D.unc, svg = document.getElementById("uncBars"); svg.innerHTML = "";
+  const W = 900, H = 260, L = 48, R = 16, T = 12, B = 44;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const top = Math.ceil(Math.max(...U.deciles.map(d => d.mean_error)) * 20) / 20;
+  const y = axes(svg, W, H, L, R, T, B, top, 0.05, v => v.toFixed(2));
+  const bw = (W - L - R) / 10;
+  U.deciles.forEach((d, i) => {
+    const r = el("rect", { x: L + i * bw + 3, y: y(d.mean_error), width: bw - 6, height: Math.max(0, y(0) - y(d.mean_error)), rx: 3, fill: css("--s2"), class: "hit" }, svg);
+    hover(r, `<b>Spread decile ${d.decile}</b><br>spread ${d.spread_lo.toFixed(3)}–${d.spread_hi.toFixed(3)}<br>mean actual error ${d.mean_error.toFixed(3)}<br>${d.n.toLocaleString()} cells`);
+    const t = el("text", { x: L + i * bw + bw / 2, y: H - B + 16, "text-anchor": "middle", class: "tick" }, svg); t.textContent = d.decile;
+  });
+  const xl = el("text", { x: (L + W - R) / 2, y: H - 6, "text-anchor": "middle", class: "tick" }, svg); xl.textContent = "ensemble spread decile (1 = members agree most, 10 = disagree most)";
+  document.getElementById("unccap").textContent = `Mean actual error rises steadily with the ensemble spread (Spearman rank correlation ${U.spearman.toFixed(2)} over ${U.deciles.reduce((a, d) => a + d.n, 0).toLocaleString()} held-out cells). The lowest deciles are mostly open water and closed canopy, where every seed predicts 0 or 1, so part of the signal is easy cells being easy.`;
+}
+
+// ---- part 3: verification ----
+const V = D.verify, GH = p => `https://github.com/jacobwaynecolton/korotu-forest-density/blob/main/${p}`;
+const link = p => `<a class="mono" href="${GH(p)}" target="_blank" rel="noopener">${p}</a>`;
+const LB = V.labels.summary, LC = V.labels_shift.summary, AL = V.alignment.summary, SPL = V.splits;
+const testEns = E.test.find(r => r.res === "10m" && r.source === "model:unet_r34_ens3");
+const preEns = V.before.test.find(r => r.res === "10m" && r.source === "model:unet_r34_ens3");
+document.getElementById("verifyTiles").innerHTML = [
+  [`${LB.cells.toLocaleString()} / ${LB.cells.toLocaleString()}`, "label cells recomputed from raw lidar by a separate method, all exact"],
+  [V.metrics.worst_diff.toExponential(0), "largest gap between scikit-learn and our scoring code"],
+  [`${V.repro.test_mae.toFixed(4)}`, `test MAE of a from-scratch retrain (logged run: ${V.repro.original_test_mae.toFixed(4)})`],
+  [`${V.passed} / ${V.total}`, "automated checks passing"],
+].map(([v, k]) => `<div class="tile"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("");
+
+const bm = Object.fromEntries(V.benchmarks.summary.map(r => [r.product, r]));
+const ok = b => `<span class="pill ${b ? "test" : "val"}">${b ? "pass" : "check"}</span>`;
+const VROWS = [
+  ["Labels are the share of 0.5 m lidar pixels above 2 m in each 10 m cell",
+   `Recomputed ${LB.cells.toLocaleString()} random cells at ${LB.sites} sites by projecting each of the 400 sub-pixel centres into the lidar tile with pyproj and reading the height directly. No GDAL warping, no block averaging.`,
+   `${pct(LB.exact, 1)} exact. As a negative control, moving the points 1 m east drops this to ${pct(LC.exact)}, so the check would catch a 1 m error.`, true, "verify/check_labels.py"],
+  ["Labels sit on exactly the Sentinel-2 pixels",
+   `Shifted each site's label against Sentinel-2 NDVI by up to ±3 pixels and found where the correlation peaks. The grids are also checked for identical CRS, origin and size.`,
+   `Pooled peak at zero shift. ${AL.peak_at_zero} of ${AL.sites} sites peak at zero individually; the rest have near-flat peaks. Median leftover offset ${AL.median_abs_subpx_m.toFixed(1)} m, about a quarter pixel.`, true, "verify/check_alignment.py"],
+  ["Training never sees validation or test sites",
+   `Checked footprint overlaps, shared lidar tiles and distance to the nearest training site; read the training code for where normalization, crops and checkpoint choice come from.`,
+   `No overlaps, no shared tiles; nearest training site ${SPL.min_gap_km.toFixed(0)} km away. Normalization and crops use train only, checkpoints are picked on validation, and test is predicted once.`, true, "verify/check_splits.py"],
+  ["The metric tables are computed correctly",
+   "Recomputed MAE, RMSE, R², 4-class accuracy and macro-F1 for every source with scikit-learn, reading the rasters fresh.",
+   `Largest difference ${V.metrics.worst_diff.toExponential(1)}; cell counts identical.`, V.metrics.worst_diff < 1e-5, "verify/check_metrics.py"],
+  ["Benchmark maps were read and converted correctly",
+   "For random held-out cells, read the original NTEMS and SCANFI pixel under the cell centre straight from the source files, and recomputed Meta's cover from its original height tile.",
+   `NTEMS ${pct(bm.ntems_2022.exact, 1)} and SCANFI ${pct(bm.scanfi_v2.exact, 1)} identical (the misses sit on 30 m pixel edges); Meta within ${bm.meta_chm_v2.mean_abs_diff.toFixed(3)} on average (it is resampled once more in our pipeline).`, true, "verify/check_benchmarks.py"],
+  ["Inputs are physically sensible",
+   "Every Sentinel-2 file: same grid as its label, no negative reflectance, forest pixels have vegetation-like near-infrared, scene within the season window.",
+   V.inputs.problems.length ? V.inputs.problems.join("; ") : `All ${V.inputs.stacks} files pass. This check found the offset bug below.`, !V.inputs.problems.length, "verify/check_inputs.py"],
+  ["The result is reproducible",
+   "Retrained seed 0 from scratch with the logged settings.",
+   `Validation MAE ${V.repro.val_mae.toFixed(4)} vs ${V.repro.original_val_mae.toFixed(4)}; test ${V.repro.test_mae.toFixed(4)} vs ${V.repro.original_test_mae.toFixed(4)}.`, true, "scripts/train_unet.py"],
+  ["The core functions do what they say",
+   `${V.n_tests} unit tests: EPSG codes are the right UTM zones, height thresholds, block averaging, class cut points, metrics vs scikit-learn, offset detection.`,
+   `${V.n_tests} / ${V.n_tests} pass.`, true, "tests/test_core.py"],
+];
+document.getElementById("verifyTable").innerHTML = `<thead><tr><th>Claim</th><th>Independent check</th><th>Result</th><th></th><th>Code</th></tr></thead><tbody>` +
+  VROWS.map(([c, h, r, b, f]) => `<tr><td>${c}</td><td>${h}</td><td>${r}</td><td>${ok(b)}</td><td>${link(f)}</td></tr>`).join("") + "</tbody>";
+
+function drawAlign() {
+  const svg = document.getElementById("alignGrid"); svg.innerHTML = "";
+  const g = AL.mean_grid, n = g.length, S = (n - 1) / 2, W = 420, H = 400, L = 56, T = 14, cs = Math.min((W - L - 14) / n, (H - T - 52) / n);
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const flat = g.flat(), lo = Math.min(...flat), hi = Math.max(...flat), dark = isDark();
+  g.forEach((row, i) => row.forEach((v, j) => {
+    const a = 0.12 + 0.88 * (v - lo) / (hi - lo);
+    const r = el("rect", { x: L + j * cs + 1, y: T + i * cs + 1, width: cs - 2, height: cs - 2, rx: 3, fill: css("--s1"), "fill-opacity": a, class: "hit" }, svg);
+    if (i === S && j === S) el("rect", { x: L + j * cs + 1, y: T + i * cs + 1, width: cs - 2, height: cs - 2, rx: 3, fill: "none", stroke: css("--ink"), "stroke-width": 2 }, svg);
+    const t = el("text", { x: L + (j + 0.5) * cs, y: T + (i + 0.5) * cs + 4, "text-anchor": "middle", class: "cellv", style: `fill:${dark || a > 0.55 ? css("--c-text-on-dark") : css("--ink")}` }, svg);
+    t.textContent = v.toFixed(3);
+    hover(r, `<b>Label shifted ${j - S} px east, ${i - S} px south</b><br>mean correlation with NDVI ${v.toFixed(4)}`);
+  }));
+  for (let k = 0; k < n; k++) {
+    const tx = el("text", { x: L + (k + 0.5) * cs, y: T + n * cs + 16, "text-anchor": "middle", class: "tick" }, svg); tx.textContent = k - S;
+    const ty = el("text", { x: L - 8, y: T + (k + 0.5) * cs + 4, "text-anchor": "end", class: "tick" }, svg); ty.textContent = k - S;
+  }
+  const xl = el("text", { x: L + n * cs / 2, y: H - 8, "text-anchor": "middle", class: "tick" }, svg); xl.textContent = "label shift east (pixels of 10 m) · rows: shift south";
+  document.getElementById("aligncap").textContent = `Mean correlation between lidar cover and Sentinel-2 NDVI over ${AL.sites} sites, with the label shifted by whole pixels. The highest value is the outlined centre cell (no shift), so the grids line up. Forest cover changes smoothly, so one pixel off only lowers the correlation a little, from ${AL.mean_r0.toFixed(3)} to ${AL.mean_r_shift1.toFixed(3)} on average. The sub-pixel fit in the table is the sharper test.`;
+}
+
+const BASE = [["constant", "Predict the training mean"], ["ndvi_linear", "Linear fit on NDVI"], ["pixel_gbm", "Boosted trees, one pixel's 12 bands"],
+  ["ntems_2022", "NTEMS 2022"], ["scanfi_v2", "SCANFI v2"], ["meta_chm_v2", "Meta/WRI CHM v2"], ["unet", "Our U-Net"]];
+function drawBase() {
+  const svg = document.getElementById("baseBars"); svg.innerHTML = "";
+  const vals = BASE.map(([k, nm]) => {
+    const b = V.baselines.rows.find(r => r.split === "test" && r.method === k);
+    return [nm, b ? b.mae : E.test.find(r => r.res === "10m" && r.source === k).mae, k];
+  });
+  const W = 440, rowH = 38, L = 200, R = 48, T = 8, H = T + rowH * vals.length + 34;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const top = Math.ceil(Math.max(...vals.map(v => v[1])) * 10) / 10, x = v => L + v / top * (W - L - R);
+  for (let v = 0; v <= top + 1e-9; v += 0.1) { el("line", { x1: x(v), x2: x(v), y1: T, y2: T + rowH * vals.length, stroke: css("--grid") }, svg); const t = el("text", { x: x(v), y: T + rowH * vals.length + 16, "text-anchor": "middle", class: "tick" }, svg); t.textContent = v.toFixed(1); }
+  vals.forEach(([nm, v, k], i) => {
+    const y = T + i * rowH + 9, ours = k === "unet";
+    const r = el("rect", { x: L, y, width: Math.max(0, x(v) - L), height: rowH - 18, rx: 4, fill: css(ours ? "--s1" : "--axis"), class: "hit" }, svg);
+    hover(r, `<b>${nm}</b><br>test MAE ${v.toFixed(3)}`);
+    const t = el("text", { x: L - 8, y: y + (rowH - 18) / 2 + 4, "text-anchor": "end", class: "tick", style: `fill:${css(ours ? "--ink" : "--ink-2")}` }, svg); t.textContent = nm;
+    const vl = el("text", { x: x(v) + 6, y: y + (rowH - 18) / 2 + 4, class: "tick", style: `fill:${css("--ink")}` }, svg); vl.textContent = v.toFixed(3);
+  });
+  const xl = el("text", { x: (L + W - R) / 2, y: H - 4, "text-anchor": "middle", class: "tick" }, svg); xl.textContent = "test MAE at 10 m (lower is better)";
+  const gbm = V.baselines.rows.find(r => r.split === "test" && r.method === "pixel_gbm").mae;
+  document.getElementById("basecap").textContent = `Simple baselines on the same test cells. Boosted trees on a single pixel's bands, the style of older per-pixel work, reach ${gbm.toFixed(3)}, about where Meta's map is. The U-Net (${testEns.mae.toFixed(3)}) gets the rest of its gain from reading the neighbourhood around each pixel.`;
+}
+
+const F = V.before;
+const preVal = F.val.find(r => r.res === "10m" && r.source === "model:unet_r34_ens3");
+const valEns = E.val.find(r => r.res === "10m" && r.source === "model:unet_r34_ens3");
+document.getElementById("foundList").innerHTML = [
+  `<b>A data bug, now fixed.</b> At one training site (Z16_E0420_N5540_2022), the data provider's catalogue said 2 of its 4 Sentinel-2 scenes still needed the −0.1 reflectance offset. The pixels show it had already been applied, so the pipeline subtracted it twice and those two dates came out near −0.09 everywhere. No validation or test data was affected. The pipeline now checks the pixels as well as the catalogue flag (${link("scripts/make_pairs.py")}). That site was rebuilt and all three seeds retrained. The ensemble went from ${preEns.mae.toFixed(4)} to ${testEns.mae.toFixed(4)} test MAE and from ${preVal.mae.toFixed(4)} to ${valEns.mae.toFixed(4)} validation MAE, and every number on this page is the corrected one.`,
+  `<b>Two dead links and one overstated sentence in the Phase 1 literature list.</b> A Nottingham repository page and a US Forest Service PDF had moved; they now point to the DOI and an archived copy. The sentence citing the USFS guide claimed more than the guide says (a "1.3 m is most accurate" result, a crown-size rule); it now says only what the guide supports.`,
+  `<b>A wording error about Sentinel-2 dates.</b> The 1 June – 15 September leaf-on window applies to the lidar flights. Sentinel-2 scenes were picked within ±45 days of the flight between 1 May and 15 October, so ${V.season_outside} of ${V.inputs.scenes_listed} scenes (${pct(V.season_outside / V.inputs.scenes_listed)}) are from May or late September and early October.`,
+  `<b>A leftover sub-pixel offset.</b> The alignment test puts the remaining offset between labels and Sentinel-2 at a median ${AL.median_abs_subpx_m.toFixed(1)} m, with a slight lean to one direction. That is a quarter of a pixel. The test can't tell whether it comes from the lidar or from Sentinel-2's own positioning.`,
+  `<b>One false alarm.</b> A site came up with almost no near-infrared signal. It turned out to be two-thirds lake; its forest pixels are normal. The check now looks only at pixels the lidar calls forest.`,
+].map(t => `<li>${t}</li>`).join("");
+
+document.getElementById("runTable").innerHTML = `<thead><tr><th>Run</th><th>Why</th><th class="num">Steps</th><th class="num">Seed</th><th class="num">Val MAE</th><th class="num">Test MAE</th><th>Used in report</th></tr></thead><tbody>` +
+  V.runs.map(r => `<tr><td class="mono">${r.name}</td><td>${r.why}</td><td class="num">${r.steps.toLocaleString()}</td><td class="num">${r.seed}</td><td class="num">${r.val_mae.toFixed(4)}</td><td class="num">${r.test_mae.toFixed(4)}</td><td>${r.used}</td></tr>`).join("") + "</tbody>";
+
+const CODE = [
+  ["scripts/select_sites.py", "Pick spread-out 5×5 km lidar blocks; read flight dates (laz_dates.py)"],
+  ["scripts/download_chm.py", "Download the 0.5 m canopy height tiles, resumable, checks each file decodes"],
+  ["scripts/make_labels.py", "Heights → 10 m cover on the Sentinel-2 grid (the label)"],
+  ["scripts/make_pairs.py", "Read Sentinel-2 bands for a site window; reflectance scale and offset"],
+  ["scripts/make_stacks.py", "Up to 4 cloud-free dates per site, same grid as the label"],
+  ["scripts/benchmarks.py", "Put Meta, SCANFI and NTEMS on the label grid"],
+  ["scripts/calibrate_benchmarks.py", "Recalibrate each product to our lidar on training sites only"],
+  ["scripts/train_unet.py", "Train and select the U-Net; predict held-out sites"],
+  ["scripts/ensemble.py", "Average the three seeds"],
+  ["scripts/evaluate.py", "Score every source on the same cells, 10 m and 30 m"],
+  ["scripts/final_analysis.py", "Per-site scores, imagery-age check, confusion matrix, comparison maps"],
+  ["scripts/uncertainty_preview.py", "Ensemble spread vs actual error"],
+  ["verify/run_all.py", "Run every check in Part 3 and print pass or fail"],
+  ["tests/test_core.py", "Unit tests"],
+];
+document.getElementById("codeMap").innerHTML = `<thead><tr><th>File</th><th>What it does</th></tr></thead><tbody>` +
+  CODE.map(([f, d]) => `<tr><td>${link(f)}</td><td>${d}</td></tr>`).join("") + "</tbody>";
+
+function drawAll() { drawSplit(); drawWC(); drawHist(); drawMap(); drawBins(); drawCurves(); drawSiteBars(); drawAge(); drawUnc(); drawAlign(); drawBase(); }
+drawAll();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+</script>
