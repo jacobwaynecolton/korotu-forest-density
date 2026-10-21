@@ -135,20 +135,65 @@ table.wrap td:nth-child(4), table.wrap td:nth-child(5) { min-width: 0; white-spa
 @media (max-width: 620px) { .decisions div { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
 pre { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; overflow-x: auto; font: 13px/1.55 var(--mono); }
 @media (prefers-reduced-motion: no-preference) { .card { transition: border-color .15s; } .card:hover { border-color: var(--axis); } }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+[id] { scroll-margin-top: 16px; }
+.index { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 22px; }
+.index > div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.index b { font-family: var(--display); font-weight: 600; display: block; margin-bottom: 6px; }
+.index b a { color: var(--ink); text-decoration: none; }
+.index ol { margin: 0; padding-left: 20px; font-size: 15px; }
+.index li { margin-top: 3px; }
+.index a { color: var(--ink-2); }
+.index a:hover { color: var(--accent); }
+.totop { position: fixed; right: 16px; bottom: 16px; z-index: 5; font: 500 13px/1 var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 9px 13px; text-decoration: none; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+.totop:hover { border-color: var(--accent); }
 </style>
 
 <div class="wrap">
   <header class="col">
-    <div class="eyebrow">CSC2701 · Korotu forest density · Phase 1 labels · Phase 2 model</div>
+    <div class="eyebrow">CSC2701 · Korotu forest density</div>
     <h1>Ontario canopy cover from airborne lidar and Sentinel-2</h1>
     <p class="lede">Training labels for the forest-density model: canopy cover for every 10&nbsp;m cell in 49 Ontario sites, measured from leaf-on lidar and placed exactly on the Sentinel-2 pixel grid, and a model trained on them that beats the current national and global canopy maps on held-out sites.</p>
     <p class="meta">Prepared by Jacob Colton · data as of 18 Oct 2026 · Ontario FRI leaf-on SPL lidar (Open Government Licence – Ontario)</p>
   </header>
 
+  <nav class="index" id="index" aria-label="Contents">
+    <div><b><a href="#phase1">Phase 1 · Labels</a></b><ol>
+      <li><a href="#what">What was built</a></li>
+      <li><a href="#sites">Where the labels come from</a></li>
+      <li><a href="#eda">What the labels look like</a></li>
+      <li><a href="#pairs">Training pairs</a></li>
+      <li><a href="#decisions">Decisions and why</a></li>
+      <li><a href="#open">Limitations and open questions</a></li>
+      <li><a href="#lit">Literature summary</a></li>
+      <li><a href="#every-site">Every site</a></li>
+      <li><a href="#files">Files and handoff</a></li>
+    </ol></div>
+    <div><b><a href="#phase2">Phase 2 · Model</a></b><ol>
+      <li><a href="#p2-what">What was done</a></li>
+      <li><a href="#p2-train">Training curves</a></li>
+      <li><a href="#model">Results tables</a></li>
+      <li><a href="#p2-classes">Errors by cover and class</a></li>
+      <li><a href="#p2-sites">Site by site</a></li>
+      <li><a href="#p2-fair">How fair is the comparison</a></li>
+      <li><a href="#p2-maps">Maps on the held-out sites</a></li>
+      <li><a href="#p2-uncert">Toward the confidence map</a></li>
+      <li><a href="#p2-next">Next steps</a></li>
+    </ol></div>
+    <div><b><a href="#part3">Part 3 · Checking the work</a></b><ol>
+      <li><a href="#p3-claims">Each claim and how it was checked</a></li>
+      <li><a href="#p3-found">What the checks found</a></li>
+      <li><a href="#p3-runs">Every training run</a></li>
+      <li><a href="#p3-limits">What these checks don't prove</a></li>
+      <li><a href="#p3-code">Code map</a></li>
+      <li><a href="https://github.com/jacobwaynecolton/korotu-forest-density" target="_blank" rel="noopener">GitHub repo ↗</a></li>
+    </ol></div>
+  </nav>
   <div class="tiles" id="tiles"></div>
   <p class="callout col">Headline: a U-Net trained on these labels predicts 10&nbsp;m canopy cover from Sentinel-2 with a test error 28&nbsp;% lower than Meta/WRI's 2026 global canopy map and about half that of Canada's SCANFI and NTEMS products, with the lowest error at 5 of 6 held-out sites. <a href="#phase2">Jump to phase 2</a>.</p>
 
-  <div class="eyebrow" style="margin-top:44px">Phase 1</div>
+  <div class="eyebrow" id="phase1" style="margin-top:44px">Phase 1</div>
   <h2 id="what" style="border-top:0;margin-top:6px;padding-top:0">What was built</h2>
   <div class="col">
     <p>Each label says what fraction of a 10&nbsp;m Sentinel-2 pixel is covered by tree crowns taller than 2&nbsp;m. The lidar measures heights every 0.5&nbsp;m, so every label is an average of 400 height measurements. Labels are continuous (0 to 1), so the cut points between dense, moderate, sparse and non-forest can still be chosen later without redoing any processing.</p>
@@ -345,7 +390,7 @@ flowchart LR
     <figcaption>Phase 2 workflow. Every box is a script in <code>scripts/</code>.</figcaption>
   </figure>
 
-  <h3>Training</h3>
+  <h3 id="p2-train">Training</h3>
   <figure class="panel">
     <div class="legend" id="curveLegend"></div>
     <svg class="chart" id="curves" role="img" aria-label="Validation error during training for three seeds, with Meta's validation error as a reference line"></svg>
@@ -362,7 +407,7 @@ flowchart LR
   <div class="tablewrap"><table id="evalVal"></table></div>
   <p class="col" style="font-size:14px;color:var(--ink-2)">MAE and RMSE are in cover fraction (0.10 = 10 percentage points). 30&nbsp;m = 3&nbsp;×&nbsp;3 blocks of 10&nbsp;m cells. Accuracy and macro-F1 use the placeholder 10 / 40 / 70&nbsp;% classes. Best value per column in bold.</p>
 
-  <div class="two">
+  <div class="two" id="p2-classes">
     <figure class="panel" style="margin:0">
       <div class="legend" id="binLegend"></div>
       <svg class="chart" id="binChart" role="img" aria-label="Mean absolute error by true canopy cover on test sites for the model, Meta and SCANFI"></svg>
@@ -376,7 +421,7 @@ flowchart LR
     </div>
   </div>
 
-  <h3>Site by site</h3>
+  <h3 id="p2-sites">Site by site</h3>
   <div class="two">
     <figure class="panel" style="margin:0">
       <div class="legend" id="siteBarLegend"></div>
@@ -390,10 +435,10 @@ flowchart LR
     </figure>
   </div>
   <div class="tablewrap"><table id="siteEval"></table></div>
-  <h3>How fair is the comparison</h3>
+  <h3 id="p2-fair">How fair is the comparison</h3>
   <ul class="findings col" id="fairness"></ul>
 
-  <h3>Maps on the held-out sites</h3>
+  <h3 id="p2-maps">Maps on the held-out sites</h3>
   <div id="compareFigs"></div>
 
   <h2 id="p2-uncert">Toward the confidence map</h2>
@@ -458,6 +503,7 @@ flowchart LR
   <h2 id="p3-code">Code map</h2>
   <div class="tablewrap"><table id="codeMap"></table></div>
 </div>
+<a class="totop" href="#index">↑ Contents</a>
 <div class="tip" id="tip" hidden></div>
 
 <script>
