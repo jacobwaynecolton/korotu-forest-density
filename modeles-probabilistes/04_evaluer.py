@@ -50,8 +50,14 @@ def niveaux(q):
 
 
 def melange(preds):
-    """Liste de (3, ...) par graine -> (3, ...) quantiles 10, 50, 90 % du mélange des graines."""
-    return np.quantile(np.concatenate([niveaux(p) for p in preds]), QUANTILES, axis=0).astype(np.float32)
+    """Liste de (3, ...) par graine -> (3, ...) quantiles 10, 50, 90 % du mélange des graines.
+
+    Les 19 niveaux sont k/20 (k = 1..19) : la position k/(n+1) de la méthode « weibull » leur correspond, si bien
+    qu'une graine seule, ou cinq graines identiques, redonnent exactement leurs q10, q50, q90. La méthode linéaire
+    par défaut resserrait l'intervalle d'environ 5 % de chaque demi-largeur.
+    """
+    return np.quantile(np.concatenate([niveaux(p) for p in preds]), QUANTILES, axis=0,
+                       method="weibull").astype(np.float32)
 
 
 def ensemble(config, chemins):
@@ -133,21 +139,31 @@ def concat(cases, cle, sites=None):
 
 # ---------- figures ----------
 def figures(cv, ext, constantes_finales, retenue, choix):
-    # couverture par tranche de couvert, configuration retenue
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4), sharey=True)
-    for ax, (titre, y, q10, q90) in zip(axes, (
-            ("Validation croisée (calibration croisée)", cv["y"], cv["q10_cal"], cv["q90_cal"]),
-            ("15 nouveaux sites ontariens (test externe)", ext["y"], ext["q10_cal"], ext["q90_cal"]))):
-        t = np.minimum(np.floor(y * 10), 9) / 10
-        x = np.unique(t)
-        ax.plot(x + 0.05, [(y[t == v] < q10[t == v]).mean() for v in x], "o-", color="tab:blue", label="label sous q10")
-        ax.plot(x + 0.05, [(y[t == v] > q90[t == v]).mean() for v in x], "o-", color="tab:orange", label="label au-dessus de q90")
-        ax.axhline(0.10, color="k", lw=1, ls="--", label="cible 10 %")
-        ax.set(title=titre, xlabel="label (tranches de 0,1)", xlim=(0, 1))
-    axes[0].set_ylabel("part des cases")
-    axes[0].legend(fontsize=8)
+    # couverture par tranche de couvert, configuration retenue : tranches du label (ce qui est vrai) et tranches
+    # de la carte centrale (ce que lit l'utilisateur de la carte)
+    fig, axes = plt.subplots(2, 2, figsize=(11, 7.5), sharey=True)
+    lignes = []
+    for j, (jeu, d) in enumerate((("Validation croisée (calibration croisée)", cv),
+                                  ("15 nouveaux sites ontariens (test externe)", ext))):
+        y, q10, q90 = d["y"], d["q10_cal"], d["q90_cal"]
+        for i, (selon, v_tr) in enumerate((("label", y), ("carte centrale q50", d["c"]))):
+            t = np.minimum(np.floor(v_tr * 10), 9) / 10
+            x = np.unique(t)
+            sous = [(y[t == v] < q10[t == v]).mean() for v in x]
+            sur = [(y[t == v] > q90[t == v]).mean() for v in x]
+            lignes += [dict(jeu=jeu, selon=selon, tranche=round(float(v), 1), cases=int((t == v).sum()),
+                            sous_q10=float(a), sur_q90=float(b)) for v, a, b in zip(x, sous, sur)]
+            ax = axes[i, j]
+            ax.plot(x + 0.05, sous, "o-", color="tab:blue", label="label sous q10")
+            ax.plot(x + 0.05, sur, "o-", color="tab:orange", label="label au-dessus de q90")
+            ax.axhline(0.10, color="k", lw=1, ls="--", label="cible 10 %")
+            ax.set(title=jeu if i == 0 else None, xlabel=f"{selon} (tranches de 0,1)", xlim=(0, 1))
+    for ax in axes[:, 0]:
+        ax.set_ylabel("part des cases")
+    axes[0, 0].legend(fontsize=8)
     fig.suptitle(f"Couverture des cartes prudente et optimiste, {retenue}")
     fig.tight_layout(); fig.savefig(RESULTATS / "couverture_tranches.png", dpi=130); plt.close(fig)
+    pd.DataFrame(lignes).to_csv(RESULTATS / "couverture_tranches.csv", index=False)
 
     # score quantile et MAE par pli pour les deux encodeurs
     t = choix["par_pli"]
@@ -212,7 +228,7 @@ def main():
                 consts[int(k)] = constantes(y[~m], q10[~m], q90[~m]) if (~m).any() else (0.0, 0.0)
                 q10c[m], q90c[m] = calibrer(q10[m], c[m], q90[m], *consts[int(k)])
             constantes_finales[config] = constantes(y, q10, q90)
-            cv_cal[config] = dict(y=y, q10_cal=q10c, q90_cal=q90c)
+            cv_cal[config] = dict(y=y, c=c, q10_cal=q10c, q90_cal=q90c)
             lignes_cv += [dict(config=config, ensemble="5 graines", calibration="brute", **mesures(y, c, q10, q90)),
                           dict(config=config, ensemble="5 graines", calibration="conforme croisée", **mesures(y, c, q10c, q90c))]
             seules = [mesures(concat(cases, "y"), np.concatenate([d["seules_q"][g][1] for d in cases.values() if len(d["seules_q"]) > g]),
@@ -271,7 +287,7 @@ def main():
             lignes_ext += [dict(config=config, groupe=groupe, sites=len(sites), calibration="brute", **mesures(y, c, q10, q90)),
                            dict(config=config, groupe=groupe, sites=len(sites), calibration="conforme", **mesures(y, c, q10c, q90c))]
             if config == retenue and groupe == "ontario":
-                ext_cal = dict(y=y, q10_cal=q10c, q90_cal=q90c, sites=sorted(sites))
+                ext_cal = dict(y=y, c=c, q10_cal=q10c, q90_cal=q90c, sites=sorted(sites))
         for s, d in cases.items():
             q10c, q90c = calibrer(d["q10"], d["c"], d["q90"], *constantes_finales[config])
             lignes_ext_site.append(dict(config=config, site_id=s, groupe=d["groupe"], graines=d["graines"],
