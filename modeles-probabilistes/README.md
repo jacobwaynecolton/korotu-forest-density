@@ -57,6 +57,8 @@ l'entraînement. Avec 3 sites, ce choix était lui-même bruité : la meilleure 
   - **En validation croisée**, les constantes de chaque pli viennent des 4 autres plis, ce qui donne une
     couverture honnête.
   - **Pour les modèles finaux**, les constantes viennent des 5 plis.
+  - **Ajout après la première évaluation** : une paire de constantes par tranche de 0,1 de la carte centrale,
+    au lieu d'une seule pour toute la carte (voir Résultats). La règle de calcul est la même dans chaque tranche.
 
 ### Étape 3 : encodeur pré-entraîné sur Sentinel-2
 
@@ -99,16 +101,18 @@ après calibration.
 ## Résultats (17 novembre 2026)
 
 Les 85 entraînements ont abouti. Les tableaux complets sont dans `resultats/` : `cv_*.csv`, `externe_*.csv`,
-`couverture_tranches.csv` et `resume.json`.
+`couverture_tranches.csv`, `references_*.csv` et `resume.json`. Rapport en ligne (en anglais), avec un visualiseur
+des cartes : https://claude.ai/artifact/UmtqSM7rsjjM6H5Tqihxz4.
 
-**Correction avant la lecture des résultats.** Dans la première évaluation, le calcul des quantiles du mélange
-utilisait la méthode linéaire de `np.quantile`. Elle resserrait l'intervalle d'environ 5 % de chaque
-demi-largeur : une graine seule ne redonnait pas son propre q10. La méthode est maintenant « weibull », qui
-correspond aux niveaux k/20, et l'évaluation a été relancée.
-- Ce qui change :
-  - la couverture brute de l'ensemble passe de 64 % à 69 % ;
-  - les constantes conformes passent de +0,017 / +0,003 à +0,014 / +0,002.
-- Ce qui ne change pas : la couverture calibrée, le choix de l'encodeur, les entraînements et les prédictions.
+**Deux changements après la première lecture des résultats**, sans réentraînement :
+1. **Correction d'une erreur.** Le calcul des quantiles du mélange des graines utilisait la méthode linéaire de
+   `np.quantile`. Elle resserrait l'intervalle d'environ 5 % de chaque demi-largeur : une graine seule ne redonnait
+   pas son propre q10. La méthode est maintenant « weibull », qui correspond aux niveaux k/20.
+2. **Calibration par tranche.** Avec une seule paire de constantes, la couverture de 80 % n'était qu'une moyenne :
+   89 % pour les cases prédites près de 0 ou de 1, 68 % pour le couvert intermédiaire. Les constantes sont
+   maintenant calculées par tranche de 0,1 de la carte centrale, toujours hors pli en validation croisée.
+
+Le choix de l'encodeur, fixé d'avance sur le score quantile brut, ne dépend d'aucun de ces deux changements.
 
 ### Validation croisée (49 sites, 5 plis par longitude)
 
@@ -116,7 +120,8 @@ correspond aux niveaux k/20, et l'évaluation a été relancée.
 |---|---|---|---|---|---|---|---|
 | L1 ResNet-34, 5 graines (modèle actuel) | 0,0892 | 0,850 | — | — | — | — | — |
 | Quantiles ResNet-34, 5 graines, brut | 0,0894 | 0,850 | 0,0285 | 14,2 % | 17,0 % | 68,8 % | 0,244 |
-| Quantiles ResNet-34, 5 graines, **calibré** | 0,0894 | 0,850 | 0,0284 | **10,1 %** | **10,0 %** | **79,9 %** | 0,257 |
+| Quantiles ResNet-34, 5 graines, calibration unique | 0,0894 | 0,850 | 0,0284 | 10,1 % | 10,0 % | 79,9 % | 0,257 |
+| **Quantiles ResNet-34, 5 graines, calibration par tranche (modèle final)** | **0,0894** | **0,850** | **0,0281** | **10,1 %** | **9,1 %** | **80,8 %** | **0,279** |
 | Quantiles ResNet-34, un seul modèle, brut | 0,0907 | 0,842 | 0,0291 | 13,3 % | 14,5 % | 72,2 % | 0,248 |
 | Quantiles ResNet-50 SSL4EO, 5 graines, brut | 0,0908 | 0,849 | 0,0289 | 13,6 % | 19,1 % | 67,4 % | 0,242 |
 
@@ -124,12 +129,8 @@ correspond aux niveaux k/20, et l'évaluation a été relancée.
   modèle L1 actuel.
 - **L'ensemble de 5 graines aide un peu** : la MAE passe de 0,0907 à 0,0894, et le score quantile de 0,0291 à
   0,0285.
-- **Les intervalles bruts sont trop étroits** : 69 % de couverture au lieu de 80 %.
-  - Pourtant, les corrections conformes sont minimes : +0,014 sous la carte prudente, +0,002 sur la carte
-    optimiste.
-  - Une grande partie des manques bruts vient donc de labels à 0 ou à 1, que les bornes sigmoïdes n'atteignent
-    jamais tout à fait.
-  - Une fois calibrées, les cartes atteignent la cible : 10 %, 10 % et 80 %.
+- **Les intervalles bruts sont trop étroits** : 69 % de couverture au lieu de 80 %. Une grande partie des manques
+  vient de labels à 0 ou à 1, que les bornes sigmoïdes n'atteignent jamais tout à fait.
 
 ### Encodeur pré-entraîné sur Sentinel-2 (étape 3)
 
@@ -138,39 +139,60 @@ la règle fixée d'avance en exigeait 4. Globalement, il est même un peu moins 
 contre 0,0285, MAE 0,0908 contre 0,0894.
 
 Le test externe confirme ce choix. Sur les 15 nouveaux sites ontariens, sa MAE est de 0,0946 contre 0,0875
-pour le ResNet-34, et son score quantile de 0,0303 contre 0,0274.
+pour le ResNet-34.
 
-### Test externe (modèles finaux ResNet-34, constantes conformes de la validation croisée)
+### Calibration par tranche de la carte centrale
+
+Couverture de l'intervalle 10–90 % :
+
+| Cases (selon la carte centrale) | Validation croisée, constante unique | Validation croisée, par tranche | 15 sites externes, constante unique | 15 sites externes, par tranche |
+|---|---|---|---|---|
+| Couvert intermédiaire (q50 entre 0,1 et 0,9) | 68 % | **79 %** | 76 % | **85 %** |
+| Couvert extrême (q50 sous 0,1 ou dès 0,9) | 89 % | 82 % | 90 % | 83 % |
+
+Les cases intermédiaires sont 45 % des cases en validation croisée et 52 % aux sites externes.
+
+- **En validation croisée**, chaque tranche atteint 10 % sous la carte prudente et 10 % au-dessus de la carte
+  optimiste. Les constantes de chaque pli viennent des 4 autres.
+- **Les corrections** vont de presque 0 pour les tranches extrêmes à +0,12 sous la carte prudente vers q50 = 0,45.
+  Elles sont dans `resume.json`.
+- **Aux 15 sites externes**, la couverture d'ensemble est de 84 %. Pour q50 entre 0,1 et 0,5, les erreurs
+  penchent d'un côté : 2 à 4 % des labels sont sous la carte prudente, 14 à 17 % au-dessus de la carte
+  optimiste. Le modèle y sous-estime davantage le couvert partiel qu'aux sites du projet.
+
+### Test externe (modèles finaux ResNet-34, constantes par tranche des 49 sites)
 
 | Groupe | Sites | MAE | Sous q10 | Au-dessus de q90 | Dans l'intervalle | Largeur |
 |---|---|---|---|---|---|---|
-| Nouveaux sites ontariens | 15 | 0,0875 | 8,4 % | 8,9 % | 82,7 % | 0,273 |
-| NEON A (forêts proches de l'Ontario) | 3 | 0,0720 | 9,7 % | 5,2 % | 85,1 % | 0,219 |
-| NEON B (hors distribution) | 4 | 0,1349 | 13,0 % | 8,7 % | 78,2 % | 0,334 |
+| Nouveaux sites ontariens | 15 | 0,0875 | 8,1 % | 7,6 % | 84,2 % | 0,302 |
+| NEON A (forêts proches de l'Ontario) | 3 | 0,0720 | 10,2 % | 7,1 % | 82,7 % | 0,219 |
+| NEON B (hors distribution) | 4 | 0,1349 | 14,3 % | 8,9 % | 76,8 % | 0,345 |
 
-- **Sur les sites jamais vus, la couverture tient** : 83 % en Ontario. Elle reste proche de la cible même aux
-  États-Unis.
-- **L'intervalle s'élargit là où le modèle se trompe plus** : il passe de 0,22 à 0,33 entre NEON A et NEON B.
-- **La largeur suit l'erreur d'un site à l'autre** : la corrélation de rang entre la largeur moyenne et la MAE
-  des 15 sites ontariens est de 0,90.
+- **Sur les sites jamais vus, la couverture tient** : 84 % en Ontario, et chaque site est entre 75 % et 90 %.
+- **L'intervalle s'élargit là où le modèle se trompe plus** : la corrélation de rang entre la largeur moyenne et
+  la MAE des 15 sites ontariens est de 0,95.
+- **Hors distribution, elle baisse** : 77 % dans le groupe NEON B, et 74 % à OSBS (savane de pins en Floride).
 
-### Limite : la couverture de 80 % est une moyenne
+### Comparaison aux cartes existantes (`06_references.py`)
 
-La figure `couverture_tranches.png` découpe la couverture par tranche de la carte centrale, c'est-à-dire selon
-ce que lit l'utilisateur de la carte.
+Meta/WRI CHM v2, SCANFI v2 et NTEMS 2022 sont mis sur la grille des labels avec `scripts/benchmarks.py`.
+- **Version recalibrée** : comme dans le projet, une régression isotone vers le label, apprise sans les sites
+  évalués (4 autres plis, ou les 49 sites pour les nouveaux sites).
+- **Cases comparées** : seules celles où toutes les cartes sont valides. MAE à 10 m :
 
-| Pixels (selon la carte centrale) | Part des pixels | Couverture, validation croisée | Couverture, 15 sites externes |
-|---|---|---|---|
-| Couvert intermédiaire (q50 entre 0,1 et 0,9) | environ 45 % | 68 % | 76 % |
-| Couvert extrême (q50 sous 0,1 ou dès 0,9) | environ 55 % | 89 % | 90 % |
+| Carte | Validation croisée (49 sites) | 15 nouveaux sites |
+|---|---|---|
+| **Modèle final, carte centrale** | **0,089** | **0,087** |
+| Modèle actuel (L1), réentraîné dans les plis / modèle d'origine (3 graines) | 0,089 | 0,089 |
+| Meta/WRI CHM v2, publié / recalibré | 0,148 / 0,154 | 0,191 / 0,164 |
+| SCANFI v2, publié / recalibré | 0,219 / 0,156 | 0,212 / 0,155 |
+| NTEMS 2022, publié / recalibré | 0,209 / 0,192 | 0,215 / 0,174 |
 
-En validation croisée, le détail du couvert intermédiaire est le suivant :
-- quand la carte centrale indique 0,2 à 0,5, 21 à 27 % des labels sont sous la carte prudente ;
-- quand elle indique 0,6 à 0,9, 18 à 19 % des labels sont au-dessus de la carte optimiste.
-
-Une constante unique ne corrige pas ce déséquilibre. **Piste**, sans réentraînement : calibrer les constantes
-par tranche de la carte centrale (calibration conforme « par groupe »). Cela ne demande qu'une nouvelle
-évaluation.
+- **Sur les 15 nouveaux sites**, l'erreur est 44 % plus basse que celle de la meilleure carte existante (SCANFI
+  recalibré).
+- **Le modèle final a l'erreur la plus basse sur chacun des 15 sites**, contre chaque produit dans ses deux
+  versions.
+- **Limite** : le label vient de la même source lidar que celle sur laquelle le modèle a appris, ce qui l'avantage.
 
 ## Étapes
 
@@ -180,6 +202,8 @@ par tranche de la carte centrale (calibration conforme « par groupe »). Cela n
 | `02_poids.py` | Poids SSL4EO adaptés à 12 bandes | `…/poids/resnet50_ssl4eo_12bandes.pth` |
 | `03_entrainer.py` | Un entraînement (configuration, pli, graine) et ses prédictions | `…/predictions/`, `…/modeles/` (finaux) |
 | `04_evaluer.py` | Ensembles, calibration, choix de l'encodeur, test externe, figures | `resultats/` |
+| `05_cartes.py` | Cartes prudente, centrale et optimiste (GeoTIFF à 3 bandes) des sites externes et, hors pli, des 49 sites | `…/cartes/` |
+| `06_references.py` | Comparaison à Meta/WRI CHM v2, SCANFI v2 et NTEMS 2022, publiés et recalibrés | `resultats/references_*.csv`, `…/references/` |
 
 Lancement sur Slurm : `bash modeles-probabilistes/lancer.sh` (options `--etape N`, `--depuis N`, `--dry-run`).
 

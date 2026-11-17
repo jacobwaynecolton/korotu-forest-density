@@ -4,8 +4,10 @@
    ne l'ont jamais vu. Ensemble des graines : moyenne pour la configuration L1 ; pour les quantiles, mélange
    des 5 distributions (chacune approchée par 19 quantiles interpolés entre q10, q50 et q90), dont on reprend
    les quantiles 10, 50 et 90 %.
-2. Calibration conforme, borne par borne : c_bas = quantile à 90 % de (q10 − label), c_haut = quantile à 90 %
-   de (label − q90) ; bornes calibrées q10 − c_bas et q90 + c_haut, ramenées dans [0, 1] et autour de q50.
+2. Calibration conforme, borne par borne et par tranche de 0,1 de la carte centrale q50 : dans chaque tranche,
+   c_bas = quantile à 90 % de (q10 − label), c_haut = quantile à 90 % de (label − q90) ; bornes calibrées
+   q10 − c_bas et q90 + c_haut, ramenées dans [0, 1] et autour de q50. La calibration globale (une seule paire
+   de constantes, protocole d'origine) est gardée pour comparaison.
    En validation croisée, les constantes de chaque pli viennent des 4 autres plis (couverture honnête) ; les
    constantes finales viennent des 5 plis et s'appliquent aux modèles finaux.
 3. Choix de l'encodeur (règle fixée d'avance) : le ResNet-50 pré-entraîné sur Sentinel-2 est retenu si son
@@ -32,34 +34,14 @@ import pandas as pd  # noqa: E402
 import rasterio  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from commun import (CONFIGS, GRAINES, N_PLIS, PREDICTIONS, QUANTILES, RESULTATS, fichiers_projet, lire,  # noqa: E402
-                    lire_prediction, sites_externes, sites_projet)
+from commun import (CONFIGS, GRAINES, N_PLIS, PREDICTIONS, QUANTILES, RESULTATS, TRANCHES, calibrer,  # noqa: E402
+                    constantes, fichiers_projet, lire, lire_prediction, melange, sites_externes, sites_projet)
 
-NIVEAUX = np.linspace(0.05, 0.95, 19)
-ALPHA = 0.1
 CONFIG_L1, CONFIG_A, CONFIG_B = "l1_r34_imagenet", "q_r34_imagenet", "q_r50_ssl4eo"
 PLIS_MIN_B = 4
 
 
 # ---------- ensembles ----------
-def niveaux(q):
-    """(3, ...) q10, q50, q90 -> (19, ...) quantiles 5 % à 95 %, interpolés et prolongés linéairement."""
-    q10, q50, q90 = q
-    out = [q10 + (u - 0.1) / 0.4 * (q50 - q10) if u <= 0.5 else q50 + (u - 0.5) / 0.4 * (q90 - q50) for u in NIVEAUX]
-    return np.clip(np.stack(out), 0, 1)
-
-
-def melange(preds):
-    """Liste de (3, ...) par graine -> (3, ...) quantiles 10, 50, 90 % du mélange des graines.
-
-    Les 19 niveaux sont k/20 (k = 1..19) : la position k/(n+1) de la méthode « weibull » leur correspond, si bien
-    qu'une graine seule, ou cinq graines identiques, redonnent exactement leurs q10, q50, q90. La méthode linéaire
-    par défaut resserrait l'intervalle d'environ 5 % de chaque demi-largeur.
-    """
-    return np.quantile(np.concatenate([niveaux(p) for p in preds]), QUANTILES, axis=0,
-                       method="weibull").astype(np.float32)
-
-
 def ensemble(config, chemins):
     preds = [lire_prediction(c) for c in chemins]
     if CONFIGS[config]["perte"] == "l1":
@@ -83,17 +65,6 @@ def mesures(y, c, q10=None, q90=None):
                   sous_q10=float((y < q10).mean()), sur_q90=float((y > q90).mean()),
                   dans_intervalle=float(((y >= q10) & (y <= q90)).mean()), largeur=float((q90 - q10).mean()))
     return d
-
-
-def constantes(y, q10, q90):
-    """Corrections conformes des deux bornes (niveau corrigé pour l'effectif)."""
-    n = len(y)
-    niveau = min(1.0, np.ceil((n + 1) * (1 - ALPHA)) / n)
-    return float(np.quantile(q10 - y, niveau)), float(np.quantile(y - q90, niveau))
-
-
-def calibrer(q10, q50, q90, c_bas, c_haut):
-    return np.minimum(np.clip(q10 - c_bas, 0, 1), q50), np.maximum(np.clip(q90 + c_haut, 0, 1), q50)
 
 
 # ---------- rassemblement des cases ----------
@@ -138,29 +109,36 @@ def concat(cases, cle, sites=None):
 
 
 # ---------- figures ----------
+def par_tranche(v, n=TRANCHES):
+    return np.minimum((np.nan_to_num(v) * n).astype(int), n - 1)
+
+
 def figures(cv, ext, constantes_finales, retenue, choix):
     # couverture par tranche de couvert, configuration retenue : tranches du label (ce qui est vrai) et tranches
-    # de la carte centrale (ce que lit l'utilisateur de la carte)
+    # de la carte centrale (ce que lit l'utilisateur de la carte) ; calibration globale et par tranche
     fig, axes = plt.subplots(2, 2, figsize=(11, 7.5), sharey=True)
     lignes = []
     for j, (jeu, d) in enumerate((("Validation croisée (calibration croisée)", cv),
                                   ("15 nouveaux sites ontariens (test externe)", ext))):
-        y, q10, q90 = d["y"], d["q10_cal"], d["q90_cal"]
+        y = d["y"]
         for i, (selon, v_tr) in enumerate((("label", y), ("carte centrale q50", d["c"]))):
-            t = np.minimum(np.floor(v_tr * 10), 9) / 10
-            x = np.unique(t)
-            sous = [(y[t == v] < q10[t == v]).mean() for v in x]
-            sur = [(y[t == v] > q90[t == v]).mean() for v in x]
-            lignes += [dict(jeu=jeu, selon=selon, tranche=round(float(v), 1), cases=int((t == v).sum()),
-                            sous_q10=float(a), sur_q90=float(b)) for v, a, b in zip(x, sous, sur)]
+            t = par_tranche(v_tr)
+            n = np.bincount(t, minlength=TRANCHES)
+            x = np.flatnonzero(n) / TRANCHES
             ax = axes[i, j]
-            ax.plot(x + 0.05, sous, "o-", color="tab:blue", label="label sous q10")
-            ax.plot(x + 0.05, sur, "o-", color="tab:orange", label="label au-dessus de q90")
-            ax.axhline(0.10, color="k", lw=1, ls="--", label="cible 10 %")
+            for calib, (q10, q90), style in (("globale", (d["q10_glob"], d["q90_glob"]), dict(ls="--", alpha=0.45)),
+                                             ("par tranche", (d["q10_cal"], d["q90_cal"]), dict(ls="-"))):
+                sous = (np.bincount(t, weights=y < q10, minlength=TRANCHES) / np.maximum(n, 1))[n > 0]
+                sur = (np.bincount(t, weights=y > q90, minlength=TRANCHES) / np.maximum(n, 1))[n > 0]
+                lignes += [dict(jeu=jeu, selon=selon, calibration=calib, tranche=round(float(v), 1), cases=int(k),
+                                sous_q10=float(a), sur_q90=float(b)) for v, k, a, b in zip(x, n[n > 0], sous, sur)]
+                ax.plot(x + 0.05, sous, marker="o", color="tab:blue", label=f"label sous q10 (calibration {calib})", **style)
+                ax.plot(x + 0.05, sur, marker="o", color="tab:orange", label=f"label au-dessus de q90 (calibration {calib})", **style)
+            ax.axhline(0.10, color="k", lw=1, ls=":", label="cible 10 %")
             ax.set(title=jeu if i == 0 else None, xlabel=f"{selon} (tranches de 0,1)", xlim=(0, 1))
     for ax in axes[:, 0]:
         ax.set_ylabel("part des cases")
-    axes[0, 0].legend(fontsize=8)
+    axes[0, 0].legend(fontsize=7)
     fig.suptitle(f"Couverture des cartes prudente et optimiste, {retenue}")
     fig.tight_layout(); fig.savefig(RESULTATS / "couverture_tranches.png", dpi=130); plt.close(fig)
     pd.DataFrame(lignes).to_csv(RESULTATS / "couverture_tranches.csv", index=False)
@@ -188,7 +166,7 @@ def figures(cv, ext, constantes_finales, retenue, choix):
     y = lire(e["label"])
     q = melange([lire_prediction(PREDICTIONS / retenue / "final" / f"g{g}" / f"{site}.tif")
                  for g in GRAINES if (PREDICTIONS / retenue / "final" / f"g{g}" / f"{site}.tif").exists()])
-    q10c, q90c = calibrer(q[0], q[1], q[2], *constantes_finales[retenue])
+    q10c, q90c = calibrer(q[0], q[1], q[2], constantes_finales[retenue])
     with rasterio.open(e["images"][0]) as s:
         x = s.read([4, 3, 2]).astype(float)
     v = x[np.isfinite(x)]
@@ -206,10 +184,17 @@ def figures(cv, ext, constantes_finales, retenue, choix):
     fig.savefig(RESULTATS / "exemple_cartes.png", dpi=130, bbox_inches="tight"); plt.close(fig)
 
 
+def mesures_calibrees(y, c, q10, q90):
+    """Mesures d'intervalle seules, suffixées « _cal »."""
+    m = mesures(y, c, q10, q90)
+    return {f"{k}_cal": m[k] for k in ("score_quantile", "sous_q10", "sur_q90", "dans_intervalle", "largeur")}
+
+
 def main():
     RESULTATS.mkdir(parents=True, exist_ok=True)
     plis = sites_projet()
-    lignes_cv, lignes_pli, lignes_site, resume, constantes_finales, cv_cal = [], [], [], {}, {}, {}
+    lignes_cv, lignes_pli, lignes_site, resume, cv_cal = [], [], [], {}, {}
+    constantes_finales, constantes_globales = {}, {}
 
     for config in CONFIGS:
         cases = cases_hors_pli(config, plis)
@@ -221,16 +206,27 @@ def main():
         if quantile:
             q10, q90 = concat(cases, "q10"), concat(cases, "q90")
             pli_case = np.concatenate([np.full(len(d["y"]), d["pli"]) for d in cases.values()])
-            # calibration croisée : constantes de chaque pli tirées des 4 autres
-            q10c, q90c, consts = np.empty_like(q10), np.empty_like(q90), {}
+            # calibration croisée : constantes de chaque pli tirées des 4 autres, par tranche de q50 et globales
+            cal = {n: (np.empty_like(q10), np.empty_like(q90), {}) for n in (TRANCHES, 1)}
             for k in np.unique(pli_case):
                 m = pli_case == k
-                consts[int(k)] = constantes(y[~m], q10[~m], q90[~m]) if (~m).any() else (0.0, 0.0)
-                q10c[m], q90c[m] = calibrer(q10[m], c[m], q90[m], *consts[int(k)])
-            constantes_finales[config] = constantes(y, q10, q90)
-            cv_cal[config] = dict(y=y, c=c, q10_cal=q10c, q90_cal=q90c)
+                for n, (bas, haut, consts) in cal.items():
+                    consts[int(k)] = constantes(y[~m], q10[~m], c[~m], q90[~m], n) if (~m).any() else np.zeros((n, 2))
+                    bas[m], haut[m] = calibrer(q10[m], c[m], q90[m], consts[int(k)])
+            (q10c, q90c, consts), (q10g, q90g, _) = cal[TRANCHES], cal[1]
+            constantes_finales[config] = constantes(y, q10, c, q90)
+            constantes_globales[config] = constantes(y, q10, c, q90, 1)
+            cv_cal[config] = dict(y=y, c=c, q10_cal=q10c, q90_cal=q90c, q10_glob=q10g, q90_glob=q90g)
+            i0 = 0
+            for d in cases.values():          # bornes calibrées de chaque site, même ordre que concat
+                i1 = i0 + len(d["y"])
+                d["q10_cal"], d["q90_cal"] = q10c[i0:i1], q90c[i0:i1]
+                i0 = i1
             lignes_cv += [dict(config=config, ensemble="5 graines", calibration="brute", **mesures(y, c, q10, q90)),
-                          dict(config=config, ensemble="5 graines", calibration="conforme croisée", **mesures(y, c, q10c, q90c))]
+                          dict(config=config, ensemble="5 graines", calibration="conforme croisée globale",
+                               **mesures(y, c, q10g, q90g)),
+                          dict(config=config, ensemble="5 graines", calibration="conforme croisée par tranche",
+                               **mesures(y, c, q10c, q90c))]
             seules = [mesures(concat(cases, "y"), np.concatenate([d["seules_q"][g][1] for d in cases.values() if len(d["seules_q"]) > g]),
                               np.concatenate([d["seules_q"][g][0] for d in cases.values() if len(d["seules_q"]) > g]),
                               np.concatenate([d["seules_q"][g][2] for d in cases.values() if len(d["seules_q"]) > g]))
@@ -249,16 +245,20 @@ def main():
             lignes_pli.append(dict(config=config, pli=k, sites=len(sites), **mesures(*args)))
         for s, d in cases.items():
             lignes_site.append(dict(config=config, site_id=s, pli=d["pli"],
-                                    **mesures(d["y"], d["c"], d.get("q10"), d.get("q90"))))
+                                    **mesures(d["y"], d["c"], d.get("q10"), d.get("q90")),
+                                    **(mesures_calibrees(d["y"], d["c"], d["q10_cal"], d["q90_cal"]) if quantile else {})))
         if quantile:
-            resume[config] = dict(constantes_conformes=dict(zip(("c_bas", "c_haut"), constantes_finales[config])),
-                                  constantes_par_pli={k: dict(zip(("c_bas", "c_haut"), v)) for k, v in consts.items()})
+            resume[config] = dict(
+                constantes_globales=dict(zip(("c_bas", "c_haut"), constantes_globales[config][0])),
+                constantes_par_tranche=[dict(q50_min=i / TRANCHES, q50_max=(i + 1) / TRANCHES, c_bas=float(a), c_haut=float(b))
+                                        for i, (a, b) in enumerate(constantes_finales[config])],
+                constantes_par_pli={k: v.round(5).tolist() for k, v in consts.items()})
 
     cv, par_pli, par_site = pd.DataFrame(lignes_cv), pd.DataFrame(lignes_pli), pd.DataFrame(lignes_site)
     for nom, df in (("cv_metriques", cv), ("cv_par_pli", par_pli), ("cv_par_site", par_site)):
         df.to_csv(RESULTATS / f"{nom}.csv", index=False)
 
-    # choix de l'encodeur
+    # choix de l'encodeur (sur le score quantile brut, comme fixé d'avance)
     choix = dict(par_pli=par_pli)
     retenue = CONFIG_A
     if {CONFIG_A, CONFIG_B} <= set(par_pli.config):
@@ -283,13 +283,16 @@ def main():
         for groupe in sorted({d["groupe"] for d in cases.values()}):
             sites = {s for s, d in cases.items() if d["groupe"] == groupe}
             y, c, q10, q90 = (concat(cases, k, sites) for k in ("y", "c", "q10", "q90"))
-            q10c, q90c = calibrer(q10, c, q90, *constantes_finales[config])
-            lignes_ext += [dict(config=config, groupe=groupe, sites=len(sites), calibration="brute", **mesures(y, c, q10, q90)),
-                           dict(config=config, groupe=groupe, sites=len(sites), calibration="conforme", **mesures(y, c, q10c, q90c))]
+            q10g, q90g = calibrer(q10, c, q90, constantes_globales[config])
+            q10c, q90c = calibrer(q10, c, q90, constantes_finales[config])
+            base = dict(config=config, groupe=groupe, sites=len(sites))
+            lignes_ext += [dict(base, calibration="brute", **mesures(y, c, q10, q90)),
+                           dict(base, calibration="conforme globale", **mesures(y, c, q10g, q90g)),
+                           dict(base, calibration="conforme par tranche", **mesures(y, c, q10c, q90c))]
             if config == retenue and groupe == "ontario":
-                ext_cal = dict(y=y, c=c, q10_cal=q10c, q90_cal=q90c, sites=sorted(sites))
+                ext_cal = dict(y=y, c=c, q10_cal=q10c, q90_cal=q90c, q10_glob=q10g, q90_glob=q90g, sites=sorted(sites))
         for s, d in cases.items():
-            q10c, q90c = calibrer(d["q10"], d["c"], d["q90"], *constantes_finales[config])
+            q10c, q90c = calibrer(d["q10"], d["c"], d["q90"], constantes_finales[config])
             lignes_ext_site.append(dict(config=config, site_id=s, groupe=d["groupe"], graines=d["graines"],
                                         **mesures(d["y"], d["c"], q10c, q90c)))
     ext, ext_site = pd.DataFrame(lignes_ext), pd.DataFrame(lignes_ext_site)
@@ -309,8 +312,11 @@ def main():
     print(par_pli.round(4).to_string(index=False))
     if "choix_encodeur" in resume:
         print(f"\nchoix de l'encodeur : {resume['choix_encodeur']}")
-    for config, (cb, ch) in constantes_finales.items():
-        print(f"constantes conformes {config} : c_bas {cb:+.4f}, c_haut {ch:+.4f}")
+    for config in constantes_finales:
+        (gb, gh), = constantes_globales[config]
+        print(f"\nconstantes conformes {config} : globales c_bas {gb:+.4f}, c_haut {gh:+.4f} ; par tranche de q50 :")
+        for i, (cb, ch) in enumerate(constantes_finales[config]):
+            print(f"  q50 {i / TRANCHES:.1f}-{(i + 1) / TRANCHES:.1f} : c_bas {cb:+.4f}, c_haut {ch:+.4f}")
     print("\ntest externe (modèles finaux) :")
     print(ext.round(4).to_string(index=False))
     print(f"\nconfiguration retenue : {retenue} | résultats dans {RESULTATS}")

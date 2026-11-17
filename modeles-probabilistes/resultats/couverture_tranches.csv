@@ -1,41 +1,81 @@
-jeu,selon,tranche,cases,sous_q10,sur_q90
-Validation croisée (calibration croisée),label,0.0,2215319,0.14348272190145075,0.0029092875563293593
-Validation croisée (calibration croisée),label,0.1,284168,0.2994038737648152,0.04306255454519862
-Validation croisée (calibration croisée),label,0.2,287121,0.29414776348647437,0.05309956429519262
-Validation croisée (calibration croisée),label,0.3,349322,0.3075042510921156,0.05064381859716823
-Validation croisée (calibration croisée),label,0.4,454579,0.2791329999846011,0.04766608224313046
-Validation croisée (calibration croisée),label,0.5,584647,0.21469194231732994,0.04679746924212388
-Validation croisée (calibration croisée),label,0.6,719795,0.15810473815461346,0.05300120173104842
-Validation croisée (calibration croisée),label,0.7,872780,0.12129058869359977,0.07911730332959051
-Validation croisée (calibration croisée),label,0.8,1168881,0.0835961915712549,0.12428895670303479
-Validation croisée (calibration croisée),label,0.9,5010347,0.007800657319742525,0.1676426802375165
-Validation croisée (calibration croisée),carte centrale q50,0.0,1851718,0.004231205831557505,0.031058724924637553
-Validation croisée (calibration croisée),carte centrale q50,0.1,319915,0.16617226450775988,0.10167075629464076
-Validation croisée (calibration croisée),carte centrale q50,0.2,310392,0.26586058919044303,0.10690675017397355
-Validation croisée (calibration croisée),carte centrale q50,0.3,335348,0.2558357288548016,0.11345527630998246
-Validation croisée (calibration croisée),carte centrale q50,0.4,413340,0.20979097111336914,0.12531572071418204
-Validation croisée (calibration croisée),carte centrale q50,0.5,599339,0.1547705055069001,0.15023384094811118
-Validation croisée (calibration croisée),carte centrale q50,0.6,884300,0.12988804704285875,0.17604772136152888
-Validation croisée (calibration croisée),carte centrale q50,0.7,1102336,0.126601145204366,0.1906260885973061
-Validation croisée (calibration croisée),carte centrale q50,0.8,1429700,0.12452192767713506,0.1817968804644331
-Validation croisée (calibration croisée),carte centrale q50,0.9,4700571,0.07710786625709941,0.05621465987855518
-15 nouveaux sites ontariens (test externe),label,0.0,485966,0.0851314701028467,0.002259417325491907
-15 nouveaux sites ontariens (test externe),label,0.1,81087,0.22664545488179363,0.035764055890586656
-15 nouveaux sites ontariens (test externe),label,0.2,97331,0.25926991400478777,0.059950067296133815
-15 nouveaux sites ontariens (test externe),label,0.3,129283,0.2722167647718571,0.06854729546808165
-15 nouveaux sites ontariens (test externe),label,0.4,176466,0.23197669806081625,0.06918613217276982
-15 nouveaux sites ontariens (test externe),label,0.5,236640,0.15520622041920215,0.06913032454361055
-15 nouveaux sites ontariens (test externe),label,0.6,303566,0.11554653683218806,0.06949065442111435
-15 nouveaux sites ontariens (test externe),label,0.7,370623,0.1045105133788243,0.07964157648068253
-15 nouveaux sites ontariens (test externe),label,0.8,469827,0.06682246869592424,0.09610984468751264
-15 nouveaux sites ontariens (test externe),label,0.9,1312715,0.0047695044240372055,0.13826230369882267
-15 nouveaux sites ontariens (test externe),carte centrale q50,0.0,435930,0.0004610832014314225,0.027580116073681556
-15 nouveaux sites ontariens (test externe),carte centrale q50,0.1,90973,0.09011464940147076,0.1576841480439251
-15 nouveaux sites ontariens (test externe),carte centrale q50,0.2,96809,0.12241630426923117,0.18035513227075994
-15 nouveaux sites ontariens (test externe),carte centrale q50,0.3,116708,0.10745621551221853,0.1872193851321246
-15 nouveaux sites ontariens (test externe),carte centrale q50,0.4,151610,0.10069916232438493,0.176373590132577
-15 nouveaux sites ontariens (test externe),carte centrale q50,0.5,229271,0.11215548412141091,0.14848803381151562
-15 nouveaux sites ontariens (test externe),carte centrale q50,0.6,352063,0.11813794690154887,0.11933943640768839
-15 nouveaux sites ontariens (test externe),carte centrale q50,0.7,408038,0.10473289252471583,0.1095216621981286
-15 nouveaux sites ontariens (test externe),carte centrale q50,0.8,464886,0.09260765004753854,0.11193496900315346
-15 nouveaux sites ontariens (test externe),carte centrale q50,0.9,1317216,0.08210954012098244,0.045038930593008286
+jeu,selon,calibration,tranche,cases,sous_q10,sur_q90
+Validation croisée (calibration croisée),label,globale,0.0,2215319,0.14348272190145075,0.0029092875563293593
+Validation croisée (calibration croisée),label,globale,0.1,284168,0.2994038737648152,0.04306255454519862
+Validation croisée (calibration croisée),label,globale,0.2,287121,0.29414776348647437,0.05309956429519262
+Validation croisée (calibration croisée),label,globale,0.3,349322,0.3075042510921156,0.05064381859716823
+Validation croisée (calibration croisée),label,globale,0.4,454579,0.2791329999846011,0.04766608224313046
+Validation croisée (calibration croisée),label,globale,0.5,584647,0.21469194231732994,0.04679746924212388
+Validation croisée (calibration croisée),label,globale,0.6,719795,0.15810473815461346,0.05300120173104842
+Validation croisée (calibration croisée),label,globale,0.7,872780,0.12129058869359977,0.07911730332959051
+Validation croisée (calibration croisée),label,globale,0.8,1168881,0.0835961915712549,0.12428895670303479
+Validation croisée (calibration croisée),label,globale,0.9,5010347,0.007800657319742525,0.1676426802375165
+Validation croisée (calibration croisée),label,par tranche,0.0,2215319,0.1604698916950561,0.003182837325008272
+Validation croisée (calibration croisée),label,par tranche,0.1,284168,0.1973234143182906,0.04425199177951071
+Validation croisée (calibration croisée),label,par tranche,0.2,287121,0.2104130314397066,0.05390758600032739
+Validation croisée (calibration croisée),label,par tranche,0.3,349322,0.2395841086447461,0.05036613783271595
+Validation croisée (calibration croisée),label,par tranche,0.4,454579,0.22842674210643255,0.04566203014217551
+Validation croisée (calibration croisée),label,par tranche,0.5,584647,0.1798281698187111,0.04141986532044122
+Validation croisée (calibration croisée),label,par tranche,0.6,719795,0.14096791447564933,0.041295090963399304
+Validation croisée (calibration croisée),label,par tranche,0.7,872780,0.13532963633447145,0.04832947592749605
+Validation croisée (calibration croisée),label,par tranche,0.8,1168881,0.11104038820033861,0.07071806283103242
+Validation croisée (calibration croisée),label,par tranche,0.9,5010347,0.018757383470645844,0.16687806253738513
+Validation croisée (calibration croisée),carte centrale q50,globale,0.0,1851718,0.004231205831557505,0.031058724924637553
+Validation croisée (calibration croisée),carte centrale q50,globale,0.1,319915,0.16617226450775988,0.10167075629464076
+Validation croisée (calibration croisée),carte centrale q50,globale,0.2,310392,0.26586058919044303,0.10690675017397355
+Validation croisée (calibration croisée),carte centrale q50,globale,0.3,335348,0.2558357288548016,0.11345527630998246
+Validation croisée (calibration croisée),carte centrale q50,globale,0.4,413340,0.20979097111336914,0.12531572071418204
+Validation croisée (calibration croisée),carte centrale q50,globale,0.5,599339,0.1547705055069001,0.15023384094811118
+Validation croisée (calibration croisée),carte centrale q50,globale,0.6,884300,0.12988804704285875,0.17604772136152888
+Validation croisée (calibration croisée),carte centrale q50,globale,0.7,1102336,0.126601145204366,0.1906260885973061
+Validation croisée (calibration croisée),carte centrale q50,globale,0.8,1429700,0.12452192767713506,0.1817968804644331
+Validation croisée (calibration croisée),carte centrale q50,globale,0.9,4700571,0.07710786625709941,0.05621465987855518
+Validation croisée (calibration croisée),carte centrale q50,par tranche,0.0,1851718,0.09873749674626482,0.031718112585177656
+Validation croisée (calibration croisée),carte centrale q50,par tranche,0.1,319915,0.0985886876201491,0.10134254411328009
+Validation croisée (calibration croisée),carte centrale q50,par tranche,0.2,310392,0.09705147039872161,0.10275393695713807
+Validation croisée (calibration croisée),carte centrale q50,par tranche,0.3,335348,0.09642818803153738,0.102424943640636
+Validation croisée (calibration croisée),carte centrale q50,par tranche,0.4,413340,0.10277737455847487,0.10219915807809551
+Validation croisée (calibration croisée),carte centrale q50,par tranche,0.5,599339,0.1000151833937054,0.10440168252024314
+Validation croisée (calibration croisée),carte centrale q50,par tranche,0.6,884300,0.10206717177428475,0.1063044215763881
+Validation croisée (calibration croisée),carte centrale q50,par tranche,0.7,1102336,0.10606294269623781,0.10213492075011611
+Validation croisée (calibration croisée),carte centrale q50,par tranche,0.8,1429700,0.10871931174372246,0.10079737007763867
+Validation croisée (calibration croisée),carte centrale q50,par tranche,0.9,4700571,0.09916433556689176,0.1011453714878469
+15 nouveaux sites ontariens (test externe),label,globale,0.0,485966,0.0851314701028467,0.002259417325491907
+15 nouveaux sites ontariens (test externe),label,globale,0.1,81087,0.22664545488179363,0.035764055890586656
+15 nouveaux sites ontariens (test externe),label,globale,0.2,97331,0.25926991400478777,0.059950067296133815
+15 nouveaux sites ontariens (test externe),label,globale,0.3,129283,0.2722167647718571,0.06854729546808165
+15 nouveaux sites ontariens (test externe),label,globale,0.4,176466,0.23197669806081625,0.06918613217276982
+15 nouveaux sites ontariens (test externe),label,globale,0.5,236640,0.15520622041920215,0.06913032454361055
+15 nouveaux sites ontariens (test externe),label,globale,0.6,303566,0.11554653683218806,0.06949065442111435
+15 nouveaux sites ontariens (test externe),label,globale,0.7,370623,0.1045105133788243,0.07964157648068253
+15 nouveaux sites ontariens (test externe),label,globale,0.8,469827,0.06682246869592424,0.09610984468751264
+15 nouveaux sites ontariens (test externe),label,globale,0.9,1312715,0.0047695044240372055,0.13826230369882267
+15 nouveaux sites ontariens (test externe),label,par tranche,0.0,485966,0.10126222822172745,0.0024919438808476313
+15 nouveaux sites ontariens (test externe),label,par tranche,0.1,81087,0.12539617941223624,0.03746593165365595
+15 nouveaux sites ontariens (test externe),label,par tranche,0.2,97331,0.18099064018657982,0.059087032908323144
+15 nouveaux sites ontariens (test externe),label,par tranche,0.3,129283,0.19880417378928397,0.06447096679377799
+15 nouveaux sites ontariens (test externe),label,par tranche,0.4,176466,0.17082044133147462,0.062006278829916245
+15 nouveaux sites ontariens (test externe),label,par tranche,0.5,236640,0.11184922244759973,0.05807555780933063
+15 nouveaux sites ontariens (test externe),label,par tranche,0.6,303566,0.09291224972493625,0.052551998576915726
+15 nouveaux sites ontariens (test externe),label,par tranche,0.7,370623,0.12054027947536985,0.04951122839111442
+15 nouveaux sites ontariens (test externe),label,par tranche,0.8,469827,0.09968775740857805,0.0492926119614241
+15 nouveaux sites ontariens (test externe),label,par tranche,0.9,1312715,0.014317654631812693,0.1364683118574862
+15 nouveaux sites ontariens (test externe),carte centrale q50,globale,0.0,435930,0.0004610832014314225,0.027580116073681556
+15 nouveaux sites ontariens (test externe),carte centrale q50,globale,0.1,90973,0.09011464940147076,0.1576841480439251
+15 nouveaux sites ontariens (test externe),carte centrale q50,globale,0.2,96809,0.12241630426923117,0.18035513227075994
+15 nouveaux sites ontariens (test externe),carte centrale q50,globale,0.3,116708,0.10745621551221853,0.1872193851321246
+15 nouveaux sites ontariens (test externe),carte centrale q50,globale,0.4,151610,0.10069916232438493,0.176373590132577
+15 nouveaux sites ontariens (test externe),carte centrale q50,globale,0.5,229271,0.11215548412141091,0.14848803381151562
+15 nouveaux sites ontariens (test externe),carte centrale q50,globale,0.6,352063,0.11813794690154887,0.11933943640768839
+15 nouveaux sites ontariens (test externe),carte centrale q50,globale,0.7,408038,0.10473289252471583,0.1095216621981286
+15 nouveaux sites ontariens (test externe),carte centrale q50,globale,0.8,464886,0.09260765004753854,0.11193496900315346
+15 nouveaux sites ontariens (test externe),carte centrale q50,globale,0.9,1317216,0.08210954012098244,0.045038930593008286
+15 nouveaux sites ontariens (test externe),carte centrale q50,par tranche,0.0,435930,0.07049985089349207,0.028316472828206363
+15 nouveaux sites ontariens (test externe),carte centrale q50,par tranche,0.1,90973,0.04008881756125444,0.1545183735833709
+15 nouveaux sites ontariens (test externe),carte centrale q50,par tranche,0.2,96809,0.035606193639021164,0.16731915421086882
+15 nouveaux sites ontariens (test externe),carte centrale q50,par tranche,0.3,116708,0.024822634266716933,0.16405045069746718
+15 nouveaux sites ontariens (test externe),carte centrale q50,par tranche,0.4,151610,0.026607743552536114,0.1392916034562364
+15 nouveaux sites ontariens (test externe),carte centrale q50,par tranche,0.5,229271,0.06128119125401817,0.09370134033523647
+15 nouveaux sites ontariens (test externe),carte centrale q50,par tranche,0.6,352063,0.08738492826567973,0.05536509090702516
+15 nouveaux sites ontariens (test externe),carte centrale q50,par tranche,0.7,408038,0.07930388836333871,0.04529970247869071
+15 nouveaux sites ontariens (test externe),carte centrale q50,par tranche,0.8,464886,0.06957189504523689,0.05984693021514952
+15 nouveaux sites ontariens (test externe),carte centrale q50,par tranche,0.9,1317216,0.10897529334596603,0.08311620873114205

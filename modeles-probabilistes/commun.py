@@ -79,3 +79,69 @@ def lire_prediction(path):
 
 def nom_pli(pli):
     return "final" if pli == "tous" else f"pli{pli}"
+
+
+# ---------- ensemble de graines et calibration (04_evaluer.py, 05_cartes.py) ----------
+NIVEAUX = np.linspace(0.05, 0.95, 19)
+ALPHA = 0.1              # intervalle 10-90 % : 10 % de manques visés de chaque côté
+TRANCHES = 10            # calibration par tranche de 0,1 de la carte centrale
+MIN_CASES = 1000         # tranche plus petite : constantes globales
+
+
+def niveaux(q):
+    """(3, ...) q10, q50, q90 -> (19, ...) quantiles 5 % à 95 %, interpolés et prolongés linéairement."""
+    q10, q50, q90 = q
+    out = [q10 + (u - 0.1) / 0.4 * (q50 - q10) if u <= 0.5 else q50 + (u - 0.5) / 0.4 * (q90 - q50) for u in NIVEAUX]
+    return np.clip(np.stack(out), 0, 1)
+
+
+def melange(preds):
+    """Liste de (3, ...) par graine -> (3, ...) quantiles 10, 50, 90 % du mélange des graines.
+
+    Les 19 niveaux sont k/20 (k = 1..19) : la position k/(n+1) de la méthode « weibull » leur correspond, si bien
+    qu'une graine seule, ou cinq graines identiques, redonnent exactement leurs q10, q50, q90. La méthode linéaire
+    par défaut resserrait l'intervalle d'environ 5 % de chaque demi-largeur.
+    """
+    return np.quantile(np.concatenate([niveaux(p) for p in preds]), QUANTILES, axis=0,
+                       method="weibull").astype(np.float32)
+
+
+def tranche(q50, n):
+    """Indice de tranche (0..n-1) de la carte centrale."""
+    return np.minimum(np.nan_to_num(q50 * n).astype(int), n - 1)
+
+
+def constantes(y, q10, q50, q90, n=TRANCHES):
+    """Corrections conformes des deux bornes : tableau (n, 2) de (c_bas, c_haut), une ligne par tranche de q50.
+
+    c_bas est le quantile à 90 % de (q10 − label), c_haut celui de (label − q90), au niveau corrigé pour
+    l'effectif de la tranche. Une constante négative resserre la borne. n = 1 donne une constante unique pour
+    toute la carte. Une tranche de moins de MIN_CASES cases reprend les constantes globales.
+    """
+    def une(m):
+        k = int(m.sum())
+        niveau = min(1.0, np.ceil((k + 1) * (1 - ALPHA)) / k)
+        return float(np.quantile(q10[m] - y[m], niveau)), float(np.quantile(y[m] - q90[m], niveau))
+    globale = une(np.ones(len(y), bool))
+    t = tranche(q50, n)
+    return np.array([une(t == i) if (t == i).sum() >= MIN_CASES else globale for i in range(n)])
+
+
+def calibrer(q10, q50, q90, consts):
+    """Bornes calibrées q10 − c_bas et q90 + c_haut (constantes de la tranche de q50), dans [0, 1] et autour de q50."""
+    c = np.asarray(consts)[tranche(q50, len(consts))]
+    return (np.minimum(np.clip(q10 - c[..., 0], 0, 1), q50),
+            np.maximum(np.clip(q90 + c[..., 1], 0, 1), q50))
+
+
+def ecrire(chemin, p, prof, descriptions=None):
+    """Tableau (bandes, lignes, colonnes) en fraction de couvert -> GeoTIFF uint16 (× ECHELLE, NODATA hors données)."""
+    chemin.parent.mkdir(parents=True, exist_ok=True)
+    a = np.where(np.isfinite(p), np.round(np.clip(p, 0, 1) * ECHELLE), NODATA).astype(np.uint16)
+    profil = dict(prof, count=a.shape[0], dtype="uint16", nodata=NODATA, compress="deflate", predictor=2)
+    partiel = chemin.with_name(chemin.name + ".part")
+    with rasterio.open(partiel, "w", **profil) as d:
+        d.write(a)
+        for i, texte in enumerate(descriptions or [], start=1):
+            d.set_band_description(i, texte)
+    partiel.rename(chemin)
