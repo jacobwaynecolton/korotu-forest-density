@@ -1,0 +1,21 @@
+{
+ "sites_exclus": [],
+ "controle_ok": true,
+ "ontario": {
+  "mae": 0.0886,
+  "biais": 0.0118,
+  "r2": 0.8399
+ },
+ "groupe_A": {
+  "n_sites": 3,
+  "mae": 0.0771,
+  "biais": 0.0103,
+  "r2": 0.7424
+ },
+ "groupe_B": {
+  "n_sites": 4,
+  "mae": 0.1351,
+  "biais": 0.0486,
+  "r2": 0.6621
+ }
+}

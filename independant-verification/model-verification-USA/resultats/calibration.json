@@ -1,0 +1,15 @@
+{
+ "n_tuiles": 15,
+ "n_un_jour": 11,
+ "ecart_abs_methode_un_jour": 0.006823329155616015,
+ "ecart_methode_un_jour": -0.002428591066357391,
+ "ecart_abs_methode_toutes": 0.015583502099792462,
+ "ecart_abs_tous_points_toutes": 0.011728750472284498,
+ "effet_densite_30": -0.015613584955093702,
+ "effet_densite_30_min_max": [
+  -0.03489899091392186,
+  0.0
+ ],
+ "seuil": 0.02,
+ "ok": true
+}
