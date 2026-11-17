@@ -1,0 +1,47 @@
+{
+ "n_sites": 15,
+ "sites_exclus": [],
+ "n_cases": 3663504,
+ "controle_ok": true,
+ "criteres": [
+  {
+   "nom": "MAE ≤ 1.25 × celle des sites de test",
+   "valeur": {
+    "nouveaux": 0.0886,
+    "test": 0.1077
+   },
+   "ok": true
+  },
+  {
+   "nom": "biais entre -0.05 et +0.05",
+   "valeur": 0.0118,
+   "ok": true
+  },
+  {
+   "nom": "par tranche de couvert : MAE ≤ celle des sites de test + 0.05",
+   "valeur": [],
+   "ok": true
+  },
+  {
+   "nom": "aucun site avec une MAE > 0.25",
+   "valeur": [],
+   "ok": true
+  },
+  {
+   "nom": "écart de MAE entre les 3 modèles ≤ 0.01",
+   "valeur": {
+    "unet_r34": 0.0938,
+    "unet_r34_s1": 0.0884,
+    "unet_r34_s2": 0.0917
+   },
+   "ok": true
+  },
+  {
+   "nom": "ensemble au moins aussi bon que le meilleur modèle (à 0.002 près)",
+   "valeur": 0.0886,
+   "ok": true
+  }
+ ],
+ "reussis": 6,
+ "total": 6
+}

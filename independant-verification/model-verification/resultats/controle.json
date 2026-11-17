@@ -1,0 +1,10 @@
+{
+ "predictions_identiques": true,
+ "ecart_max": 0.0028963088989257812,
+ "ecart_moyen_max": 0.00017033118638209999,
+ "mae_notre_code": 0.10771205276250839,
+ "n_notre_code": 726191,
+ "mae_projet": 0.10771233588457108,
+ "mae_identique": true,
+ "ok": true
+}
