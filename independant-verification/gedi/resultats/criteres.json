@@ -1,0 +1,70 @@
+{
+ "n_tirs": 30258,
+ "n_sites": 48,
+ "criteres": [
+  {
+   "nom": "hauteurs : corrélation ≥ 0,85",
+   "valeur": 0.848,
+   "ok": false
+  },
+  {
+   "nom": "hauteurs : biais médian entre -2 et +2 m",
+   "valeur": -1.75,
+   "ok": true
+  },
+  {
+   "nom": "couvert : Spearman ≥ 0,70",
+   "valeur": 0.716,
+   "ok": true
+  },
+  {
+   "nom": "couvert : relation croissante d'une tranche à l'autre",
+   "valeur": [
+    0.039,
+    0.07,
+    0.09,
+    0.126,
+    0.16,
+    0.212,
+    0.279,
+    0.367,
+    0.498,
+    0.734
+   ],
+   "ok": true
+  },
+  {
+   "nom": "sites : aucun site aberrant",
+   "valeur": [
+    "Z15_E0630_N5565_2024",
+    "Z16_E0405_N5390_2022",
+    "Z16_E0420_N5540_2022",
+    "Z16_E0670_N5210_2023",
+    "Z17_E0650_N4940_2023",
+    "Z17_E0665_N5045_2019"
+   ],
+   "ok": false
+  },
+  {
+   "nom": "groupes : écart de biais du couvert ≤ 0,05",
+   "valeur": 0.223,
+   "ok": false
+  },
+  {
+   "nom": "position : corrélation maximale à ±10 m près",
+   "valeur": {
+    "couvert": [
+     0,
+     0
+    ],
+    "hauteur": [
+     0,
+     0
+    ]
+   },
+   "ok": true
+  }
+ ],
+ "reussis": 4,
+ "total": 7
+}
