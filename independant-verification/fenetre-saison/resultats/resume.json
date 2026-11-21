@@ -1,0 +1,58 @@
+{
+ "ontario (nouveaux sites + sites retenus du projet)": {
+  "scenes_hors_coeur": 12,
+  "dont_debut": 7,
+  "dont_fin": 5,
+  "ecart_mae_moyen": 0.04559351296888458,
+  "ecart_mae_median": 0.02762421096364657,
+  "scenes_plus_mauvaises": 11,
+  "ecart_biais_moyen": -0.05291813277330625,
+  "ecart_biais_foret_moyen": -0.0860915125910348,
+  "ecart_mae_intermediaire_moyen": 0.039533150071899094,
+  "sites": 11,
+  "gain_moyen_si_coeur_seul": 0.005614789372140711,
+  "sites_ameliores": 8
+ },
+ "neon": {
+  "scenes_hors_coeur": 2,
+  "dont_debut": 0,
+  "dont_fin": 2,
+  "ecart_mae_moyen": 0.03925586212426424,
+  "ecart_mae_median": 0.03925586212426424,
+  "scenes_plus_mauvaises": 2,
+  "ecart_biais_moyen": -0.013122434262186289,
+  "ecart_biais_foret_moyen": -0.026172952842898667,
+  "ecart_mae_intermediaire_moyen": 0.03972829878330231,
+  "sites": 2,
+  "gain_moyen_si_coeur_seul": 0.01601731777191162,
+  "sites_ameliores": 2
+ },
+ "ontario_nouveaux": {
+  "scenes_hors_coeur": 9,
+  "dont_debut": 5,
+  "dont_fin": 4,
+  "ecart_mae_moyen": 0.02344192950813859,
+  "ecart_mae_median": 0.01599508772293727,
+  "scenes_plus_mauvaises": 8,
+  "ecart_biais_moyen": -0.013635149592624253,
+  "ecart_biais_foret_moyen": -0.027668287684382113,
+  "ecart_mae_intermediaire_moyen": 0.022340630215627173,
+  "sites": 8,
+  "gain_moyen_si_coeur_seul": 0.0028575407341122627,
+  "sites_ameliores": 5
+ },
+ "projet_retenus": {
+  "scenes_hors_coeur": 3,
+  "dont_debut": 2,
+  "dont_fin": 1,
+  "ecart_mae_moyen": 0.11204826335112254,
+  "ecart_mae_median": 0.06558554619550705,
+  "scenes_plus_mauvaises": 3,
+  "ecart_biais_moyen": -0.17076708231535223,
+  "ecart_biais_foret_moyen": -0.26136118731099284,
+  "ecart_mae_intermediaire_moyen": 0.09111070964071487,
+  "sites": 3,
+  "gain_moyen_si_coeur_seul": 0.01296745240688324,
+  "sites_ameliores": 3
+ }
+}
