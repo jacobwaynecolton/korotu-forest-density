@@ -1,5 +1,12 @@
 # Korotu forest density: LiDAR ground truth and a Sentinel-2 canopy-cover model
 
+> **Final pipeline (November 2026): [`pipeline/`](pipeline/README.md).** About 250 lidar sites drawn from a bank
+> of 14,015 blocks, with more partial cover, a spatial test set, and a U-Net with conservative, central and
+> optimistic maps. The studies behind its choices are in `modeles-probabilistes/` and `independant-verification/`.
+> The rest of this page describes the first version (49 sites); its code stays in `scripts/`, `verify/` and
+> `report/`, and the studies still use it. Its reported area should read 1,195 km²: 1,219 km² included
+> Z16_E0275_N5330_2021, which was dropped for lack of a cloud-free image.
+
 CSC2701 Korotu project. Canopy-cover training labels: for every 10 m Sentinel-2 pixel in
 49 Ontario sites (1,219 km²), the fraction covered by tree canopy, measured from leaf-on
 airborne lidar. Plus a U-Net that predicts that cover from Sentinel-2 alone, benchmarked

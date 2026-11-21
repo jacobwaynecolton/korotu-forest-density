@@ -1,0 +1,94 @@
+# Final pipeline configuration. Every number that shapes the dataset, the split or the model lives here.
+# Paths can be overridden with environment variables: PIPELINE_DATA, PIPELINE_CONFIG (another file).
+
+[paths]
+# Large outputs: labels, Sentinel-2 stacks, predictions, models. Not in git.
+data = "/w/20261/tsalin/MLOps/pipeline_final"
+# Small frozen inputs and results (site list, scene list, splits, metrics). In git.
+manifests = "pipeline/manifests"
+results = "pipeline/results"
+# FRI leaf-on tile index (334 MB). Downloaded from tile_index_url if missing.
+tile_index = "/w/20261/tsalin/MLOps/independant_verification/modele/FRI_Leaf_On_Tile_Index.gpkg"
+tile_index_url = "https://download.fri.mnrf.gov.on.ca/api/api/Download/tile-index/FRI_Leaf_On_Tile_Index_GeoPackage/FRI_Leaf_On_Tile_Index_GeoPackage.gpkg"
+# NTEMS 2022 canopy cover (30 m, Canada), used only to estimate how much partial cover a block has.
+ntems = "/h/460/tsalin/projects/MLOps/korotu-forest-density/data/raw/ntems/CA_canopy_cover_2022.tif"
+ntems_url = "https://opendata.nfis.org/downloads/forest_change/CA_canopy_cover_2022.zip"
+# Folders searched for CHM tiles (<site>/<tile>_CHM.tif) before downloading. Never written to or deleted.
+chm_cache = [
+  "/h/460/tsalin/projects/MLOps/korotu-forest-density/data/raw/fri_chm",
+  "/w/20261/tsalin/MLOps/independant_verification/modele/chm",
+]
+# Sites that must be in the bank: the project's 49 sites and the 15 sites of the Ontario verification study.
+existing_sites = [
+  "data/manifest/sites.csv",
+  "independant-verification/model-verification/sites.csv",
+]
+
+[sites]
+target = 250                  # number of sites in the final dataset
+min_spacing_km = 15           # minimum distance between block centres
+seed = 2701
+block_km = 5                  # 5 x 5 tiles of 1 km
+min_year = 2019
+leaf_on = ["06-01", "09-15"]  # every lidar flight of a site must fall in this window (inclusive)
+max_flight_span_days = 60
+# Partial-cover strata: terciles over all eligible blocks of the NTEMS share of 30 m pixels with cover in
+# [partial_low, partial_high). Target shares of the final dataset, from most to least partial cover.
+partial_low = 0.10
+partial_high = 0.70
+strata = ["high", "medium", "low"]
+strata_shares = [0.5, 0.3, 0.2]
+
+[labels]
+fine_m = 0.5                  # CHM pixel
+cell_m = 10                   # label cell = Sentinel-2 pixel
+snap_m = 60                   # grid origin on multiples of 60 m: S2 10/20/60 m pixels line up
+height_range = [-2.0, 80.0]   # heights outside are treated as missing (spikes, pits, -9999, -32767)
+extra_nodata = [-9999.0, -32767.0, 1.1754943508222875e-38]   # FLT_MIN, even when not declared
+canopy_m = 2.0                # main label: share of the cell above 2 m
+canopy_alt_m = 5.0            # second band: share above 5 m
+keep_chm = false              # delete downloaded CHM tiles once the label is written
+min_valid_share = 0.5         # a site is usable if at least half of its grid has a label
+
+[sentinel2]
+stac = "https://earth-search.aws.element84.com/v1"
+collection = "sentinel-2-l2a"
+window = ["06-01", "09-15"]   # same as the lidar flights
+days_around_flight = 45
+max_scenes = 4
+min_days_apart = 5
+max_bad_fraction = 0.01       # scene rejected if >= 1% of the site is bad by SCL
+bad_scl = [0, 1, 3, 8, 9, 10, 11]   # no data, saturated, cloud shadow, cloud medium/high, cirrus, snow
+scale = 0.0001                # reflectance = DN x scale. In this collection the -0.1 BOA offset is always
+                              # already removed (audit of 254 scenes); a scene that still has it stops the run.
+offset_alarm_dn = 1000        # 1st percentile of blue DN at or above this means the offset is still in
+
+[split]
+seed = 2701
+cell_km = 100                 # spatial groups: sites in the same 100 km grid cell stay together
+buffer_km = 25                # a model never trains on a site within this distance of a site it is scored on
+test_share = 0.15             # share of sites in the held-out test set
+folds = 5
+draws = 5000                  # random draws tried; the most balanced one is kept
+
+[train]
+encoder = "resnet34"
+weights = "imagenet"
+quantiles = [0.1, 0.5, 0.9]
+seeds = [0, 1, 2, 3, 4]
+batch = 32
+crop = 128
+lr = 0.001
+weight_decay = 0.0001
+# Step count: chosen on fold 0, seed 0, among these candidates (step 6). Rule fixed in advance: the smallest
+# count whose out-of-fold quantile score is within 1% of the best candidate.
+steps_candidates = [8000, 16000, 32000]
+steps_tolerance = 0.01
+steps_default = 16000         # used only if the choice has not been made
+tile = 256
+overlap = 64
+
+[calibration]
+bands = 10                    # per-band conformal constants, bands of 0.1 of the central map
+alpha = 0.1                   # 10-90% interval
+min_cells = 1000              # a band with fewer cells uses the global constants
