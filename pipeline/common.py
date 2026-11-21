@@ -127,4 +127,9 @@ def task_sites(all_sites, task, n_tasks):
 
 def array_task():
     """(task index, number of tasks) from Slurm, or (0, 1) outside an array."""
-    return int(os.environ.get("SLURM_ARRAY_TASK_ID", 0)), int(os.environ.get("SLURM_ARRAY_TASK_COUNT", 1))
+    e = os.environ
+    if "SLURM_ARRAY_TASK_ID" not in e:
+        return 0, 1
+    task = int(e["SLURM_ARRAY_TASK_ID"]) - int(e.get("SLURM_ARRAY_TASK_MIN", 0))
+    count = int(e.get("SLURM_ARRAY_TASK_COUNT") or int(e["SLURM_ARRAY_TASK_MAX"]) - int(e.get("SLURM_ARRAY_TASK_MIN", 0)) + 1)
+    return task, count
