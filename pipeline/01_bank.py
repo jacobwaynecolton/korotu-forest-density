@@ -24,14 +24,14 @@ from rasterio.warp import transform_bounds
 from rasterio.windows import from_bounds
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import CFG, CSRS_UTM_EPSG, MANIFESTS, REPO, site_id  # noqa: E402
+from common import CFG, CSRS_UTM_EPSG, MANIFESTS, REPO, makedirs, site_id  # noqa: E402
 from lidar import eligible_blocks, read_tile_index  # noqa: E402
 
 P, S = CFG["paths"], CFG["sites"]
 
 
 def download(url, path):
-    path.parent.mkdir(parents=True, exist_ok=True)
+    makedirs(path.parent)
     tmp = path.with_name(path.name + ".part")
     with requests.get(url, stream=True, timeout=600) as r:
         r.raise_for_status()
@@ -89,7 +89,7 @@ def main():
     missing = existing - set(blocks.site_id)
     if missing:
         print(f"warning: {len(missing)} existing sites are not eligible blocks and will be skipped: {sorted(missing)}")
-    MANIFESTS.mkdir(parents=True, exist_ok=True)
+    makedirs(MANIFESTS)
     cols = ["site_id", "zone", "year", "be", "bn", "lon", "lat", "ntems_partial", "ntems_mean", "stratum", "existing"]
     blocks[cols].round(5).to_csv(MANIFESTS / "bank.csv", index=False)
     print(blocks.groupby("stratum").ntems_partial.agg(["size", "min", "max"]).round(3))

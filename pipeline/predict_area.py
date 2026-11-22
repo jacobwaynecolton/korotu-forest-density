@@ -56,7 +56,7 @@ def main():
         it = items[s["scene"]]
         arr = np.stack([read_window(it.assets[k].href, bounds, shape) for _, k, _ in BANDS] +
                        [read_window(it.assets["scl"].href, bounds, shape)]).astype(np.uint16)
-        check_scale_and_offset(it, arr[1])
+        check_scale_and_offset(it, arr[11])
         xs.append(arr)
     refl, bad = reflectance_and_mask(np.stack(xs))
     print(f"zone {zone}, grid {shape[1]} x {shape[0]} cells, scenes: {[s['date'] for s in scenes]}", flush=True)

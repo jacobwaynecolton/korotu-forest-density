@@ -2,6 +2,7 @@
 import json
 import math
 import os
+import time
 import tomllib
 from pathlib import Path
 
@@ -93,9 +94,24 @@ def read_band(path, band=1):
         return src.read(band).astype(np.float32)
 
 
+def makedirs(path):
+    """mkdir -p that tolerates the NFS race between array tasks: when several tasks create the same folder at once,
+    one of them can see 'exists' while the folder does not look like a directory yet."""
+    path = Path(path)
+    for i in range(6):
+        try:
+            path.mkdir(parents=True, exist_ok=True)
+            return
+        except FileExistsError:
+            time.sleep(0.5 * (i + 1))
+            if path.is_dir():
+                return
+    path.mkdir(parents=True, exist_ok=True)
+
+
 def write_cover(path, arr, profile, descriptions=None):
     """(bands, H, W) cover fractions -> uint16 GeoTIFF (x 10 000, 65535 = no data). Atomic via a .part file."""
-    path.parent.mkdir(parents=True, exist_ok=True)
+    makedirs(path.parent)
     a = np.where(np.isfinite(arr), np.round(np.clip(arr, 0, 1) * SCALE_U16), NODATA_U16).astype(np.uint16)
     prof = dict(profile, count=a.shape[0], dtype="uint16", nodata=NODATA_U16, compress="deflate", predictor=2)
     tmp = path.with_name(path.name + ".part")
@@ -114,7 +130,7 @@ def read_cover(path):
 
 
 def write_json(path, obj):
-    path.parent.mkdir(parents=True, exist_ok=True)
+    makedirs(path.parent)
     tmp = path.with_name(path.name + ".part")
     tmp.write_text(json.dumps(obj, indent=1, default=float))
     tmp.rename(path)

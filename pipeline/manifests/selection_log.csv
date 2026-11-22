@@ -1,0 +1,552 @@
+site_id,stratum,existing,outcome,detail
+Z15_E0350_N5580_2022,high,True,accepted,4 scenes
+Z15_E0415_N5390_2020,low,True,accepted,4 scenes
+Z15_E0415_N5625_2025,low,True,accepted,2 scenes
+Z15_E0445_N5490_2023,high,True,accepted,4 scenes
+Z15_E0480_N5780_2025,high,True,accepted,4 scenes
+Z15_E0520_N5405_2021,medium,True,accepted,2 scenes
+Z15_E0530_N5540_2021,high,True,accepted,2 scenes
+Z15_E0535_N5710_2025,high,True,accepted,4 scenes
+Z15_E0545_N5470_2022,low,True,accepted,4 scenes
+Z15_E0575_N5345_2020,medium,True,accepted,4 scenes
+Z15_E0630_N5565_2024,high,True,accepted,4 scenes
+Z15_E0655_N5390_2019,high,True,accepted,4 scenes
+Z15_E0675_N5335_2021,high,True,accepted,2 scenes
+Z15_E0690_N5475_2020,medium,True,accepted,2 scenes
+Z15_E0735_N5410_2019,medium,True,accepted,4 scenes
+Z16_E0350_N5465_2020,low,True,accepted,4 scenes
+Z16_E0350_N5600_2023,high,True,accepted,1 scenes
+Z16_E0365_N5700_2024,high,True,accepted,2 scenes
+Z16_E0390_N5625_2023,medium,True,accepted,3 scenes
+Z16_E0405_N5390_2022,low,True,accepted,4 scenes
+Z16_E0420_N5540_2022,low,True,accepted,4 scenes
+Z16_E0425_N5460_2021,low,True,accepted,3 scenes
+Z16_E0425_N5700_2024,high,True,accepted,3 scenes
+Z16_E0470_N5480_2021,medium,True,accepted,1 scenes
+Z16_E0490_N5420_2020,low,True,accepted,3 scenes
+Z16_E0565_N5615_2019,medium,True,accepted,3 scenes
+Z16_E0570_N5450_2021,low,True,accepted,4 scenes
+Z16_E0575_N5580_2020,high,True,accepted,4 scenes
+Z16_E0585_N5370_2021,medium,True,accepted,3 scenes
+Z16_E0610_N5555_2020,high,True,accepted,2 scenes
+Z16_E0670_N5210_2023,low,True,accepted,4 scenes
+Z16_E0685_N5385_2022,high,True,accepted,3 scenes
+Z16_E0690_N5445_2023,high,True,accepted,4 scenes
+Z17_E0310_N5125_2021,low,True,accepted,3 scenes
+Z17_E0315_N5215_2021,medium,True,accepted,2 scenes
+Z17_E0320_N5305_2021,low,True,accepted,2 scenes
+Z17_E0355_N5560_2019,high,True,accepted,3 scenes
+Z17_E0360_N5435_2021,medium,True,accepted,4 scenes
+Z17_E0360_N5495_2021,medium,True,accepted,4 scenes
+Z17_E0370_N5305_2021,low,True,accepted,3 scenes
+Z17_E0395_N5355_2021,medium,True,accepted,3 scenes
+Z17_E0395_N5415_2021,medium,True,accepted,4 scenes
+Z17_E0400_N5110_2021,low,True,accepted,4 scenes
+Z17_E0405_N5280_2021,high,True,accepted,4 scenes
+Z17_E0405_N5530_2021,high,True,accepted,2 scenes
+Z17_E0435_N5480_2021,high,True,accepted,4 scenes
+Z17_E0450_N5540_2023,high,True,accepted,2 scenes
+Z17_E0475_N5320_2023,medium,True,accepted,4 scenes
+Z17_E0485_N5560_2023,high,True,accepted,4 scenes
+Z17_E0515_N5370_2023,medium,True,accepted,4 scenes
+Z17_E0515_N5525_2023,high,True,accepted,4 scenes
+Z17_E0565_N5240_2020,medium,True,accepted,4 scenes
+Z17_E0565_N5500_2025,high,True,accepted,3 scenes
+Z17_E0580_N5310_2025,medium,True,accepted,4 scenes
+Z17_E0590_N4970_2019,low,True,accepted,4 scenes
+Z17_E0600_N5175_2020,low,True,accepted,3 scenes
+Z17_E0600_N5480_2025,high,True,accepted,4 scenes
+Z17_E0600_N5545_2025,high,True,accepted,4 scenes
+Z17_E0630_N5185_2020,low,True,accepted,4 scenes
+Z17_E0650_N4940_2023,low,True,accepted,1 scenes
+Z17_E0665_N5045_2019,medium,True,accepted,4 scenes
+Z17_E0670_N5120_2020,medium,True,accepted,3 scenes
+Z18_E0305_N5105_2022,low,True,accepted,4 scenes
+Z18_E0325_N5015_2022,low,True,accepted,4 scenes
+Z16_E0510_N5630_2021,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0425_N5645_2023,high,False,accepted,2 scenes
+Z15_E0675_N5645_2025,high,False,accepted,3 scenes
+Z17_E0515_N5435_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0420_N5475_2021,high,False,accepted,2 scenes
+Z15_E0540_N5620_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0450_N5685_2023,high,False,accepted,2 scenes
+Z15_E0420_N5530_2022,high,False,accepted,2 scenes
+Z17_E0415_N5345_2020,high,False,accepted,4 scenes
+Z15_E0435_N5605_2025,high,False,flight_dates,flights spread over 65 days
+Z15_E0615_N5610_2024,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0365_N5525_2019,high,False,accepted,4 scenes
+Z17_E0605_N5215_2020,medium,False,accepted,4 scenes
+Z15_E0690_N5610_2025,high,False,accepted,4 scenes
+Z15_E0670_N5570_2024,high,False,accepted,3 scenes
+Z15_E0720_N5395_2019,medium,False,accepted,4 scenes
+Z16_E0555_N5560_2020,high,False,accepted,4 scenes
+Z16_E0455_N5575_2022,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0405_N5480_2021,high,False,flight_dates,flights spread over 61 days
+Z16_E0475_N5510_2022,high,False,accepted,1 scenes
+Z17_E0540_N5310_2025,medium,False,accepted,2 scenes
+Z16_E0440_N5545_2022,high,False,accepted,4 scenes
+Z17_E0395_N5115_2021,medium,False,spacing,7.1 km from an accepted site
+Z15_E0435_N5730_2025,medium,False,flight_dates,flights outside the leaf-on window
+Z15_E0600_N5545_2024,medium,False,accepted,4 scenes
+Z17_E0545_N5470_2024,high,False,flight_dates,flights spread over 365 days
+Z16_E0475_N5640_2021,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0575_N5500_2025,high,False,spacing,10.0 km from an accepted site
+Z15_E0470_N5745_2025,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0580_N5415_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0525_N5410_2023,high,False,flight_dates,flights outside the leaf-on window
+Z16_E0305_N5530_2022,high,False,accepted,2 scenes
+Z17_E0510_N5360_2023,high,False,spacing,11.2 km from an accepted site
+Z16_E0300_N5580_2023,high,False,flight_dates,flights outside the leaf-on window
+Z16_E0565_N5545_2020,high,False,accepted,3 scenes
+Z17_E0550_N5285_2025,medium,False,accepted,1 scenes
+Z15_E0495_N5765_2025,high,False,accepted,4 scenes
+Z17_E0595_N5540_2025,high,False,spacing,7.1 km from an accepted site
+Z15_E0640_N5480_2021,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0560_N5390_2021,high,False,accepted,3 scenes
+Z15_E0480_N5665_2023,medium,False,accepted,3 scenes
+Z15_E0350_N5510_2022,high,False,accepted,2 scenes
+Z17_E0470_N5180_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z16_E0640_N5400_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z18_E0280_N4955_2023,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0745_N5005_2023,medium,False,flight_dates,flights outside the leaf-on window
+Z15_E0555_N5390_2021,medium,False,spacing,5.0 km from an accepted site
+Z16_E0605_N5415_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0630_N4970_2019,medium,False,accepted,1 scenes
+Z16_E0480_N5610_2021,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0600_N5420_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0390_N5535_2019,high,False,accepted,2 scenes
+Z17_E0585_N5490_2025,high,False,accepted,4 scenes
+Z17_E0605_N5145_2020,medium,False,accepted,3 scenes
+Z17_E0565_N5470_2024,high,False,flight_dates,flights spread over 365 days
+Z17_E0540_N5400_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0605_N5460_2020,high,False,accepted,4 scenes
+Z15_E0400_N5745_2025,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0630_N5585_2024,high,False,accepted,3 scenes
+Z17_E0380_N5340_2021,medium,False,accepted,4 scenes
+Z16_E0555_N5570_2020,high,False,spacing,10.0 km from an accepted site
+Z17_E0525_N5585_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0430_N5510_2023,high,False,accepted,1 scenes
+Z15_E0570_N5380_2021,medium,False,spacing,14.1 km from an accepted site
+Z17_E0580_N5445_2023,medium,False,flight_dates,flights outside the leaf-on window
+Z15_E0685_N5545_2022,medium,False,accepted,2 scenes
+Z15_E0605_N5425_2020,high,False,accepted,4 scenes
+Z17_E0430_N5505_2021,high,False,accepted,4 scenes
+Z17_E0505_N5095_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0460_N5100_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0390_N5495_2021,medium,False,accepted,4 scenes
+Z15_E0485_N5590_2025,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0485_N5325_2023,high,False,spacing,11.2 km from an accepted site
+Z15_E0560_N5480_2022,high,False,accepted,3 scenes
+Z16_E0660_N5520_2020,high,False,accepted,3 scenes
+Z17_E0580_N5440_2023,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0355_N5265_2021,medium,False,flight_dates,flights spread over 73 days
+Z15_E0630_N5490_2022,medium,False,accepted,4 scenes
+Z15_E0370_N5480_2022,low,False,accepted,3 scenes
+Z17_E0595_N5530_2025,high,False,accepted,2 scenes
+Z15_E0540_N5470_2022,medium,False,spacing,5.0 km from an accepted site
+Z15_E0695_N5400_2019,medium,False,accepted,3 scenes
+Z15_E0690_N5520_2022,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0495_N5740_2025,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0635_N5585_2024,high,False,spacing,5.0 km from an accepted site
+Z15_E0700_N5475_2020,high,False,spacing,10.0 km from an accepted site
+Z17_E0360_N5405_2021,high,False,accepted,3 scenes
+Z17_E0335_N5155_2022,low,False,accepted,3 scenes
+Z17_E0460_N5165_2021,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0415_N5680_2025,high,False,accepted,1 scenes
+Z16_E0425_N5480_2021,medium,False,accepted,1 scenes
+Z17_E0595_N5500_2025,high,False,spacing,14.1 km from an accepted site
+Z17_E0480_N5315_2023,high,False,spacing,7.1 km from an accepted site
+Z17_E0460_N5500_2022,high,False,accepted,4 scenes
+Z15_E0565_N5665_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0615_N5600_2024,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0415_N5340_2020,high,False,spacing,5.0 km from an accepted site
+Z16_E0405_N5675_2024,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0450_N5570_2025,high,False,flight_dates,flights outside the leaf-on window
+Z16_E0635_N5480_2021,high,False,flight_dates,flights outside the leaf-on window
+Z16_E0385_N5660_2023,high,False,flight_dates,flights outside the leaf-on window
+Z16_E0610_N5500_2020,high,False,accepted,3 scenes
+Z16_E0325_N5415_2020,medium,False,accepted,4 scenes
+Z17_E0615_N5160_2020,low,False,accepted,4 scenes
+Z15_E0415_N5575_2025,high,False,flight_dates,flights spread over 66 days
+Z16_E0710_N5505_2020,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0415_N5620_2025,high,False,spacing,5.0 km from an accepted site
+Z15_E0395_N5755_2025,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0700_N5505_2022,high,False,accepted,4 scenes
+Z15_E0665_N5445_2019,medium,False,accepted,2 scenes
+Z15_E0665_N5625_2025,high,False,accepted,4 scenes
+Z16_E0730_N5165_2022,low,False,flight_dates,flights outside the leaf-on window
+Z15_E0465_N5460_2022,low,False,accepted,4 scenes
+Z15_E0425_N5755_2025,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0555_N5490_2025,high,False,spacing,14.1 km from an accepted site
+Z16_E0390_N5695_2024,high,False,accepted,4 scenes
+Z17_E0355_N5165_2022,medium,False,flight_dates,flights spread over 306 days
+Z15_E0440_N5405_2020,medium,False,accepted,4 scenes
+Z17_E0590_N5160_2020,high,False,accepted,4 scenes
+Z17_E0470_N5555_2023,high,False,accepted,4 scenes
+Z17_E0390_N5425_2021,medium,False,spacing,11.2 km from an accepted site
+Z17_E0750_N4995_2023,medium,False,flight_dates,flights outside the leaf-on window
+Z16_E0675_N5510_2020,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0460_N5250_2024,medium,False,accepted,2 scenes
+Z17_E0340_N5195_2022,low,False,flight_dates,flights spread over 301 days
+Z17_E0325_N5240_2021,low,False,flight_dates,flights outside the leaf-on window
+Z17_E0530_N5240_2020,low,False,accepted,4 scenes
+Z17_E0410_N5405_2021,high,False,accepted,4 scenes
+Z15_E0420_N5685_2025,medium,False,spacing,7.1 km from an accepted site
+Z15_E0370_N5485_2022,medium,False,spacing,5.0 km from an accepted site
+Z17_E0340_N5380_2021,medium,False,accepted,3 scenes
+Z15_E0425_N5545_2025,high,False,accepted,4 scenes
+Z16_E0495_N5440_2020,low,False,flight_dates,flights outside the leaf-on window
+Z16_E0635_N5330_2024,low,False,flight_dates,flights spread over 354 days
+Z16_E0735_N5135_2023,low,False,accepted,4 scenes
+Z17_E0605_N5320_2024,high,False,accepted,3 scenes
+Z15_E0660_N5445_2019,medium,False,spacing,5.0 km from an accepted site
+Z17_E0340_N5270_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z15_E0465_N5395_2020,medium,False,accepted,4 scenes
+Z17_E0530_N5265_2025,high,False,flight_dates,flights outside the leaf-on window
+Z16_E0550_N5595_2019,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0680_N5515_2022,high,False,accepted,3 scenes
+Z15_E0575_N5655_2024,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0515_N5400_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0485_N5740_2025,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0585_N5425_2020,high,False,accepted,4 scenes
+Z16_E0585_N5520_2020,medium,False,accepted,2 scenes
+Z15_E0495_N5400_2021,low,False,flight_dates,flights outside the leaf-on window
+Z17_E0745_N5070_2019,low,False,accepted,4 scenes
+Z15_E0715_N5390_2019,high,False,spacing,7.1 km from an accepted site
+Z17_E0505_N5400_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0435_N5715_2025,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0615_N5615_2024,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0545_N5535_2025,high,False,accepted,3 scenes
+Z17_E0350_N5295_2021,medium,False,accepted,3 scenes
+Z15_E0490_N5705_2025,high,False,accepted,4 scenes
+Z16_E0375_N5470_2020,low,False,accepted,4 scenes
+Z16_E0280_N5475_2021,high,False,no_scene,no Sentinel-2 scene passes the rules
+Z15_E0525_N5620_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0495_N5515_2023,high,False,accepted,4 scenes
+Z18_E0390_N5015_2024,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0350_N5270_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0635_N5155_2020,medium,False,accepted,2 scenes
+Z17_E0535_N5430_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0500_N5255_2024,high,False,accepted,4 scenes
+Z17_E0310_N5530_2019,high,False,flight_dates,flights spread over 365 days
+Z17_E0570_N5335_2024,high,False,no_scene,no Sentinel-2 scene passes the rules
+Z16_E0465_N5575_2022,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0485_N5690_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0465_N5550_2023,high,False,spacing,7.1 km from an accepted site
+Z17_E0550_N5455_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0485_N5440_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0700_N5510_2022,high,False,spacing,5.0 km from an accepted site
+Z15_E0415_N5540_2025,high,False,spacing,11.2 km from an accepted site
+Z17_E0280_N5480_2019,high,False,no_scene,no Sentinel-2 scene passes the rules
+Z16_E0615_N5545_2020,high,False,spacing,11.2 km from an accepted site
+Z17_E0340_N5555_2019,high,False,accepted,4 scenes
+Z15_E0520_N5660_2023,medium,False,flight_dates,flights outside the leaf-on window
+Z15_E0590_N5395_2020,medium,False,flight_dates,flights outside the leaf-on window
+Z15_E0540_N5395_2021,medium,False,accepted,2 scenes
+Z17_E0560_N5240_2020,low,False,spacing,5.0 km from an accepted site
+Z17_E0635_N4980_2019,low,False,spacing,11.2 km from an accepted site
+Z17_E0540_N5060_2019,low,False,accepted,4 scenes
+Z15_E0495_N5715_2025,high,False,spacing,11.2 km from an accepted site
+Z17_E0500_N5565_2023,high,False,accepted,4 scenes
+Z17_E0550_N5250_2020,medium,False,accepted,3 scenes
+Z16_E0605_N5410_2021,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0475_N5680_2023,high,False,accepted,1 scenes
+Z16_E0735_N5215_2023,low,False,flight_dates,flights outside the leaf-on window
+Z17_E0540_N5065_2019,low,False,spacing,5.0 km from an accepted site
+Z15_E0465_N5410_2020,low,False,accepted,3 scenes
+Z17_E0525_N5415_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0340_N5265_2022,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0620_N5425_2020,high,False,spacing,15.0 km from an accepted site
+Z15_E0405_N5535_2022,high,False,no_scene,no Sentinel-2 scene passes the rules
+Z15_E0430_N5715_2025,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0535_N5540_2025,high,False,spacing,11.2 km from an accepted site
+Z15_E0480_N5775_2025,high,False,spacing,5.0 km from an accepted site
+Z17_E0580_N5505_2025,high,False,accepted,4 scenes
+Z17_E0390_N5205_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z15_E0495_N5440_2020,medium,False,flight_dates,flights outside the leaf-on window
+Z15_E0450_N5405_2020,medium,False,spacing,10.0 km from an accepted site
+Z17_E0415_N5180_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0650_N4965_2019,medium,False,accepted,1 scenes
+Z17_E0580_N5155_2020,high,False,spacing,11.2 km from an accepted site
+Z17_E0610_N5185_2020,high,False,spacing,14.1 km from an accepted site
+Z16_E0650_N5415_2021,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0630_N5515_2022,high,False,accepted,3 scenes
+Z15_E0450_N5715_2025,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0430_N5500_2021,high,False,spacing,5.0 km from an accepted site
+Z17_E0385_N5265_2021,high,False,flight_dates,flights spread over 72 days
+Z16_E0715_N5540_2019,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0610_N5580_2024,high,False,accepted,3 scenes
+Z17_E0545_N5275_2025,medium,False,spacing,11.2 km from an accepted site
+Z17_E0390_N5430_2021,medium,False,accepted,2 scenes
+Z18_E0355_N4945_2023,low,False,flight_dates,flights outside the leaf-on window
+Z16_E0470_N5430_2020,low,False,accepted,1 scenes
+Z17_E0505_N5515_2023,high,False,spacing,10.0 km from an accepted site
+Z16_E0415_N5650_2023,high,False,accepted,4 scenes
+Z16_E0405_N5575_2023,medium,False,accepted,4 scenes
+Z17_E0440_N5560_2023,high,False,accepted,2 scenes
+Z16_E0350_N5555_2023,low,False,no_scene,no Sentinel-2 scene passes the rules
+Z15_E0420_N5475_2022,low,False,flight_dates,flights outside the leaf-on window
+Z17_E0600_N5155_2020,low,False,spacing,11.2 km from an accepted site
+Z16_E0610_N5395_2021,low,False,flight_dates,flights outside the leaf-on window
+Z17_E0725_N5105_2019,low,False,accepted,4 scenes
+Z17_E0535_N5495_2025,high,False,accepted,4 scenes
+Z17_E0460_N5220_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z16_E0460_N5575_2022,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0310_N5425_2021,medium,False,accepted,4 scenes
+Z16_E0500_N5640_2021,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0355_N5380_2021,high,False,spacing,15.0 km from an accepted site
+Z17_E0315_N5465_2019,high,False,accepted,4 scenes
+Z17_E0420_N5515_2021,high,False,spacing,14.1 km from an accepted site
+Z17_E0615_N5205_2020,high,False,spacing,14.1 km from an accepted site
+Z15_E0500_N5775_2025,high,False,spacing,11.2 km from an accepted site
+Z17_E0410_N5360_2020,high,False,accepted,4 scenes
+Z17_E0445_N5145_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z15_E0660_N5520_2022,medium,False,flight_dates,flights spread over 374 days
+Z15_E0610_N5395_2020,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0535_N5340_2024,medium,False,accepted,4 scenes
+Z16_E0715_N5260_2024,low,False,accepted,1 scenes
+Z16_E0430_N5630_2022,high,False,accepted,2 scenes
+Z17_E0385_N5300_2021,medium,False,accepted,2 scenes
+Z16_E0400_N5645_2023,high,False,flight_dates,flights spread over 353 days
+Z16_E0445_N5565_2022,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0415_N5740_2025,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0420_N5200_2021,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0550_N5370_2024,high,False,accepted,3 scenes
+Z15_E0410_N5445_2022,low,False,flight_dates,flights outside the leaf-on window
+Z17_E0640_N4990_2019,low,False,accepted,1 scenes
+Z17_E0400_N5480_2021,high,False,accepted,2 scenes
+Z17_E0650_N5070_2019,medium,False,flight_dates,flights outside the leaf-on window
+Z16_E0490_N5485_2019,medium,False,flight_dates,flights spread over 66 days
+Z16_E0575_N5500_2020,medium,False,accepted,4 scenes
+Z16_E0460_N5505_2022,high,False,accepted,4 scenes
+Z17_E0370_N5390_2021,high,False,accepted,3 scenes
+Z17_E0550_N5150_2020,medium,False,accepted,2 scenes
+Z17_E0625_N4990_2019,low,False,spacing,15.0 km from an accepted site
+Z17_E0645_N5135_2020,low,False,accepted,4 scenes
+Z17_E0460_N5410_2023,high,False,accepted,4 scenes
+Z15_E0670_N5540_2022,medium,False,accepted,3 scenes
+Z17_E0515_N5425_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0550_N5480_2025,high,False,accepted,4 scenes
+Z15_E0420_N5710_2025,low,False,flight_dates,flights outside the leaf-on window
+Z17_E0585_N5290_2025,low,False,accepted,1 scenes
+Z16_E0295_N5530_2022,high,False,spacing,10.0 km from an accepted site
+Z15_E0565_N5360_2020,high,False,accepted,4 scenes
+Z15_E0445_N5545_2025,medium,False,accepted,4 scenes
+Z17_E0365_N5495_2021,high,False,spacing,5.0 km from an accepted site
+Z15_E0560_N5650_2025,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0470_N5460_2023,high,False,accepted,4 scenes
+Z17_E0470_N5400_2023,high,False,spacing,14.1 km from an accepted site
+Z15_E0685_N5630_2025,high,False,accepted,3 scenes
+Z17_E0385_N5360_2021,medium,False,spacing,11.2 km from an accepted site
+Z15_E0610_N5420_2020,medium,False,spacing,7.1 km from an accepted site
+Z15_E0520_N5450_2020,medium,False,accepted,4 scenes
+Z16_E0380_N5445_2020,low,False,accepted,4 scenes
+Z16_E0360_N5590_2024,high,False,spacing,14.1 km from an accepted site
+Z15_E0550_N5365_2020,high,False,accepted,4 scenes
+Z17_E0415_N5140_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0420_N5190_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0420_N5290_2021,medium,False,accepted,4 scenes
+Z17_E0485_N5400_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0655_N5545_2022,high,False,accepted,3 scenes
+Z17_E0700_N5055_2019,low,False,accepted,4 scenes
+Z15_E0525_N5665_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0410_N5380_2020,high,False,accepted,4 scenes
+Z17_E0710_N4955_2023,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0580_N5160_2020,medium,False,spacing,10.0 km from an accepted site
+Z17_E0585_N5245_2020,medium,False,accepted,4 scenes
+Z15_E0680_N5540_2022,high,False,spacing,7.1 km from an accepted site
+Z15_E0610_N5590_2023,high,False,spacing,10.0 km from an accepted site
+Z17_E0495_N5545_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0595_N5630_2023,high,False,no_scene,no Sentinel-2 scene passes the rules
+Z17_E0290_N5460_2019,high,False,no_scene,no Sentinel-2 scene passes the rules
+Z15_E0690_N5630_2025,high,False,spacing,5.0 km from an accepted site
+Z15_E0490_N5685_2023,high,False,flight_dates,flights outside the leaf-on window
+Z16_E0605_N5535_2020,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0370_N5400_2021,high,False,spacing,10.0 km from an accepted site
+Z16_E0390_N5645_2023,high,False,flight_dates,flights spread over 353 days
+Z17_E0715_N4975_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0460_N5680_2023,high,False,spacing,11.2 km from an accepted site
+Z17_E0590_N5250_2020,high,False,spacing,7.1 km from an accepted site
+Z15_E0530_N5665_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0520_N5220_2021,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0540_N5370_2020,high,False,spacing,11.2 km from an accepted site
+Z17_E0445_N5490_2022,high,False,spacing,14.1 km from an accepted site
+Z17_E0480_N5375_2023,high,False,accepted,4 scenes
+Z17_E0350_N5530_2021,high,False,accepted,4 scenes
+Z15_E0720_N5435_2019,medium,False,accepted,2 scenes
+Z16_E0530_N5485_2019,low,False,flight_dates,flights spread over 66 days
+Z17_E0590_N5010_2019,low,False,accepted,4 scenes
+Z15_E0550_N5685_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0455_N5165_2021,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0470_N5580_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0540_N5615_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0460_N5740_2025,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0620_N5605_2024,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0480_N5690_2023,high,False,spacing,11.2 km from an accepted site
+Z15_E0405_N5545_2025,high,False,accepted,1 scenes
+Z15_E0580_N5470_2022,medium,False,accepted,4 scenes
+Z17_E0575_N5530_2025,high,False,accepted,2 scenes
+Z15_E0525_N5560_2021,low,False,accepted,4 scenes
+Z18_E0330_N4980_2024,high,False,accepted,1 scenes
+Z17_E0320_N5325_2022,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0385_N5240_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0325_N5280_2021,medium,False,accepted,3 scenes
+Z16_E0270_N5580_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0500_N5410_2023,high,False,accepted,4 scenes
+Z17_E0405_N5285_2021,high,False,spacing,5.0 km from an accepted site
+Z16_E0430_N5605_2022,high,False,accepted,4 scenes
+Z17_E0415_N5130_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z15_E0435_N5580_2025,medium,False,flight_dates,flights spread over 66 days
+Z16_E0620_N5335_2021,medium,False,accepted,4 scenes
+Z17_E0490_N5290_2023,low,False,flight_dates,flights outside the leaf-on window
+Z17_E0675_N5005_2023,low,False,flight_dates,flights outside the leaf-on window
+Z16_E0685_N5175_2022,low,False,flight_dates,flights outside the leaf-on window
+Z16_E0635_N5320_2023,low,False,accepted,1 scenes
+Z16_E0605_N5360_2021,high,False,flight_dates,flights spread over 83 days
+Z15_E0565_N5620_2023,high,False,flight_dates,flights outside the leaf-on window
+Z16_E0450_N5505_2022,high,False,spacing,10.0 km from an accepted site
+Z17_E0315_N5410_2021,high,False,accepted,4 scenes
+Z15_E0400_N5405_2020,medium,False,accepted,4 scenes
+Z15_E0545_N5485_2022,high,False,accepted,4 scenes
+Z16_E0480_N5405_2020,low,False,flight_dates,flights outside the leaf-on window
+Z17_E0295_N5275_2021,low,False,no_scene,no Sentinel-2 scene passes the rules
+Z15_E0405_N5420_2020,low,False,accepted,4 scenes
+Z17_E0360_N5390_2021,high,False,spacing,10.0 km from an accepted site
+Z17_E0290_N5550_2019,high,False,no_scene,no Sentinel-2 scene passes the rules
+Z17_E0495_N5270_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0485_N5470_2022,high,False,accepted,4 scenes
+Z15_E0510_N5395_2021,medium,False,spacing,14.1 km from an accepted site
+Z15_E0635_N5440_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0520_N5230_2021,medium,False,spacing,14.1 km from an accepted site
+Z17_E0660_N4970_2023,medium,False,spacing,11.2 km from an accepted site
+Z16_E0405_N5630_2022,medium,False,accepted,4 scenes
+Z15_E0440_N5755_2025,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0535_N5385_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0575_N5355_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0580_N5540_2025,high,False,spacing,11.2 km from an accepted site
+Z15_E0540_N5625_2023,high,False,flight_dates,flights outside the leaf-on window
+Z16_E0430_N5595_2022,high,False,spacing,10.0 km from an accepted site
+Z17_E0395_N5290_2021,high,False,spacing,14.1 km from an accepted site
+Z16_E0405_N5680_2024,high,False,flight_dates,flights outside the leaf-on window
+Z16_E0715_N5440_2020,high,False,accepted,3 scenes
+Z15_E0660_N5605_2025,high,False,accepted,4 scenes
+Z15_E0445_N5580_2025,medium,False,flight_dates,flights spread over 66 days
+Z17_E0525_N5165_2022,medium,False,flight_dates,flights outside the leaf-on window
+Z16_E0545_N5415_2020,medium,False,flight_dates,flights outside the leaf-on window
+Z15_E0645_N5630_2025,medium,False,accepted,4 scenes
+Z17_E0550_N5145_2020,low,False,spacing,5.0 km from an accepted site
+Z17_E0425_N5110_2021,low,False,accepted,4 scenes
+Z17_E0550_N5535_2025,high,False,spacing,5.0 km from an accepted site
+Z17_E0475_N5470_2022,high,False,spacing,10.0 km from an accepted site
+Z15_E0360_N5510_2022,high,False,spacing,10.0 km from an accepted site
+Z16_E0460_N5565_2022,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0475_N5535_2023,high,False,accepted,2 scenes
+Z16_E0655_N5400_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0445_N5120_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z15_E0620_N5450_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0450_N5145_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z15_E0355_N5505_2022,medium,False,spacing,7.1 km from an accepted site
+Z15_E0450_N5635_2023,medium,False,accepted,4 scenes
+Z17_E0565_N5520_2025,high,False,spacing,14.1 km from an accepted site
+Z17_E0580_N5460_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0650_N5570_2024,high,False,accepted,3 scenes
+Z17_E0570_N5005_2019,low,False,accepted,4 scenes
+Z15_E0580_N5615_2023,high,False,no_scene,no Sentinel-2 scene passes the rules
+Z17_E0525_N5460_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0460_N5560_2025,high,False,flight_dates,flights spread over 70 days
+Z17_E0500_N5465_2022,high,False,accepted,4 scenes
+Z15_E0720_N5455_2019,medium,False,accepted,2 scenes
+Z15_E0620_N5470_2021,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0615_N5470_2021,high,False,spacing,14.1 km from an accepted site
+Z17_E0475_N5570_2023,high,False,spacing,14.1 km from an accepted site
+Z17_E0400_N5255_2021,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0495_N5680_2023,high,False,flight_dates,flights outside the leaf-on window
+Z16_E0665_N5370_2022,high,False,accepted,1 scenes
+Z17_E0540_N5390_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0475_N5550_2023,high,False,spacing,7.1 km from an accepted site
+Z16_E0645_N5535_2019,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0685_N5590_2024,high,False,accepted,4 scenes
+Z15_E0445_N5375_2020,medium,False,accepted,3 scenes
+Z15_E0445_N5455_2022,low,False,flight_dates,flights outside the leaf-on window
+Z17_E0430_N5165_2021,low,False,flight_dates,flights outside the leaf-on window
+Z15_E0475_N5515_2021,low,False,accepted,4 scenes
+Z15_E0480_N5630_2023,high,False,accepted,3 scenes
+Z16_E0675_N5515_2020,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0500_N5295_2023,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0335_N5275_2021,medium,False,spacing,11.2 km from an accepted site
+Z16_E0505_N5465_2020,medium,False,accepted,3 scenes
+Z17_E0360_N5395_2021,high,False,spacing,10.0 km from an accepted site
+Z15_E0685_N5555_2021,high,False,spacing,10.0 km from an accepted site
+Z17_E0525_N5555_2023,high,False,accepted,4 scenes
+Z17_E0750_N5070_2019,low,False,spacing,5.0 km from an accepted site
+Z16_E0500_N5475_2019,low,False,spacing,11.2 km from an accepted site
+Z15_E0570_N5425_2020,low,False,spacing,15.0 km from an accepted site
+Z16_E0725_N5130_2023,low,False,spacing,11.2 km from an accepted site
+Z15_E0400_N5710_2025,low,False,flight_dates,flights outside the leaf-on window
+Z17_E0650_N5050_2019,low,False,accepted,4 scenes
+Z17_E0430_N5490_2021,high,False,spacing,11.2 km from an accepted site
+Z17_E0585_N5520_2025,high,False,spacing,14.1 km from an accepted site
+Z15_E0420_N5540_2025,high,False,spacing,7.1 km from an accepted site
+Z17_E0400_N5275_2021,high,False,spacing,7.1 km from an accepted site
+Z17_E0415_N5390_2020,high,False,spacing,11.2 km from an accepted site
+Z16_E0280_N5510_2023,high,False,spacing,13.3 km from an accepted site
+Z17_E0365_N5280_2021,high,False,accepted,3 scenes
+Z15_E0480_N5560_2025,medium,False,flight_dates,flights spread over 70 days
+Z17_E0450_N5110_2021,medium,False,accepted,4 scenes
+Z17_E0555_N5320_2024,high,False,accepted,2 scenes
+Z17_E0545_N5345_2024,high,False,spacing,11.2 km from an accepted site
+Z17_E0415_N5350_2020,high,False,spacing,5.0 km from an accepted site
+Z17_E0375_N5390_2021,high,False,spacing,5.0 km from an accepted site
+Z16_E0410_N5575_2023,high,False,spacing,5.0 km from an accepted site
+Z15_E0480_N5540_2021,high,False,accepted,3 scenes
+Z17_E0380_N5530_2019,medium,False,spacing,11.2 km from an accepted site
+Z16_E0480_N5435_2020,medium,False,spacing,11.2 km from an accepted site
+Z16_E0340_N5560_2023,medium,False,no_scene,no Sentinel-2 scene passes the rules
+Z15_E0505_N5455_2022,medium,False,accepted,4 scenes
+Z16_E0575_N5380_2021,low,False,spacing,14.1 km from an accepted site
+Z15_E0375_N5430_2022,low,False,flight_dates,flights outside the leaf-on window
+Z17_E0470_N5260_2024,low,False,spacing,14.1 km from an accepted site
+Z15_E0440_N5685_2023,low,False,spacing,10.0 km from an accepted site
+Z16_E0720_N5260_2024,low,False,spacing,5.0 km from an accepted site
+Z15_E0350_N5590_2022,low,False,spacing,10.0 km from an accepted site
+Z17_E0670_N5010_2019,low,False,accepted,3 scenes
+Z17_E0600_N5345_2024,high,False,accepted,4 scenes
+Z17_E0520_N5260_2024,medium,False,accepted,4 scenes
+Z17_E0390_N5265_2021,high,False,flight_dates,flights spread over 72 days
+Z15_E0695_N5515_2022,high,False,spacing,11.2 km from an accepted site
+Z15_E0470_N5730_2025,high,False,accepted,4 scenes
+Z16_E0700_N5215_2023,low,False,flight_dates,flights outside the leaf-on window
+Z16_E0345_N5545_2023,low,False,accepted,1 scenes
+Z17_E0600_N5520_2025,high,False,spacing,11.2 km from an accepted site
+Z15_E0415_N5490_2023,high,False,accepted,4 scenes
+Z17_E0365_N5305_2021,medium,False,spacing,5.0 km from an accepted site
+Z17_E0465_N5140_2022,medium,False,flight_dates,flights outside the leaf-on window
+Z16_E0350_N5380_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0445_N5495_2022,medium,False,accepted,4 scenes
+Z15_E0655_N5490_2022,high,False,accepted,3 scenes
+Z16_E0590_N5545_2020,high,False,accepted,2 scenes
+Z16_E0690_N5505_2020,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0345_N5475_2021,medium,False,accepted,4 scenes
+Z17_E0620_N5050_2019,low,False,accepted,4 scenes
+Z16_E0550_N5590_2019,high,False,flight_dates,flights spread over 74 days
+Z17_E0485_N5540_2023,high,False,spacing,11.2 km from an accepted site
+Z17_E0545_N5420_2023,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0555_N5460_2023,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0570_N5690_2024,high,False,accepted,2 scenes
+Z15_E0640_N5445_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z16_E0640_N5355_2021,medium,False,accepted,3 scenes
+Z17_E0405_N5410_2021,high,False,spacing,7.1 km from an accepted site
+Z15_E0720_N5415_2019,high,False,accepted,4 scenes
+Z17_E0455_N5235_2021,low,False,flight_dates,flights outside the leaf-on window
+Z17_E0725_N5080_2019,low,False,accepted,4 scenes
+Z17_E0515_N5380_2023,high,False,spacing,10.0 km from an accepted site
+Z17_E0325_N5535_2019,high,False,accepted,4 scenes
+Z16_E0515_N5440_2020,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0415_N5205_2021,medium,False,flight_dates,flights outside the leaf-on window
+Z17_E0360_N5220_2021,medium,False,accepted,2 scenes
+Z16_E0600_N5555_2020,high,False,spacing,10.0 km from an accepted site
+Z16_E0465_N5565_2022,high,False,flight_dates,flights outside the leaf-on window
+Z16_E0455_N5560_2022,high,False,flight_dates,flights outside the leaf-on window
+Z17_E0280_N5500_2019,high,False,no_scene,no Sentinel-2 scene passes the rules
+Z15_E0485_N5735_2025,high,False,flight_dates,flights outside the leaf-on window
+Z15_E0630_N5605_2025,high,False,accepted,4 scenes

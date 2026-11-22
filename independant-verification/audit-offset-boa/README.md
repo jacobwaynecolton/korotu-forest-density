@@ -23,6 +23,13 @@ les pixels sont déjà corrigés), qui avaient causé le bug du double décalage
 résume à réflectance = DN × 0,0001. La fonction peut devenir cette seule règle, plus une alarme qui arrête le
 pipeline si une scène semble encore contenir le décalage (1er percentile du bleu ≥ 1 000 en DN).
 
+**Correction (22 novembre 2026)** : l'alarme doit regarder la bande B12 (SWIR 2,2 µm), pas le bleu. Au premier
+lancement du pipeline final, 9 images ont déclenché l'alarme sur le bleu (1er percentile entre 1 078 et 1 260 en DN),
+alors que leur B12 restait bas (87 à 425). Deux d'entre elles ont même la version de traitement 03.01, qui n'a jamais
+eu de décalage. C'était de la fumée de feux de forêt ou de la brume (2021, 2023, 2025), qui éclaircit le bleu mais
+presque pas B12. Un décalage resté dans l'image mettrait au contraire toutes les bandes, B12 compris, au-dessus
+de 1 000.
+
 **Réserve** : la collection retraitée `sentinel-2-c1-l2a` d'Earth Search suit une autre convention (version 05.xx
 partout, décalage −0,1 dans les métadonnées, pas de drapeau). À la tuile testée, l'année 2022 y manquait. Un
 changement de collection demanderait un inventaire, et sa propre règle.

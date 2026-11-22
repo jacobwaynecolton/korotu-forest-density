@@ -70,7 +70,7 @@ def test_offset_alarm():
         id = "x"
         assets = {key: type("A", (), {"extra_fields": {"raster:bands": [{"scale": 0.0001}]}})()
                   for _, key, _ in sentinel2.BANDS}
-    sentinel2.check_scale_and_offset(Item, np.array([150, 300, 900, 2000], np.uint16))
+    sentinel2.check_scale_and_offset(Item, np.array([90, 300, 900, 2000], np.uint16))   # B12 of a smoky scene too
     with pytest.raises(ValueError):
         sentinel2.check_scale_and_offset(Item, np.full(100, 1100, np.uint16))
 

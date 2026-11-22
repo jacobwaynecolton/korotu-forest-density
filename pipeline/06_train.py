@@ -33,7 +33,7 @@ import rasterio
 import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import CFG, LABELS, MANIFESTS, MODELS, PREDICTIONS, STACKS, km_between, write_cover, write_json  # noqa: E402
+from common import CFG, LABELS, MANIFESTS, MODELS, PREDICTIONS, STACKS, km_between, makedirs, write_cover, write_json  # noqa: E402
 from model import build, normalise, norm_stats, pinball_loss, predict, quantiles  # noqa: E402
 from sentinel2 import load_stack, reflectance_and_mask  # noqa: E402
 
@@ -148,7 +148,7 @@ def main():
         if step % 500 == 0 or step == spec["steps"]:
             log.append(dict(step=step, loss=loss.item(), minutes=(time.time() - t0) / 60))
             print(f"  step {step:6d}  loss {loss.item():.4f}  {(time.time() - t0) / 60:.1f} min", flush=True)
-    (MODELS / "logs").mkdir(parents=True, exist_ok=True)
+    makedirs(MODELS / "logs")
     pd.DataFrame(log).to_csv(MODELS / "logs" / (spec["name"].replace("/", "_") + ".csv"), index=False)
 
     model.eval()
@@ -161,7 +161,7 @@ def main():
     info = dict(spec, train_sites=train_ids, predicted_sites=pred_ids, mean=mean.tolist(), std=std.tolist(),
                 minutes=round((time.time() - t0) / 60, 1))
     if args.mode == "final":
-        MODELS.mkdir(parents=True, exist_ok=True)
+        makedirs(MODELS)
         torch.save({k: v.half() for k, v in model.state_dict().items()}, MODELS / f"final_g{spec['seed']}.pt")
         write_json(MODELS / f"final_g{spec['seed']}.json", info)
     write_json(out_dir / "DONE", info)

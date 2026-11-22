@@ -10,7 +10,7 @@ from rasterio.enums import Resampling
 from rasterio.warp import transform_bounds
 from rasterio.windows import from_bounds
 
-from common import CFG, s2_epsg
+from common import CFG, makedirs, s2_epsg
 
 os.environ.setdefault("GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR")
 os.environ.setdefault("GDAL_HTTP_MAX_RETRY", "4")
@@ -85,17 +85,19 @@ def choose_scenes(cl, zone, bounds, flight_start, flight_end):
                  bad_fraction=round(bad, 5)) for it, bad in kept]
 
 
-def check_scale_and_offset(item, blue_dn):
+def check_scale_and_offset(item, swir_dn):
     """Reflectance = DN x scale. Stops if a band has another scale, or if the scene still contains the -0.1 BOA
-    offset (1st percentile of blue DN >= offset_alarm_dn): this collection delivers it already removed."""
+    offset: then every band has DN >= 1000, including B12 (SWIR 2.2 um), whose 1st percentile is otherwise far below
+    (dark water, shade). B12 is used because haze and wildfire smoke raise blue and red, but barely B12: a smoky
+    scene must not be mistaken for an offset problem. This collection delivers the offset already removed."""
     for _, key, _ in BANDS:
         s = item.assets[key].extra_fields["raster:bands"][0].get("scale", 1.0)
         if abs(s - C["scale"]) > 1e-12:
             raise ValueError(f"{item.id} {key}: scale {s}, expected {C['scale']}")
-    v = blue_dn[blue_dn > 0]
+    v = swir_dn[swir_dn > 0]
     p1 = float(np.percentile(v, 1)) if v.size else 0.0
     if p1 >= C["offset_alarm_dn"]:
-        raise ValueError(f"{item.id}: 1st percentile of blue DN is {p1:.0f}; the BOA offset seems not removed")
+        raise ValueError(f"{item.id}: 1st percentile of B12 DN is {p1:.0f}; the BOA offset seems not removed")
     return p1
 
 
@@ -106,16 +108,16 @@ def write_stack(item, path, bounds, profile):
     with ThreadPoolExecutor(6) as ex:
         arrs = list(ex.map(lambda k: read_window(item.assets[k].href, bounds, shape), keys))
     stack = np.stack(arrs).astype(np.uint16)
-    p1 = check_scale_and_offset(item, stack[1])
+    p1 = check_scale_and_offset(item, stack[11])
     prof = dict(profile, count=stack.shape[0], dtype="uint16", nodata=0, predictor=2)
-    path.parent.mkdir(parents=True, exist_ok=True)
+    makedirs(path.parent)
     tmp = path.with_name(path.name + ".part")
     with rasterio.open(tmp, "w", **prof) as d:
         d.write(stack)
         for i, (name, _, res) in enumerate(BANDS, 1):
             d.set_band_description(i, f"{name} ({res} m native), DN; reflectance = DN x {C['scale']}")
         d.set_band_description(SCL_BAND + 1, "SCL scene classification")
-        d.update_tags(scene=item.id, datetime=item.datetime.isoformat(), blue_p1_dn=p1,
+        d.update_tags(scene=item.id, datetime=item.datetime.isoformat(), b12_p1_dn=p1,
                       processing_baseline=str(item.properties.get("s2:processing_baseline")))
     tmp.rename(path)
 

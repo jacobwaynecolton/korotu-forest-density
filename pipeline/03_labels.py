@@ -24,7 +24,7 @@ import pandas as pd
 import rasterio
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import (CFG, CHM, LABELS, MANIFESTS, STATUS, array_task, block_grid, grid_profile, sites,  # noqa: E402
+from common import (CFG, CHM, LABELS, MANIFESTS, STATUS, array_task, block_grid, grid_profile, makedirs, sites,  # noqa: E402
                     task_sites, write_json)
 from lidar import build_label, cache_index, fetch_tile  # noqa: E402
 
@@ -41,7 +41,7 @@ def one_site(row, tiles, cache):
     bounds = block_grid(row.zone, row.be, row.bn)
     label, stats = build_label(row.zone, bounds, [p for p, _ in got])
     prof = grid_profile(row.zone, bounds, count=3, dtype="float32", nodata=np.nan)
-    LABELS.mkdir(parents=True, exist_ok=True)
+    makedirs(LABELS)
     tmp = out.with_name(out.name + ".part")
     with rasterio.open(tmp, "w", **dict(prof, predictor=3)) as d:
         d.write(label)

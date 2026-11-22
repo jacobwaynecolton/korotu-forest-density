@@ -21,7 +21,7 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import CFG, LABELS, MANIFESTS, PREDICTIONS, RESULTS, read_band, read_cover, write_json  # noqa: E402
+from common import CFG, LABELS, MANIFESTS, PREDICTIONS, RESULTS, makedirs, read_band, read_cover, write_json  # noqa: E402
 from model import band_of, calibrate, constants, metrics, mixture  # noqa: E402
 
 T, K = CFG["train"], CFG["calibration"]
@@ -76,7 +76,7 @@ def main():
     sp = pd.read_csv(MANIFESTS / "splits.csv")
     pool = sp[sp.split == "train"]
     fold_of = dict(zip(pool.site_id, pool.fold))
-    RESULTS.mkdir(parents=True, exist_ok=True)
+    makedirs(RESULTS)
 
     # 1-2. cross-validation
     cv, cv_sites = cells(pool.site_id.tolist(), lambda sid, s: PREDICTIONS / f"cv/fold{fold_of[sid]}/g{s}")

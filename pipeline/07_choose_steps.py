@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import CFG, LABELS, MANIFESTS, PREDICTIONS, RESULTS, read_band, read_cover, write_json  # noqa: E402
+from common import CFG, LABELS, MANIFESTS, PREDICTIONS, RESULTS, makedirs, read_band, read_cover, write_json  # noqa: E402
 from model import metrics  # noqa: E402
 
 T = CFG["train"]
@@ -41,7 +41,7 @@ def main():
     ok = t[t.quantile_score <= best * (1 + T["steps_tolerance"])]
     chosen = int(ok.steps.min())
     t["chosen"] = t.steps == chosen
-    RESULTS.mkdir(parents=True, exist_ok=True)
+    makedirs(RESULTS)
     t.to_csv(RESULTS / "steps_choice.csv", index=False)
     write_json(MANIFESTS / "steps.json", dict(steps=chosen, rule=f"smallest candidate within "
                                               f"{T['steps_tolerance']:.0%} of the best quantile score on fold 0",

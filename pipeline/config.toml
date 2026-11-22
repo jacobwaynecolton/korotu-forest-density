@@ -61,7 +61,8 @@ max_bad_fraction = 0.01       # scene rejected if >= 1% of the site is bad by SC
 bad_scl = [0, 1, 3, 8, 9, 10, 11]   # no data, saturated, cloud shadow, cloud medium/high, cirrus, snow
 scale = 0.0001                # reflectance = DN x scale. In this collection the -0.1 BOA offset is always
                               # already removed (audit of 254 scenes); a scene that still has it stops the run.
-offset_alarm_dn = 1000        # 1st percentile of blue DN at or above this means the offset is still in
+offset_alarm_dn = 1000        # 1st percentile of B12 DN at or above this means the offset is still in
+                              # (B12, not blue: haze and wildfire smoke raise blue, not B12)
 
 [split]
 seed = 2701

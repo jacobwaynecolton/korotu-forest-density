@@ -14,7 +14,7 @@ from rasterio.transform import from_origin
 from rasterio.warp import Resampling, reproject, transform_bounds
 from rasterio.windows import Window, from_bounds
 
-from common import CFG, CHM, CSRS_UTM_EPSG, s2_epsg
+from common import CFG, CHM, CSRS_UTM_EPSG, makedirs, s2_epsg
 
 S, L = CFG["sites"], CFG["labels"]
 
@@ -122,7 +122,7 @@ def fetch_tile(name, url, site, cache):
     path = CHM / site / f"{name}_CHM.tif"
     if _complete(path):
         return path, True
-    path.parent.mkdir(parents=True, exist_ok=True)
+    makedirs(path.parent)
     tmp = path.with_name(path.name + ".part")
     for attempt in range(3):
         try:

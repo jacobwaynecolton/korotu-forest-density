@@ -40,6 +40,9 @@ while [ $# -gt 0 ]; do
     esac
 done
 want() { [ "$1" -ge "$FROM" ] && [ "$1" -le "$TO" ]; }
+# output folders created once here, not by many array tasks at the same time (NFS race)
+DATA=$(.venv/bin/python -I -c "import sys; sys.path.insert(0, '$P'); import common; print(common.DATA)")
+[ "$DRY" = 1 ] || mkdir -p "$DATA"/{labels,stacks,chm,status/labels,status/images,predictions,models/logs,maps}
 
 submit() {  # submit <name> "<jobs to wait for>" <sbatch options...> -- <script and arguments...>
     local name=$1 deps
