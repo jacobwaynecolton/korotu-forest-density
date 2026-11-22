@@ -1,0 +1,9 @@
+{
+ "steps": 32000,
+ "rule": "smallest candidate within 1% of the best quantile score on fold 0",
+ "scores": {
+  "8000": 0.028203897799054783,
+  "16000": 0.02974233776330948,
+  "32000": 0.02660675843556722
+ }
+}
