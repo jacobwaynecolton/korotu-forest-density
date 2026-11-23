@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canopy Cover Mapper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header class="bar">
+  <div class="brand">
+    <span class="brand-name">Canopy Cover Mapper</span>
+    <span class="brand-sub">Sentinel-2 · Korotu final model, trained on 250 Ontario lidar sites</span>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="mapcol" aria-label="Map">
+    <form class="search" id="search-form" role="search">
+      <label for="search-q" class="sr-only">Search a place</label>
+      <input id="search-q" type="search" placeholder="Search a place, e.g. Timmins, Ontario" autocomplete="off">
+      <button type="submit">Search</button>
+    </form>
+    <ul class="search-results" id="search-results" hidden></ul>
+    <div id="map" aria-label="Map: draw the area of interest here"></div>
+    <div class="map-actions">
+      <button type="button" id="draw-btn" class="primary-outline" aria-pressed="false">Draw an area</button>
+      <span class="hint" id="draw-hint">Click two opposite corners on the map.</span>
+      <label class="field-inline" for="basemap">Background
+        <select id="basemap"><option value="map">Map</option><option value="sat">Satellite</option></select>
+      </label>
+      <label class="field-inline" for="overlay-on"><input type="checkbox" id="overlay-on" disabled> Result on the map</label>
+      <label class="field-inline" for="overlay-opacity">Opacity
+        <input type="range" id="overlay-opacity" min="0" max="100" value="75" disabled>
+      </label>
+    </div>
+  </section>
+
+  <aside class="panel" aria-labelledby="h-aoi">
+    <h2 id="h-aoi">Area of interest</h2>
+    <p class="hint">Draw a rectangle, pick a search result, or type the latitude and longitude of the corners (decimal degrees, west is negative).</p>
+    <table class="corners">
+      <thead><tr><th></th><th>Latitude</th><th>Longitude</th></tr></thead>
+      <tbody>
+        <tr><th>North-west</th><td><input id="c0-lat" inputmode="decimal"></td><td><input id="c0-lon" inputmode="decimal"></td></tr>
+        <tr><th>North-east</th><td><input id="c1-lat" inputmode="decimal"></td><td><input id="c1-lon" inputmode="decimal"></td></tr>
+        <tr><th>South-east</th><td><input id="c2-lat" inputmode="decimal"></td><td><input id="c2-lon" inputmode="decimal"></td></tr>
+        <tr><th>South-west</th><td><input id="c3-lat" inputmode="decimal"></td><td><input id="c3-lon" inputmode="decimal"></td></tr>
+      </tbody>
+    </table>
+    <button type="button" id="corners-btn" class="secondary">Use these corners</button>
+    <p class="aoi-size" id="aoi-size">No area yet.</p>
+    <div class="opts">
+      <label for="opt-scenes">Images
+        <select id="opt-scenes"><option value="4">up to 4</option><option value="3">up to 3</option><option value="2">up to 2</option><option value="1">1</option></select>
+      </label>
+      <label for="opt-year">Summer
+        <select id="opt-year"><option value="">most recent</option></select>
+      </label>
+    </div>
+    <button type="button" id="run-btn" class="primary" disabled>Map canopy cover</button>
+    <div class="progress" id="progress" hidden>
+      <div class="progress-text" id="progress-text">Starting</div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <p class="error" id="error" role="alert" hidden></p>
+    <h3>Recent analyses</h3>
+    <ul class="history" id="history"><li class="hint">None yet.</li></ul>
+    <details class="about">
+      <summary>How the maps are made</summary>
+      <ul>
+        <li>Images: Sentinel-2 L2A of the most recent summer (1 June to 15 September), most recent first, at least 5 days apart, under 1% cloud, shadow or snow over the area. The area must fit in one Sentinel-2 tile.</li>
+        <li>Model: the 5 final U-Nets, each predicting the 10th, 50th and 90th percentiles of canopy cover (share of the 10&nbsp;m cell under canopy above 2&nbsp;m), combined and calibrated.</li>
+        <li>Conservative: true cover below it in about 10% of cells. Optimistic: above it in about 10%. Central: the median.</li>
+        <li>Accuracy on 39 held-out Ontario sites: mean absolute error 0.085. Outside Ontario's forest, expect larger errors.</li>
+      </ul>
+    </details>
+  </aside>
+</main>
+
+<section class="results" id="results" hidden aria-labelledby="h-res">
+  <div class="res-head">
+    <div>
+      <h2 id="h-res">Canopy cover</h2>
+      <p class="res-meta" id="res-meta"></p>
+    </div>
+    <a class="secondary" id="download" href="#" download>Download GeoTIFF (3 bands)</a>
+  </div>
+  <ul class="warnings" id="warnings" hidden></ul>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Maps shown">
+      <button type="button" data-view="side" aria-pressed="true">Side by side</button>
+      <button type="button" data-view="0" aria-pressed="false">Conservative</button>
+      <button type="button" data-view="1" aria-pressed="false">Central</button>
+      <button type="button" data-view="2" aria-pressed="false">Optimistic</button>
+    </div>
+    <div class="seg" role="group" aria-label="Colours">
+      <button type="button" data-colour="continuous" aria-pressed="true">Continuous</button>
+      <button type="button" data-colour="classes" aria-pressed="false">Classes</button>
+    </div>
+  </div>
+
+  <div class="class-editor" id="class-editor" hidden>
+    <div class="ce-top">
+      <label for="ce-preset">Preset
+        <select id="ce-preset">
+          <option value="">Custom</option>
+          <option value="example">4 classes: 20 / 50 / 80%</option>
+          <option value="project">Project classes: 10 / 40 / 70%</option>
+          <option value="forest">Forest / non-forest: 10%</option>
+          <option value="tenths">5 classes of 20%</option>
+        </select>
+      </label>
+      <label for="ce-n">Number of classes
+        <select id="ce-n"></select>
+      </label>
+    </div>
+    <table class="ce-table">
+      <thead><tr><th>Colour</th><th>Name</th><th>From</th><th>To</th></tr></thead>
+      <tbody id="ce-rows"></tbody>
+    </table>
+    <p class="error" id="ce-error" hidden></p>
+  </div>
+
+  <div class="panels side" id="panels">
+    <figure class="pnl" data-k="sat">
+      <div class="pnl-img"><img id="sat-img" alt="Sentinel-2 natural colour image of the area"></div>
+      <figcaption><b>Sentinel-2</b><span id="sat-date"></span></figcaption>
+      <div class="scene-chips" id="scene-chips"></div>
+    </figure>
+    <figure class="pnl" data-k="0"><div class="pnl-img"><canvas></canvas></div><figcaption><b>Conservative</b><span>q10, calibrated</span></figcaption></figure>
+    <figure class="pnl" data-k="1"><div class="pnl-img"><canvas></canvas></div><figcaption><b>Central</b><span>median</span></figcaption></figure>
+    <figure class="pnl" data-k="2"><div class="pnl-img"><canvas></canvas></div><figcaption><b>Optimistic</b><span>q90, calibrated</span></figcaption></figure>
+  </div>
+
+  <div class="readout" id="readout" aria-live="polite"><span class="hint">Move over an image to read the canopy cover of a 10&nbsp;m cell.</span></div>
+  <div class="legend" id="legend"></div>
+
+  <div class="areas">
+    <h3 id="areas-title">Canopy area</h3>
+    <div class="tbl-wrap"><table id="areas-table"></table></div>
+    <p class="hint" id="areas-note"></p>
+  </div>
+</section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="/static/app.js"></script>
+</body>
+</html>
