@@ -1,0 +1,985 @@
+<title>Probabilistic Canopy Maps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+/* Layout: technical note, same identity as the earlier verification report. One reading column (~68 chars)
+   inside a 1000 px frame that figures, tables and the map viewer fill. Summary, tests, references, maps. */
+:root {
+  --page: #f4f5f1;
+  --surface: #fcfcfb;
+  --ink: #11150f;
+  --ink-2: #4b5148;
+  --muted: #73796f;
+  --rule: #dcdfd6;
+  --grid: #e4e5de;
+  --axis: #c3c2b7;
+  --accent: #1c5cab;
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --s3: #1baf7a;
+  --neutral-bar: #b9bdb2;
+  --g-test: #9a9f94;
+  --good: #0ca30c;
+  --band: rgba(17, 21, 15, 0.06);
+  --nodata-a: #e6e8e2;
+  --nodata-b: #d9dcd4;
+  --tip-bg: #11150f;
+  --tip-ink: #f0efec;
+  --tip-ink-2: #c3c2b7;
+  --f-display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "Source Code Pro", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #0f110e; --surface: #1a1a19; --ink: #eeefea; --ink-2: #c3c2b7; --muted: #959990;
+    --rule: #2e302b; --grid: #2a2b28; --axis: #4a4c46; --accent: #86b6ef;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --neutral-bar: #5d6058; --g-test: #7d8279;
+    --band: rgba(255, 255, 255, 0.07); --nodata-a: #2a2c29; --nodata-b: #232522;
+    --tip-bg: #f0efec; --tip-ink: #11150f; --tip-ink-2: #4b5148;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page: #0f110e; --surface: #1a1a19; --ink: #eeefea; --ink-2: #c3c2b7; --muted: #959990;
+  --rule: #2e302b; --grid: #2a2b28; --axis: #4a4c46; --accent: #86b6ef;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --neutral-bar: #5d6058; --g-test: #7d8279;
+  --band: rgba(255, 255, 255, 0.07); --nodata-a: #2a2c29; --nodata-b: #232522;
+  --tip-bg: #f0efec; --tip-ink: #11150f; --tip-ink-2: #4b5148;
+  color-scheme: dark;
+}
+
+body { background: var(--page); color: var(--ink); font-family: var(--f-body); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+.wrap {
+  max-width: 1000px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 72px;
+  display: grid; gap: 56px;
+}
+section { display: grid; gap: 18px; min-width: 0; }
+.prose { max-width: 68ch; display: grid; gap: 14px; min-width: 0; }
+.prose p, .prose ul, .prose ol { margin: 0; }
+.prose ul, .prose ol { padding-left: 1.2em; display: grid; gap: 6px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.1; font-weight: 700; }
+h2 { font-size: clamp(23px, 3.2vw, 29px); line-height: 1.2; font-weight: 700; }
+h3 { font-size: 20px; line-height: 1.3; font-weight: 600; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+code { font-family: var(--f-mono); font-size: 0.85em; background: var(--band); padding: 0.05em 0.3em; border-radius: 3px; overflow-wrap: anywhere; }
+strong { font-weight: 600; }
+.eyebrow { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); font-weight: 600; }
+.lede { font-size: 19px; line-height: 1.55; max-width: 66ch; margin: 0; }
+.meta { font-size: 14px; color: var(--ink-2); margin: 0; max-width: 80ch; }
+header { display: grid; gap: 16px; }
+.section-head { display: grid; gap: 6px; border-top: 1px solid var(--rule); padding-top: 22px; }
+.section-head p { margin: 0; color: var(--ink-2); max-width: 70ch; }
+.small { font-size: 14px; color: var(--ink-2); margin: 0; }
+
+.verdict { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 22px 24px; display: grid; gap: 14px; }
+.verdict h2 { font-size: 22px; }
+.verdict ul { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; max-width: 76ch; }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.tile { border-top: 2px solid var(--ink); padding-top: 10px; display: grid; gap: 2px; align-content: start; }
+.tile .label { font-size: 14px; color: var(--ink-2); }
+.tile .value { font-size: 30px; font-weight: 600; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.tile .note { font-size: 14px; color: var(--ink-2); }
+
+figure { margin: 0; display: grid; gap: 10px; min-width: 0; }
+.fig { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 18px 14px; display: grid; gap: 12px; min-width: 0; }
+.fig-title { font-weight: 600; font-size: 16px; margin: 0; }
+.fig-sub { font-size: 14px; color: var(--ink-2); margin: 0; }
+figcaption { font-size: 15px; color: var(--ink-2); max-width: 76ch; }
+.chart { min-width: 0; position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.pair > div { display: grid; gap: 6px; min-width: 0; align-content: start; }
+.panel-title { font-size: 14px; font-weight: 600; margin: 0; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; align-items: start; }
+.cols > * { min-width: 0; }
+.callout { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 20px; display: grid; gap: 8px; max-width: 78ch; }
+.callout p, .callout ul { margin: 0; }
+.callout ul { padding-left: 1.2em; display: grid; gap: 4px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 14px; color: var(--ink-2); align-items: center; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.key-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.key-ring { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; border: 2px solid var(--s1); box-sizing: border-box; }
+.key-bar { width: 14px; height: 10px; border-radius: 2px; display: inline-block; flex: none; }
+.key-line { width: 20px; height: 0; border-top: 2px solid; display: inline-block; flex: none; }
+.key-line.dash { border-top-style: dashed; opacity: 0.55; }
+.key-diamond { width: 8px; height: 8px; transform: rotate(45deg); border: 1.5px solid var(--ink); display: inline-block; flex: none; background: var(--surface); }
+.ramp { display: inline-flex; align-items: center; gap: 8px; }
+.ramp i { width: 110px; height: 9px; border-radius: 4px; display: inline-block; background: linear-gradient(90deg, #f6f9fd, #cde2fb, #86b6ef, #3987e5, #1c5cab, #0d366b); }
+.ramp-nodata i { width: 18px; background: repeating-linear-gradient(45deg, var(--nodata-a) 0 3px, var(--nodata-b) 3px 6px); border: 1px solid var(--rule); }
+
+/* SVG */
+.grid { stroke: var(--grid); stroke-width: 1; }
+.axis { stroke: var(--axis); stroke-width: 1; }
+.tick { fill: var(--muted); font-size: 12px; font-family: var(--f-body); font-variant-numeric: tabular-nums; }
+.axt { fill: var(--ink-2); font-size: 13px; font-family: var(--f-body); }
+.lab { fill: var(--ink-2); font-size: 12px; font-family: var(--f-body); }
+.lab-strong { fill: var(--ink); font-size: 13px; font-weight: 600; font-family: var(--f-body); font-variant-numeric: tabular-nums; }
+.halo { paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.ref { stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 2 3; }
+.line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.line.dash { stroke-dasharray: 5 4; opacity: 0.5; }
+.dot { stroke: var(--surface); stroke-width: 2; }
+.land { fill: var(--surface); stroke: var(--axis); stroke-width: 1; }
+.neighbour { fill: none; stroke: var(--grid); stroke-width: 1; }
+.foldband { fill: var(--band); }
+.hit { fill: transparent; cursor: default; }
+.hit:focus { outline: none; }
+.hit:focus-visible { stroke: var(--ink); stroke-width: 1.5; }
+.hit.is-hover { fill: var(--band); }
+
+#tip { position: fixed; z-index: 20; pointer-events: none; background: var(--tip-bg); color: var(--tip-ink); border-radius: 6px; padding: 8px 10px;
+  font-size: 13px; line-height: 1.35; max-width: 300px; display: grid; gap: 3px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); }
+.tip-row { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.tip-row strong { font-weight: 700; font-variant-numeric: tabular-nums; }
+.tip-l { color: var(--tip-ink-2); }
+.tip-key { width: 12px; height: 3px; border-radius: 1px; display: inline-block; align-self: center; }
+
+details.data { font-size: 14px; }
+details.data summary { cursor: pointer; color: var(--accent); width: fit-content; }
+.tbl-wrap { overflow-x: auto; min-width: 0; }
+details .tbl-wrap { margin-top: 8px; }
+table { border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; width: 100%; }
+th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; color: var(--ink-2); font-size: 13px; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+tr.is-final td { font-weight: 600; }
+tr.is-final td:first-child { box-shadow: inset 3px 0 0 var(--s1); }
+.sub { color: var(--muted); font-weight: 400; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; white-space: nowrap; }
+.status svg { width: 16px; height: 16px; flex: none; }
+.st-good { fill: var(--good); }
+
+/* Map viewer */
+.viewer { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px; display: grid; gap: 14px; min-width: 0; }
+.picker { display: grid; gap: 10px; }
+.pick-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.pick-group .titre { font-size: 13px; color: var(--ink-2); font-weight: 600; min-width: 190px; display: inline-flex; align-items: center; gap: 6px; }
+.pick-group button {
+  font: inherit; font-size: 13px; font-variant-numeric: tabular-nums; cursor: pointer;
+  background: var(--page); color: var(--ink); border: 1px solid var(--rule); border-radius: 999px; padding: 3px 10px;
+}
+.pick-group button:hover { border-color: var(--axis); }
+.pick-group button[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.v-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; border-top: 1px solid var(--rule); padding-top: 12px; }
+.v-head .nom { font-weight: 600; font-size: 17px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); }
+.v-stats { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 14px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.v-stats b { color: var(--ink); font-weight: 600; }
+.v-top, .v-bot { display: grid; gap: 10px; }
+.v-top { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.v-bot { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.v-panel { display: grid; gap: 5px; min-width: 0; margin: 0; }
+.v-panel figcaption { font-size: 13px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; }
+.v-panel figcaption b { color: var(--ink); font-weight: 600; }
+.v-img { position: relative; aspect-ratio: 1 / 1; border-radius: 6px; overflow: hidden; border: 1px solid var(--rule); touch-action: none;
+  background: repeating-linear-gradient(45deg, var(--nodata-a) 0 6px, var(--nodata-b) 6px 12px); cursor: crosshair; }
+.v-img img, .v-img canvas { display: block; width: 100%; height: 100%; object-fit: fill; image-rendering: auto; }
+.v-mark { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; border: 2px solid #fff;
+  box-shadow: 0 0 0 1.5px #11150f; pointer-events: none; }
+.v-read { min-height: 50px; font-size: 14px; display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: center; font-variant-numeric: tabular-nums;
+  background: var(--page); border-radius: 6px; padding: 8px 12px; }
+.v-read .lbl { color: var(--ink-2); }
+.v-read b { font-weight: 600; }
+.v-legend { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 13px; color: var(--ink-2); align-items: center; }
+.v-status { font-size: 14px; color: var(--ink-2); }
+@media (max-width: 560px) { .v-bot { gap: 6px; } .v-panel figcaption { font-size: 12px; flex-direction: column; gap: 0; } }
+
+ol.plain { padding-left: 1.2em; margin: 0; display: grid; gap: 6px; }
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  .wrap { gap: 44px; padding-block: 28px 56px; }
+  .fig, .viewer { padding: 12px; }
+  .tile .value { font-size: 26px; }
+  .pick-group .titre { min-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Korotu forest density · model development · November 17, 2026</div>
+  <h1>A final canopy cover model that says how sure it is</h1>
+  <p class="lede">The final model draws three 10&nbsp;m maps from Sentinel-2: a conservative map, a central map and an optimistic map. The true cover falls between the conservative and optimistic maps in 8 cells out of 10. Its central map is as accurate as the current model, and its error is about 40% lower than the best existing canopy cover map for Ontario.</p>
+  <p class="meta">Branch <code>tsalin/reproduction-and-verification</code> · code and full protocol in <code>modeles-probabilistes/</code> · protocol and selection rule set on November 17, 2026, before training · 85 trainings, 5-fold cross-validation by site, external test on 15 new Ontario lidar sites.</p>
+</header>
+
+<section aria-labelledby="h-brief">
+  <div class="verdict">
+    <h2 id="h-brief">In brief</h2>
+    <ul>
+      <li><strong>Final model:</strong> the project's U-Net (ResNet-34 encoder, ImageNet weights) with three outputs, the 10th, 50th and 90th percentiles of cover, trained 5 times with different seeds and combined, then calibrated.</li>
+      <li><strong>Architecture tests:</strong> the three outputs cost nothing in accuracy (central map MAE 0.0894 vs 0.0892 for the current single-output model). An encoder pre-trained on Sentinel-2 (ResNet-50, SSL4EO) did not beat ImageNet weights: better in 3 folds out of 5, where 4 were required.</li>
+      <li><strong>Calibration:</strong> one correction per band of predicted cover brings the 80% interval to 79% coverage in partly forested cells, instead of 68% with a single correction for the whole map.</li>
+      <li><strong>Against existing maps:</strong> on 15 new Ontario sites, the central map's MAE is <strong>0.087</strong>, against 0.155 for SCANFI and 0.164 for Meta/WRI, even after recalibrating both on the project's lidar. The final model has the lowest error on all 15 sites.</li>
+    </ul>
+  </div>
+</section>
+
+<section aria-label="Key figures">
+  <div class="tiles">
+    <div class="tile"><span class="label">Central map, 15 new sites</span><span class="value">0.087</span><span class="note">MAE at 10&nbsp;m (current model: 0.089)</span></div>
+    <div class="tile"><span class="label">Best existing map</span><span class="value">0.155</span><span class="note">SCANFI v2, recalibrated on project lidar</span></div>
+    <div class="tile"><span class="label">80% interval, cross-validation</span><span class="value">81%</span><span class="note">of cells inside, 49 project sites</span></div>
+    <div class="tile"><span class="label">80% interval, new sites</span><span class="value">84%</span><span class="note">of cells inside, 15 sites never used</span></div>
+    <div class="tile"><span class="label">Width follows error</span><span class="value">0.95</span><span class="note">rank correlation, interval width vs site MAE</span></div>
+  </div>
+</section>
+
+<section aria-labelledby="h-maps">
+  <div class="section-head">
+    <h2 id="h-maps">What the three maps mean</h2>
+    <p>For each 10&nbsp;m pixel, the model gives a range of plausible canopy cover, as a fraction from 0 to 1.</p>
+  </div>
+  <div class="cols">
+    <div class="prose">
+      <ul>
+        <li><strong>Conservative map (q10).</strong> The true cover is below it in only 10% of cells. Use it when overestimating cover is costly.</li>
+        <li><strong>Central map (q50).</strong> The median, the best single estimate. It replaces the current model's map.</li>
+        <li><strong>Optimistic map (q90).</strong> The true cover is above it in only 10% of cells.</li>
+      </ul>
+      <p>The gap between the conservative and optimistic maps is the uncertainty. It is narrow over water and closed forest, and wide over partial cover, clearcuts and regrowth.</p>
+    </div>
+    <div class="prose">
+      <p><strong>How the model learns three maps.</strong> The network has three outputs instead of one. Each is trained with a quantile (pinball) loss that penalizes errors on one side more than the other: for q10, overestimates cost 9 times more than underestimates. At 50%, this loss is half the L1 loss of the current model, so the central map is still the median.</p>
+      <p><strong>Truth here</strong> means the project's lidar label: the share of the 10&nbsp;m cell under canopy above 2&nbsp;m, from leaf-on airborne lidar.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-eval">
+  <div class="section-head">
+    <h2 id="h-eval">How the candidates were compared</h2>
+    <p>The project's test set has 3 sites, and its MAE ranges from 0.078 to 0.134 between them. That spread is larger than the expected difference between two architectures, so every candidate was evaluated on all 49 sites by cross-validation.</p>
+  </div>
+  <div class="cols">
+    <div class="prose">
+      <p><strong>Cross-validation by longitude.</strong> The 49 project sites are sorted from west to east and cut into 5 blocks of 9 or 10 sites. Each block is predicted by models trained on the other 4, so every prediction is for a region the model has not seen.</p>
+      <p><strong>External test.</strong> The 15 new Ontario sites from the earlier verification study are never used for training or for any choice. The 7 NEON sites in the United States are reported for description only.</p>
+      <p><strong>Selection rule, set before training.</strong> The encoder pre-trained on Sentinel-2 replaces the ImageNet one only if its quantile score is better in at least 4 folds out of 5.</p>
+    </div>
+    <figure>
+      <div class="fig">
+        <p class="fig-title">Cross-validation folds</p>
+        <div class="legend">
+          <span><i class="key-dot" style="background:var(--ink-2)"></i>Project site (49)</span>
+          <span><i class="key-ring"></i>New site, external test (15)</span>
+          <span><i class="key-bar" style="background:var(--band);border:1px solid var(--rule)"></i>Fold</span>
+        </div>
+        <div class="chart" id="fig-folds"></div>
+      </div>
+    </figure>
+  </div>
+
+  <figure>
+    <div class="fig">
+      <p class="fig-title">The three configurations</p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Configuration</th><th>Encoder</th><th>Pre-training</th><th>Outputs and loss</th><th>Input scaling</th><th class="num">Trainings</th></tr></thead>
+        <tbody>
+          <tr><td><code>l1_r34_imagenet</code><br><span class="sub">current model</span></td><td>ResNet-34</td><td>ImageNet</td><td>1 output, L1</td><td>per-band z-score</td><td class="num">5 folds × 5 seeds = 25</td></tr>
+          <tr class="is-final"><td><code>q_r34_imagenet</code><br><span class="sub">final model</span></td><td>ResNet-34</td><td>ImageNet</td><td>q10, q50, q90, quantile loss</td><td>per-band z-score</td><td class="num">25 + 5 final = 30</td></tr>
+          <tr><td><code>q_r50_ssl4eo</code></td><td>ResNet-50</td><td>SSL4EO-S12, self-supervised on 13 Sentinel-2 bands</td><td>q10, q50, q90, quantile loss</td><td>raw reflectance, as in pre-training</td><td class="num">25 + 5 final = 30</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <figcaption>All runs use the project's recipe: 12 Sentinel-2 L2A bands, 128&nbsp;px crops with flips and rotations, one random date per sample, AdamW at 10⁻³ with a one-cycle schedule, 8,000 steps, batch 32. Prediction averages all dates and 4 flips over overlapping 256&nbsp;px windows. The 5 final models of each quantile configuration are trained on all 49 sites and predict the external sites. ResNet-34 runs took about 6 minutes, ResNet-50 runs about 8.</figcaption>
+  </figure>
+</section>
+
+<section aria-labelledby="h-tests">
+  <div class="section-head">
+    <h2 id="h-tests">Architecture tests</h2>
+    <p>All figures in this section are out-of-fold: each site is predicted by models that never saw it. Pooled over the 49 sites, that is 11.9 million cells of 10&nbsp;m.</p>
+  </div>
+
+  <figure>
+    <div class="fig">
+      <p class="fig-title">Cross-validation results, 49 project sites</p>
+      <p class="fig-sub">Central map error, and how well the 10–90% interval covers the lidar label (target: 10% below, 10% above, 80% inside).</p>
+      <div class="tbl-wrap" id="tbl-cv"></div>
+    </div>
+    <figcaption>The quantile score averages the pinball losses at 10, 50 and 90%. Lower is better, and it rewards both accuracy and narrow intervals. “One model” is the average over the 5 seeds taken one at a time.</figcaption>
+  </figure>
+
+  <div class="cols">
+    <div class="prose">
+      <h3>Three outputs instead of one</h3>
+      <p>The quantile model's central map has the same MAE as the current model (0.0894 vs 0.0892) and the same R² (0.850). The extra outputs come for free.</p>
+      <h3>Five seeds instead of one</h3>
+      <p>Combining 5 trainings lowers the MAE from 0.0907 to 0.0894 and the quantile score from 0.0291 to 0.0285. Each seed is treated as a distribution, and the final percentiles are those of the mixture of the 5, so the interval widens where the seeds disagree.</p>
+    </div>
+    <div class="prose">
+      <h3>Encoder pre-trained on Sentinel-2</h3>
+      <p>The ResNet-50 pre-trained on SSL4EO-S12 is better in folds 2, 3 and 5, and worse in folds 1 and 4. The rule required 4 folds out of 5, so the lighter ResNet-34 stays. Pooled, it is also slightly worse (MAE 0.0908 vs 0.0894), and the external test confirms it: 0.0946 vs 0.0875 on the 15 new sites.</p>
+      <p class="small">This comparison mixes two changes, pre-training and depth: the published SSL4EO weights do not exist for ResNet-34.</p>
+    </div>
+  </div>
+
+  <figure>
+    <div class="fig">
+      <p class="fig-title">ImageNet ResNet-34 vs SSL4EO ResNet-50, fold by fold</p>
+      <p class="fig-sub">Out-of-fold quantile score of the 5-seed ensemble, before calibration. Lower is better. Folds run from west to east.</p>
+      <div class="legend">
+        <span><i class="key-dot" style="background:var(--s1)"></i>ResNet-34, ImageNet</span>
+        <span><i class="key-dot" style="background:var(--s2)"></i>ResNet-50, SSL4EO</span>
+      </div>
+      <div class="chart" id="fig-encoder" style="max-width:760px"></div>
+    </div>
+  </figure>
+
+  <div class="cols">
+    <div class="prose">
+      <h3>Calibration</h3>
+      <p>Before calibration, the interval holds 69% of labels instead of 80%. Conformal calibration fixes this by shifting each bound by a constant measured on held-out data: the 90th percentile of how far labels fall below the conservative map, and the same above the optimistic map.</p>
+      <p>A single pair of constants reached 80% overall, but only as an average. Cells predicted near 0 or near 1 (water, closed forest) were covered 89% of the time, while partly forested cells were covered 68% of the time.</p>
+      <p>The final model therefore uses one pair of constants per band of 0.1 of the central map. In cross-validation, each fold's constants come from the other 4 folds, so the coverage below is honest. The final constants come from all 49 sites. This per-band step was added after the first evaluation showed the imbalance; it was not in the protocol set before training.</p>
+    </div>
+    <figure>
+      <div class="fig">
+        <p class="fig-title">Interval coverage by type of cell</p>
+        <div class="tbl-wrap" id="tbl-cover"></div>
+      </div>
+      <figcaption>Partly forested: central map between 0.1 and 0.9 (45% of cells in cross-validation, 52% at the new sites). Water and closed forest: the rest.</figcaption>
+    </figure>
+  </div>
+
+  <figure>
+    <div class="fig">
+      <p class="fig-title">Labels outside the interval, by predicted cover</p>
+      <p class="fig-sub">Share of cells where the lidar label is below the conservative map or above the optimistic map, by band of the central map. Target: 10% each.</p>
+      <div class="legend">
+        <span><i class="key-line" style="border-color:var(--s1)"></i>Below conservative map</span>
+        <span><i class="key-line" style="border-color:var(--s2)"></i>Above optimistic map</span>
+        <span><i class="key-line" style="border-color:var(--ink-2)"></i>Per-band calibration (final)</span>
+        <span><i class="key-line dash" style="border-color:var(--ink-2)"></i>Single calibration</span>
+      </div>
+      <div class="pair" id="fig-coverage"></div>
+    </div>
+    <figcaption>In cross-validation, per-band calibration puts every band on target. At the 15 new sites, the overall coverage holds (84%), but for central values between 0.1 and 0.5 the errors lean one way: the label is rarely below the conservative map (2 to 4%) and more often above the optimistic map (14 to 17%). At these new sites, the model underestimates partial cover more than at the project sites.</figcaption>
+  </figure>
+</section>
+
+<section aria-labelledby="h-refs">
+  <div class="section-head">
+    <h2 id="h-refs">Final model vs existing canopy cover maps</h2>
+    <p>Three national or global products, put on each site's 10&nbsp;m label grid with the project's own code. Every comparison uses only cells where the label and all maps are valid.</p>
+  </div>
+  <div class="cols">
+    <div class="prose">
+      <ul>
+        <li><strong>Meta/WRI Global Canopy Height v2</strong> (2026): about 1&nbsp;m canopy height from very high resolution imagery; cover is the share of 1&nbsp;m pixels above 2&nbsp;m, the same definition as our label.</li>
+        <li><strong>SCANFI v2</strong> (2026): crown closure at 30&nbsp;m from Landsat, calibrated on the National Forest Inventory. The 5-yearly layer closest to the lidar year.</li>
+        <li><strong>NTEMS 2022</strong>: canopy cover at 30&nbsp;m from Landsat, calibrated on lidar plots.</li>
+      </ul>
+    </div>
+    <div class="prose">
+      <p><strong>Recalibration.</strong> These products define cover differently. As in the project, each is also shown after a monotone (isotonic) mapping to our lidar label, learned without the evaluated sites: on the other 4 folds in cross-validation, and on the 49 project sites for the new sites. This compares models rather than definitions.</p>
+      <p><strong>Our models.</strong> In cross-validation, the out-of-fold central map and the current model retrained in the same folds. At the new sites, the final models and the project's original 3-seed model.</p>
+    </div>
+  </div>
+
+  <figure>
+    <div class="fig">
+      <p class="fig-title">Mean absolute error at 10&nbsp;m</p>
+      <div class="legend">
+        <span><i class="key-bar" style="background:var(--s1)"></i>Final model, central map</span>
+        <span><i class="key-bar" style="background:var(--g-test)"></i>Current or original model</span>
+        <span><i class="key-bar" style="background:var(--neutral-bar)"></i>Existing map, recalibrated</span>
+        <span><i class="key-diamond"></i>Existing map, as published</span>
+      </div>
+      <div class="pair" id="fig-refs"></div>
+      <details class="data"><summary>Full table: MAE, RMSE, bias and R²</summary><div class="tbl-wrap" id="tbl-refs"></div></details>
+    </div>
+    <figcaption>At the 15 new sites, the central map's error is 0.087, against 0.155 for the best existing map (SCANFI recalibrated): 44% lower. In cross-validation the gap is 40% (0.089 against 0.148 for Meta as published). The final model has the lowest error on every one of the 15 sites, against every product in both versions. Recalibration helps SCANFI most (0.21 to 0.16 at the new sites), since crown closure is a different quantity from our cover. For Meta, which uses our definition, it mainly lowers the RMSE. Our label comes from the same lidar source the model learned from, which gives our model a home advantage.</figcaption>
+  </figure>
+</section>
+
+<section aria-labelledby="h-trust">
+  <div class="section-head">
+    <h2 id="h-trust">Are the intervals honest away from the training sites?</h2>
+    <p>The final models, with the constants learned on the 49 project sites, applied unchanged to the external sites.</p>
+  </div>
+  <figure>
+    <div class="fig">
+      <p class="fig-title">External test, final models</p>
+      <div class="tbl-wrap" id="tbl-ext"></div>
+    </div>
+  </figure>
+  <div class="cols">
+    <figure>
+      <div class="fig">
+        <p class="fig-title">Wider intervals where the error is larger</p>
+        <p class="fig-sub">Per site: mean interval width (optimistic minus conservative) against the central map's MAE.</p>
+        <div class="legend">
+          <span><i class="key-dot" style="background:var(--s1)"></i>New Ontario sites (15)</span>
+          <span><i class="key-dot" style="background:var(--s2)"></i>NEON, similar forests (3)</span>
+          <span><i class="key-dot" style="background:var(--s3)"></i>NEON, out of domain (4)</span>
+        </div>
+        <div class="chart" id="fig-width"></div>
+      </div>
+    </figure>
+    <div class="prose">
+      <p><strong>Ontario.</strong> At the 15 new sites, 84% of labels fall inside the interval, and every site is between 75% and 90%. The rank correlation between a site's mean interval width and its MAE is 0.95: the map itself shows where it is less reliable.</p>
+      <p><strong>United States.</strong> In forests similar to Ontario (NEON A), coverage holds at 83%. Out of domain (NEON B), it drops to 77% and the interval widens to 0.35 on average. At OSBS, a Florida pine savanna, the model mistakes green grass for canopy: MAE 0.208, coverage 74%.</p>
+      <p><strong>What coverage means.</strong> It is a share of cells, pooled over sites. It does not promise 80% at every site or in every landscape.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-viewer">
+  <div class="section-head">
+    <h2 id="h-viewer">The final model's maps</h2>
+    <p>Pick one of the 22 external sites, which the final models never saw. Each image covers about 5&nbsp;×&nbsp;5&nbsp;km. Move over any panel to read the five values at that pixel.</p>
+  </div>
+  <div class="viewer">
+    <div class="picker" id="picker"></div>
+    <div class="v-head" id="v-head"></div>
+    <div class="v-stats" id="v-stats"></div>
+    <div class="v-top">
+      <figure class="v-panel"><div class="v-img" data-k="s2"><img id="v-s2" alt="Sentinel-2 natural color image of the selected site"></div><figcaption><span><b>Sentinel-2</b> natural color</span><span id="v-date"></span></figcaption></figure>
+      <figure class="v-panel"><div class="v-img" data-k="0"></div><figcaption><span><b>Lidar label</b> ground truth</span></figcaption></figure>
+    </div>
+    <div class="v-bot">
+      <figure class="v-panel"><div class="v-img" data-k="1"></div><figcaption><span><b>Conservative</b></span><span>q10, calibrated</span></figcaption></figure>
+      <figure class="v-panel"><div class="v-img" data-k="2"></div><figcaption><span><b>Central</b></span><span>q50</span></figcaption></figure>
+      <figure class="v-panel"><div class="v-img" data-k="3"></div><figcaption><span><b>Optimistic</b></span><span>q90, calibrated</span></figcaption></figure>
+    </div>
+    <div class="v-read" id="v-read" aria-live="polite"><span class="lbl">Move over a panel to read canopy cover at one pixel.</span></div>
+    <div class="v-legend">
+      <span class="ramp">Canopy cover 0 <i></i> 1</span>
+      <span class="ramp ramp-nodata"><i></i> no label</span>
+    </div>
+  </div>
+  <p class="small" style="max-width:80ch">The Sentinel-2 image is the site's first date, bands 4, 3 and 2 with a per-image stretch. Values in the maps are stored to 0.004.</p>
+</section>
+
+<section aria-labelledby="h-limits">
+  <div class="section-head">
+    <h2 id="h-limits">Limitations and next steps</h2>
+  </div>
+  <div class="cols">
+    <div class="prose">
+      <h3>Limitations</h3>
+      <ul>
+        <li>The intervals describe disagreement with the lidar label, label noise included. They are calibrated on 49 managed Ontario forest sites.</li>
+        <li>Coverage is guaranteed on average over cells, not per site. At the new sites, partial cover is still slightly underestimated.</li>
+        <li>The existing maps are compared on our label definition. Our model learned that definition from the same lidar, which favors it.</li>
+        <li>The encoder test changes depth and pre-training at once, and uses the ResNet-34 learning rate for the ResNet-50.</li>
+        <li>Out of domain (low green vegetation, savanna), the central map overestimates cover and the interval holds fewer labels.</li>
+      </ul>
+    </div>
+    <div class="prose">
+      <h3>Next steps</h3>
+      <ol>
+        <li>Publish the three maps with their meaning: the conservative map is the one to use for claims that must not overstate cover.</li>
+        <li>Add a prediction script for new areas with the 5 final models and the per-band constants (today, maps are made for the evaluation sites only).</li>
+        <li>Add northern and low-vegetation sites to training. This targets both the remaining bias at the new sites and the out-of-domain failures.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-repro">
+  <div class="section-head">
+    <h2 id="h-repro">Reproducing these results</h2>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Step</th><th>Script</th><th>Output</th></tr></thead>
+    <tbody>
+      <tr><td>1. Folds</td><td><code>01_plis.py</code></td><td><code>plis.csv</code></td></tr>
+      <tr><td>2. SSL4EO weights adapted to 12 bands</td><td><code>02_poids.py</code></td><td>ResNet-50 weights without band B10</td></tr>
+      <tr><td>3. 85 trainings</td><td><code>03_entrainer.py</code></td><td>out-of-fold and external predictions, 10 final models</td></tr>
+      <tr><td>4. Ensembles, calibration, encoder choice, external test</td><td><code>04_evaluer.py</code></td><td><code>resultats/</code></td></tr>
+      <tr><td>5. Calibrated maps</td><td><code>05_cartes.py</code></td><td>3-band GeoTIFFs: conservative, central, optimistic</td></tr>
+      <tr><td>6. Comparison with Meta, SCANFI and NTEMS</td><td><code>06_references.py</code></td><td><code>resultats/references_*.csv</code></td></tr>
+    </tbody>
+  </table></div>
+  <p class="small" style="max-width:80ch">All steps run on Slurm with <code>bash modeles-probabilistes/lancer.sh</code> (options <code>--etape N</code>, <code>--depuis N</code>, <code>--dry-run</code>). An error in how the 5 seeds were combined was found and fixed before these results: the mixture percentiles had been computed in a way that narrowed the interval by about 5%. Training and predictions were not affected.</p>
+</section>
+
+</div>
+
+<div id="tip" hidden aria-hidden="true"></div>
+
+<script type="application/json" id="donnees">__DONNEES__</script>
+<script>
+(function () {
+  "use strict";
+  var D = JSON.parse(document.getElementById("donnees").textContent);
+  var NS = "http://www.w3.org/2000/svg";
+
+  // ---------- helpers ----------
+  function f(x, n) { return x == null ? "–" : Number(x).toFixed(n == null ? 3 : n); }
+  function pc(x, n) { return x == null ? "–" : (100 * x).toFixed(n == null ? 1 : n) + "%"; }
+  function h(tag, attrs, kids) {
+    var e = document.createElement(tag);
+    for (var k in (attrs || {})) { if (k === "text") e.textContent = attrs[k]; else if (k === "html") e.innerHTML = attrs[k]; else e.setAttribute(k, attrs[k]); }
+    (kids || []).forEach(function (c) { if (c != null) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return e;
+  }
+  function s(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in (attrs || {})) { if (k === "text") e.textContent = attrs[k]; else e.setAttribute(k, attrs[k]); }
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function svgBox(w, hgt, label) {
+    var svg = s("svg", { viewBox: "0 0 " + w + " " + hgt, role: "img", "aria-label": label });
+    return svg;
+  }
+  function scale(d0, d1, r0, r1) { return function (v) { return r0 + (v - d0) / (d1 - d0) * (r1 - r0); }; }
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  // ---------- tooltip ----------
+  var tip = document.getElementById("tip");
+  function showTip(ev, html) {
+    tip.innerHTML = html; tip.hidden = false;
+    var x = ev.clientX, y = ev.clientY;
+    if (x == null && ev.target && ev.target.getBoundingClientRect) { var b = ev.target.getBoundingClientRect(); x = b.left + b.width / 2; y = b.top; }
+    var tw = tip.offsetWidth, th = tip.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+    var left = x + 14, top = y + 14;
+    if (left + tw > vw - 8) left = x - tw - 14;
+    if (top + th > vh - 8) top = y - th - 14;
+    tip.style.left = Math.max(8, left) + "px"; tip.style.top = Math.max(8, top) + "px";
+  }
+  function hideTip() { tip.hidden = true; }
+  function row(label, value, color) {
+    return '<div class="tip-row">' + (color ? '<i class="tip-key" style="background:' + color + '"></i>' : "") +
+      '<span class="tip-l">' + esc(label) + "</span><strong>" + value + "</strong></div>";
+  }
+  function hover(el, html) {
+    el.setAttribute("tabindex", "0");
+    el.addEventListener("pointermove", function (ev) { el.classList.add("is-hover"); showTip(ev, html()); });
+    el.addEventListener("pointerleave", function () { el.classList.remove("is-hover"); hideTip(); });
+    el.addEventListener("focus", function (ev) { el.classList.add("is-hover"); showTip(ev, html()); });
+    el.addEventListener("blur", function () { el.classList.remove("is-hover"); hideTip(); });
+  }
+
+  var GROUPS = {
+    ontario: { name: "New Ontario sites", short: "Ontario, new", color: "var(--s1)" },
+    neon_A: { name: "NEON, similar forests", short: "NEON A", color: "var(--s2)" },
+    neon_B: { name: "NEON, out of domain", short: "NEON B", color: "var(--s3)" }
+  };
+  var FINAL = "q_r34_imagenet";
+  var JEU_CV = "Validation croisée (calibration croisée)", JEU_EXT = "15 nouveaux sites ontariens (test externe)";
+
+  // ---------- fold map ----------
+  (function folds() {
+    var W = 560, H = 300, m = { l: 34, r: 10, t: 26, b: 26 };
+    var lon0 = -95.6, lon1 = -74.2, lat0 = 45.4, lat1 = 52.3, k = Math.cos(48.5 * Math.PI / 180);
+    var sx = (W - m.l - m.r) / ((lon1 - lon0) * k), sy = (H - m.t - m.b) / (lat1 - lat0), sc = Math.min(sx, sy);
+    var ox = m.l + ((W - m.l - m.r) - (lon1 - lon0) * k * sc) / 2;
+    function X(lon) { return ox + (lon - lon0) * k * sc; }
+    function Y(lat) { return m.t + (lat1 - lat) * sc; }
+    var svg = svgBox(W, H, "Map of the 49 project sites and 15 new sites in Ontario, with the 5 longitude folds");
+    var clip = s("clipPath", { id: "clip-folds" }, s("defs", {}, svg));
+    s("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b }, clip);
+    var g = s("g", { "clip-path": "url(#clip-folds)" }, svg);
+    function path(rings) { return rings.map(function (r) { return "M" + r.map(function (p) { return X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1); }).join("L") + "Z"; }).join(""); }
+    s("path", { d: path(D.contour.neighbours), class: "neighbour" }, g);
+    s("path", { d: path(D.contour.ontario), class: "land" }, g);
+    // fold bands
+    var byFold = {};
+    D.plis.forEach(function (p) { (byFold[p.pli] = byFold[p.pli] || []).push(p.lon); });
+    var keys = Object.keys(byFold).map(Number).sort();
+    var edges = [lon0];
+    for (var i = 0; i < keys.length - 1; i++) edges.push((Math.max.apply(null, byFold[keys[i]]) + Math.min.apply(null, byFold[keys[i + 1]])) / 2);
+    edges.push(lon1);
+    keys.forEach(function (kf, i) {
+      if (i % 2 === 0) s("rect", { x: X(edges[i]), y: m.t, width: X(edges[i + 1]) - X(edges[i]), height: H - m.t - m.b, class: "foldband" }, g);
+      s("text", { x: (X(edges[i]) + X(edges[i + 1])) / 2, y: m.t - 8, "text-anchor": "middle", class: "lab-strong", text: "Fold " + (kf + 1) }, svg);
+      if (i > 0) s("line", { x1: X(edges[i]), x2: X(edges[i]), y1: m.t, y2: H - m.b, class: "axis", "stroke-dasharray": "3 3" }, svg);
+    });
+    [46, 48, 50, 52].forEach(function (lat) { s("text", { x: m.l - 6, y: Y(lat) + 4, "text-anchor": "end", class: "tick", text: lat + "°N" }, svg); });
+    [-94, -89, -84, -79, -75].forEach(function (lon) { s("text", { x: X(lon), y: H - m.b + 17, "text-anchor": "middle", class: "tick", text: Math.abs(lon) + "°W" }, svg); });
+    D.plis.forEach(function (p) {
+      var c = s("circle", { cx: X(p.lon), cy: Y(p.lat), r: 4.5, class: "dot", style: "fill:var(--ink-2)" }, svg);
+      hover(c, function () { return row("Project site", p.site_id) + row("Fold", p.pli + 1) + row("Original split", p.split_origine); });
+    });
+    D.nouveaux.forEach(function (p) {
+      var c = s("circle", { cx: X(p.lon), cy: Y(p.lat), r: 5, style: "fill:var(--surface);stroke:var(--s1);stroke-width:2" }, svg);
+      hover(c, function () { return row("New site", p.site_id) + row("Lidar year", p.year) + row("Use", "external test only"); });
+    });
+    document.getElementById("fig-folds").appendChild(svg);
+  })();
+
+  // ---------- cross-validation table ----------
+  (function cvTable() {
+    var rows = [
+      ["l1_r34_imagenet", "5 graines", "—", "Current model (L1), 5 seeds", ""],
+      ["q_r34_imagenet", "5 graines", "brute", "Quantile ResNet-34, 5 seeds", "uncalibrated"],
+      ["q_r34_imagenet", "5 graines", "conforme croisée globale", "Quantile ResNet-34, 5 seeds", "single calibration"],
+      ["q_r34_imagenet", "5 graines", "conforme croisée par tranche", "Quantile ResNet-34, 5 seeds", "per-band calibration (final)"],
+      ["q_r34_imagenet", "un modèle (moyenne des graines)", "brute", "Quantile ResNet-34, one model", "uncalibrated"],
+      ["q_r50_ssl4eo", "5 graines", "brute", "Quantile ResNet-50 SSL4EO, 5 seeds", "uncalibrated"],
+      ["q_r50_ssl4eo", "5 graines", "conforme croisée par tranche", "Quantile ResNet-50 SSL4EO, 5 seeds", "per-band calibration"]
+    ];
+    var t = h("table", {}, [h("thead", {}, [h("tr", {}, ["Model", "MAE", "R²", "Quantile score", "Below q10", "Above q90", "Inside", "Width"].map(function (c, i) { return h("th", { class: i ? "num" : "", text: c }); }))])]);
+    var tb = h("tbody");
+    rows.forEach(function (r) {
+      var v = D.cv_metriques.find(function (x) { return x.config === r[0] && x.ensemble === r[1] && x.calibration === r[2]; });
+      if (!v) return;
+      var tr = h("tr", { class: r[4].indexOf("final") >= 0 ? "is-final" : "" }, [
+        h("td", { html: esc(r[3]) + (r[4] ? '<br><span class="sub">' + esc(r[4]) + "</span>" : "") }),
+        h("td", { class: "num", text: f(v.mae, 4) }), h("td", { class: "num", text: f(v.r2, 3) }),
+        h("td", { class: "num", text: v.score_quantile == null ? "–" : f(v.score_quantile, 4) }),
+        h("td", { class: "num", text: pc(v.sous_q10) }), h("td", { class: "num", text: pc(v.sur_q90) }),
+        h("td", { class: "num", text: pc(v.dans_intervalle) }), h("td", { class: "num", text: v.largeur == null ? "–" : f(v.largeur, 3) })
+      ]);
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+    document.getElementById("tbl-cv").appendChild(t);
+  })();
+
+  // ---------- encoder chart ----------
+  (function encoder() {
+    var W = 700, H = 270, m = { l: 56, r: 16, t: 34, b: 44 };
+    var A = D.cv_par_pli.filter(function (r) { return r.config === "q_r34_imagenet"; });
+    var B = D.cv_par_pli.filter(function (r) { return r.config === "q_r50_ssl4eo"; });
+    var vals = A.concat(B).map(function (r) { return r.score_quantile; });
+    var y0 = 0.025, y1 = 0.032;
+    var x = scale(-0.5, A.length - 0.5, m.l, W - m.r), y = scale(y0, y1, H - m.b, m.t);
+    var svg = svgBox(W, H, "Quantile score per fold for the two encoders");
+    for (var v = 0.026; v <= y1 + 1e-9; v += 0.002) {
+      s("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: "grid" }, svg);
+      s("text", { x: m.l - 8, y: y(v) + 4, "text-anchor": "end", class: "tick", text: v.toFixed(3) }, svg);
+    }
+    s("text", { x: 14, y: (m.t + H - m.b) / 2, class: "axt", transform: "rotate(-90 14 " + (m.t + H - m.b) / 2 + ")", "text-anchor": "middle", text: "quantile score" }, svg);
+    A.forEach(function (a, i) {
+      var b = B.find(function (r) { return r.pli === a.pli; });
+      var cx = x(i);
+      var hit = s("rect", { x: cx - 50, y: m.t - 24, width: 100, height: H - m.b - m.t + 24, class: "hit" }, svg);
+      s("line", { x1: cx - 12, x2: cx + 12, y1: y(a.score_quantile), y2: y(b.score_quantile), class: "axis" }, svg);
+      s("circle", { cx: cx - 12, cy: y(a.score_quantile), r: 6, class: "dot", style: "fill:var(--s1)" }, svg);
+      s("circle", { cx: cx + 12, cy: y(b.score_quantile), r: 6, class: "dot", style: "fill:var(--s2)" }, svg);
+      var win = b.score_quantile < a.score_quantile;
+      s("text", { x: cx, y: m.t - 10, "text-anchor": "middle", class: "lab", text: win ? "SSL4EO better" : "ImageNet better" }, svg);
+      s("text", { x: cx, y: H - m.b + 18, "text-anchor": "middle", class: "tick", text: "Fold " + (a.pli + 1) }, svg);
+      s("text", { x: cx, y: H - m.b + 34, "text-anchor": "middle", class: "tick", text: a.sites + " sites" }, svg);
+      svg.appendChild(hit);
+      hover(hit, function () {
+        return row("Fold " + (a.pli + 1), a.sites + " sites") +
+          row("ResNet-34 ImageNet, score", f(a.score_quantile, 4), "var(--s1)") + row("  MAE", f(a.mae, 4)) +
+          row("ResNet-50 SSL4EO, score", f(b.score_quantile, 4), "var(--s2)") + row("  MAE", f(b.mae, 4));
+      });
+    });
+    document.getElementById("fig-encoder").appendChild(svg);
+  })();
+
+  // ---------- coverage summary table ----------
+  var cover = D.couverture_tranches.filter(function (r) { return r.selon === "carte centrale q50"; });
+  (function coverTable() {
+    function agg(jeu, calib, mid) {
+      var rs = cover.filter(function (r) { return r.jeu === jeu && r.calibration === calib && ((r.tranche >= 0.1 && r.tranche < 0.9) === mid); });
+      var n = rs.reduce(function (a, r) { return a + r.cases; }, 0);
+      var out = rs.reduce(function (a, r) { return a + r.cases * (r.sous_q10 + r.sur_q90); }, 0) / n;
+      return 1 - out;
+    }
+    var t = h("table", {}, [h("thead", {}, [h("tr", {}, [h("th", { text: "Cells" }), h("th", { class: "num", text: "Single calib." }), h("th", { class: "num", text: "Per band" })])])]);
+    var tb = h("tbody");
+    [[JEU_CV, "Cross-validation"], [JEU_EXT, "15 new sites"]].forEach(function (j) {
+      [[true, "partly forested"], [false, "water, closed forest"]].forEach(function (k) {
+        tb.appendChild(h("tr", {}, [h("td", { html: esc(j[1]) + ', <span class="sub">' + k[1] + "</span>" }),
+          h("td", { class: "num", text: pc(agg(j[0], "globale", k[0]), 0) }), h("td", { class: "num", text: pc(agg(j[0], "par tranche", k[0]), 0) })]));
+      });
+    });
+    t.appendChild(tb);
+    document.getElementById("tbl-cover").appendChild(t);
+  })();
+
+  // ---------- coverage chart ----------
+  (function coverage() {
+    var host = document.getElementById("fig-coverage");
+    [[JEU_CV, "Cross-validation, 49 project sites"], [JEU_EXT, "External test, 15 new Ontario sites"]].forEach(function (j) {
+      var W = 440, H = 270, m = { l: 44, r: 12, t: 12, b: 42 };
+      var x = scale(0, 1, m.l, W - m.r), y = scale(0, 0.3, H - m.b, m.t);
+      var svg = svgBox(W, H, "Share of labels outside the interval by band of the central map, " + j[1]);
+      [0, 0.1, 0.2, 0.3].forEach(function (v) {
+        s("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: "grid" }, svg);
+        s("text", { x: m.l - 6, y: y(v) + 4, "text-anchor": "end", class: "tick", text: Math.round(v * 100) + "%" }, svg);
+      });
+      [0, 0.2, 0.4, 0.6, 0.8, 1].forEach(function (v) { s("text", { x: x(v), y: H - m.b + 16, "text-anchor": "middle", class: "tick", text: v.toFixed(1) }, svg); });
+      s("text", { x: (m.l + W - m.r) / 2, y: H - 6, "text-anchor": "middle", class: "axt", text: "central map (bands of 0.1)" }, svg);
+      s("line", { x1: m.l, x2: W - m.r, y1: y(0.1), y2: y(0.1), class: "ref" }, svg);
+      s("text", { x: W - m.r - 2, y: y(0.1) - 5, "text-anchor": "end", class: "lab halo", text: "target 10%" }, svg);
+      var data = {};
+      ["globale", "par tranche"].forEach(function (c) { data[c] = cover.filter(function (r) { return r.jeu === j[0] && r.calibration === c; }).sort(function (a, b) { return a.tranche - b.tranche; }); });
+      [["globale", "line dash"], ["par tranche", "line"]].forEach(function (c) {
+        [["sous_q10", "var(--s1)"], ["sur_q90", "var(--s2)"]].forEach(function (k) {
+          var d = data[c[0]].map(function (r, i) { return (i ? "L" : "M") + x(r.tranche + 0.05).toFixed(1) + "," + y(r[k[0]]).toFixed(1); }).join("");
+          s("path", { d: d, class: c[1], style: "stroke:" + k[1] }, svg);
+          if (c[0] === "par tranche") data[c[0]].forEach(function (r) { s("circle", { cx: x(r.tranche + 0.05), cy: y(r[k[0]]), r: 3.5, class: "dot", style: "fill:" + k[1] }, svg); });
+        });
+      });
+      data["par tranche"].forEach(function (r, i) {
+        var g0 = data.globale[i];
+        var hit = s("rect", { x: x(r.tranche), y: m.t, width: x(0.1) - x(0), height: H - m.b - m.t, class: "hit" }, svg);
+        hover(hit, function () {
+          return row("Central map", r.tranche.toFixed(1) + "–" + (r.tranche + 0.1).toFixed(1)) + row("Cells", r.cases.toLocaleString("en-US")) +
+            row("Below conservative, per band", pc(r.sous_q10), "var(--s1)") + row("  single calibration", pc(g0.sous_q10)) +
+            row("Above optimistic, per band", pc(r.sur_q90), "var(--s2)") + row("  single calibration", pc(g0.sur_q90));
+        });
+      });
+      host.appendChild(h("div", {}, [h("p", { class: "panel-title", text: j[1] }), (function () { var c = h("div", { class: "chart" }); c.appendChild(svg); return c; })()]));
+    });
+  })();
+
+  // ---------- references ----------
+  var SRC = [
+    ["final", "Final model (central map)"],
+    ["origine", "Current / original model"],
+    ["Meta/WRI CHM v2", "Meta/WRI CHM v2"],
+    ["SCANFI v2", "SCANFI v2"],
+    ["NTEMS 2022", "NTEMS 2022"]
+  ];
+  function refRows(jeu) {
+    var rs = D.references_metriques.filter(function (r) { return r.jeu === jeu; });
+    return SRC.map(function (sr) {
+      if (sr[0] === "final") return { name: sr[1], main: rs.find(function (r) { return r.source.indexOf("Modèle final") === 0; }), kind: "final" };
+      if (sr[0] === "origine") {
+        var o = rs.find(function (r) { return r.source.indexOf("Modèle d'origine") === 0; });
+        return { name: o.source.indexOf("3 graines") > 0 ? "Original model (3 seeds)" : "Current model (L1, 5 seeds)", main: o, kind: "model" };
+      }
+      return { name: sr[1], main: rs.find(function (r) { return r.source === sr[0] && r.version === "recalibré"; }), raw: rs.find(function (r) { return r.source === sr[0] && r.version === "brut"; }), kind: "product" };
+    });
+  }
+  (function refsChart() {
+    var host = document.getElementById("fig-refs");
+    var jeux = [["validation croisée, 49 sites du projet", "Cross-validation, 49 project sites"], ["15 nouveaux sites ontariens", "15 new Ontario sites"]];
+    jeux.forEach(function (j) {
+      var rows = refRows(j[0]);
+      var W = 440, rowH = 38, m = { l: 168, r: 44, t: 8, b: 34 }, H = m.t + rows.length * rowH + m.b;
+      var x = scale(0, 0.25, m.l, W - m.r);
+      var svg = svgBox(W, H, "Mean absolute error by map, " + j[1]);
+      [0, 0.05, 0.1, 0.15, 0.2, 0.25].forEach(function (v) {
+        s("line", { x1: x(v), x2: x(v), y1: m.t, y2: H - m.b, class: "grid" }, svg);
+        s("text", { x: x(v), y: H - m.b + 16, "text-anchor": "middle", class: "tick", text: v.toFixed(2) }, svg);
+      });
+      s("text", { x: (m.l + W - m.r) / 2, y: H - 4, "text-anchor": "middle", class: "axt", text: "MAE (cover fraction)" }, svg);
+      rows.forEach(function (r, i) {
+        var cy = m.t + i * rowH + rowH / 2, bh = 16;
+        var col = r.kind === "final" ? "var(--s1)" : r.kind === "model" ? "var(--g-test)" : "var(--neutral-bar)";
+        s("text", { x: m.l - 10, y: cy + 4, "text-anchor": "end", class: r.kind === "final" ? "lab-strong" : "lab", text: r.name }, svg);
+        var w = Math.max(0, x(r.main.mae) - x(0));
+        s("path", { d: "M" + x(0) + "," + (cy - bh / 2) + "h" + (w - 4) + "a4,4 0 0 1 4,4v" + (bh - 8) + "a4,4 0 0 1 -4,4h" + (-(w - 4)) + "Z", style: "fill:" + col }, svg);
+        var labX = x(r.main.mae) + 6;
+        if (r.raw) {
+          var dx = x(r.raw.mae);
+          s("rect", { x: dx - 5, y: cy - 5, width: 10, height: 10, transform: "rotate(45 " + dx + " " + cy + ")", style: "fill:var(--surface);stroke:var(--ink);stroke-width:1.5" }, svg);
+          labX = Math.max(labX, dx + 10);
+        }
+        s("text", { x: labX, y: cy + 4, class: "lab-strong", text: f(r.main.mae, 3) }, svg);
+        var hit = s("rect", { x: 0, y: cy - rowH / 2, width: W, height: rowH, class: "hit" }, svg);
+        hover(hit, function () {
+          var out = row(r.name, "");
+          if (r.raw) {
+            out += row("Recalibrated MAE", f(r.main.mae, 3)) + row("  RMSE / bias / R²", f(r.main.rmse, 3) + " / " + f(r.main.biais, 3) + " / " + f(r.main.r2, 2));
+            out += row("As published MAE", f(r.raw.mae, 3)) + row("  RMSE / bias / R²", f(r.raw.rmse, 3) + " / " + f(r.raw.biais, 3) + " / " + f(r.raw.r2, 2));
+          } else {
+            out += row("MAE", f(r.main.mae, 4)) + row("RMSE / bias / R²", f(r.main.rmse, 3) + " / " + f(r.main.biais, 3) + " / " + f(r.main.r2, 2));
+          }
+          return out + row("Cells", r.main.n.toLocaleString("en-US"));
+        });
+      });
+      host.appendChild(h("div", {}, [h("p", { class: "panel-title", text: j[1] }), (function () { var c = h("div", { class: "chart" }); c.appendChild(svg); return c; })()]));
+    });
+    // table
+    var t = h("table", {}, [h("thead", {}, [h("tr", {}, ["Sites", "Map", "Version", "MAE", "RMSE", "Bias", "R²"].map(function (c, i) { return h("th", { class: i > 2 ? "num" : "", text: c }); }))])]);
+    var tb = h("tbody");
+    jeux.forEach(function (j) {
+      refRows(j[0]).forEach(function (r) {
+        [[r.main, r.raw ? "recalibrated" : "—"], r.raw ? [r.raw, "as published"] : null].forEach(function (p) {
+          if (!p) return;
+          tb.appendChild(h("tr", { class: r.kind === "final" ? "is-final" : "" }, [h("td", { text: j[1] }), h("td", { text: r.name }), h("td", { text: p[1] }),
+            h("td", { class: "num", text: f(p[0].mae, 4) }), h("td", { class: "num", text: f(p[0].rmse, 4) }), h("td", { class: "num", text: f(p[0].biais, 4) }), h("td", { class: "num", text: f(p[0].r2, 3) })]));
+        });
+      });
+    });
+    t.appendChild(tb);
+    document.getElementById("tbl-refs").appendChild(t);
+  })();
+
+  // ---------- external table ----------
+  (function extTable() {
+    var t = h("table", {}, [h("thead", {}, [h("tr", {}, ["Sites", "MAE", "Bias", "R²", "Inside, uncalibrated", "Below q10", "Above q90", "Inside", "Width"].map(function (c, i) { return h("th", { class: i ? "num" : "", text: c }); }))])]);
+    var tb = h("tbody");
+    ["ontario", "neon_A", "neon_B"].forEach(function (g) {
+      var raw = D.externe_metriques.find(function (r) { return r.config === FINAL && r.groupe === g && r.calibration === "brute"; });
+      var cal = D.externe_metriques.find(function (r) { return r.config === FINAL && r.groupe === g && r.calibration === "conforme par tranche"; });
+      tb.appendChild(h("tr", {}, [h("td", { html: '<span class="chip"><i class="key-dot" style="background:' + GROUPS[g].color + '"></i>' + esc(GROUPS[g].name) + " (" + cal.sites + ")</span>" }),
+        h("td", { class: "num", text: f(cal.mae, 3) }), h("td", { class: "num", text: (cal.biais > 0 ? "+" : "") + f(cal.biais, 3) }), h("td", { class: "num", text: f(cal.r2, 2) }),
+        h("td", { class: "num", text: pc(raw.dans_intervalle, 0) }), h("td", { class: "num", text: pc(cal.sous_q10) }), h("td", { class: "num", text: pc(cal.sur_q90) }),
+        h("td", { class: "num", html: "<b>" + pc(cal.dans_intervalle) + "</b>" }), h("td", { class: "num", text: f(cal.largeur, 3) })]));
+    });
+    t.appendChild(tb);
+    document.getElementById("tbl-ext").appendChild(t);
+  })();
+
+  // ---------- width vs error ----------
+  var perSite = {};
+  D.externe_par_site.filter(function (r) { return r.config === FINAL; }).forEach(function (r) { perSite[r.site_id] = r; });
+  var siteInfo = {};
+  D.sites.forEach(function (r) { siteInfo[r.id] = r; });
+  (function widthChart() {
+    var W = 460, H = 320, m = { l: 50, r: 16, t: 12, b: 44 };
+    var x = scale(0.1, 0.55, m.l, W - m.r), y = scale(0, 0.22, H - m.b, m.t);
+    var svg = svgBox(W, H, "Interval width against MAE for the 22 external sites");
+    [0, 0.05, 0.1, 0.15, 0.2].forEach(function (v) {
+      s("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: "grid" }, svg);
+      s("text", { x: m.l - 6, y: y(v) + 4, "text-anchor": "end", class: "tick", text: v.toFixed(2) }, svg);
+    });
+    [0.1, 0.2, 0.3, 0.4, 0.5].forEach(function (v) { s("text", { x: x(v), y: H - m.b + 16, "text-anchor": "middle", class: "tick", text: v.toFixed(1) }, svg); });
+    s("text", { x: (m.l + W - m.r) / 2, y: H - 6, "text-anchor": "middle", class: "axt", text: "mean interval width" }, svg);
+    s("text", { x: 12, y: (m.t + H - m.b) / 2, class: "axt", transform: "rotate(-90 12 " + (m.t + H - m.b) / 2 + ")", "text-anchor": "middle", text: "MAE of the central map" }, svg);
+    Object.keys(perSite).forEach(function (id) {
+      var r = perSite[id], info = siteInfo[id] || { nom: id };
+      var c = s("circle", { cx: x(r.largeur), cy: y(r.mae), r: 6, class: "dot", style: "fill:" + GROUPS[r.groupe].color }, svg);
+      hover(c, function () {
+        return row(info.nom, GROUPS[r.groupe].short) + row("MAE", f(r.mae, 3)) + row("Mean width", f(r.largeur, 3)) + row("Labels inside", pc(r.dans_intervalle));
+      });
+      if (id === "OSBS_2021") s("text", { x: x(r.largeur) - 9, y: y(r.mae) + 4, "text-anchor": "end", class: "lab halo", text: "OSBS" }, svg);
+    });
+    document.getElementById("fig-width").appendChild(svg);
+  })();
+
+  // ---------- map viewer ----------
+  var STOPS = ["#f6f9fd", "#cde2fb", "#86b6ef", "#3987e5", "#1c5cab", "#0d366b"];
+  var LUT = (function () {
+    var rgb = STOPS.map(function (c) { return [1, 3, 5].map(function (i) { return parseInt(c.substr(i, 2), 16); }); });
+    var out = new Uint8ClampedArray(256 * 4);
+    for (var v = 0; v < 256; v++) {
+      if (v > 250) { out[v * 4 + 3] = 0; continue; }
+      var t = v / 250 * (rgb.length - 1), i = Math.min(rgb.length - 2, Math.floor(t)), u = t - i;
+      for (var k = 0; k < 3; k++) out[v * 4 + k] = Math.round(rgb[i][k] + (rgb[i + 1][k] - rgb[i][k]) * u);
+      out[v * 4 + 3] = 255;
+    }
+    return out;
+  })();
+  var NAMES = ["Label", "Conservative", "Central", "Optimistic"];
+  var state = { id: null, w: 0, h: 0, gray: null, token: 0 };
+  var panels = Array.prototype.slice.call(document.querySelectorAll(".v-img"));
+  var marks = panels.map(function (p) { var mk = h("div", { class: "v-mark", hidden: "" }); p.appendChild(mk); return mk; });
+  var readout = document.getElementById("v-read");
+
+  function buildPicker() {
+    var host = document.getElementById("picker");
+    ["ontario", "neon_A", "neon_B"].forEach(function (g) {
+      var grp = h("div", { class: "pick-group", role: "group", "aria-label": GROUPS[g].name }, [
+        h("span", { class: "titre", html: '<i class="key-dot" style="background:' + GROUPS[g].color + '"></i>' + esc(GROUPS[g].name) })
+      ]);
+      D.sites.filter(function (r) { return r.groupe === g; }).forEach(function (r) {
+        var b = h("button", { type: "button", "aria-pressed": "false", "data-id": r.id, text: r.nom });
+        b.addEventListener("click", function () { select(r.id); });
+        grp.appendChild(b);
+      });
+      host.appendChild(grp);
+    });
+  }
+
+  function select(id) {
+    if (state.id === id) return;
+    state.id = id; state.gray = null;
+    var token = ++state.token;
+    var info = siteInfo[id], r = perSite[id];
+    Array.prototype.forEach.call(document.querySelectorAll(".pick-group button"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-id") === id ? "true" : "false"); });
+    var head = document.getElementById("v-head");
+    head.innerHTML = "";
+    head.appendChild(h("span", { class: "nom", text: info.nom }));
+    head.appendChild(h("span", { class: "chip", html: '<i class="key-dot" style="background:' + GROUPS[info.groupe].color + '"></i>' + esc(GROUPS[info.groupe].name) }));
+    if (info.nom !== id) head.appendChild(h("span", { class: "chip", text: id }));
+    var st = document.getElementById("v-stats");
+    st.innerHTML = "";
+    var items = [["Mean label", f(info.label_moyen, 2)], ["MAE", f(r.mae, 3)], ["Bias", (r.biais > 0 ? "+" : "") + f(r.biais, 3)],
+      ["Labels inside the interval", pc(r.dans_intervalle, 0)], ["Mean width", f(r.largeur, 2)], ["Sentinel-2 dates", info.images]];
+    var refs = D.references_par_site.filter(function (x) { return x.site_id === id && x.version === "recalibré"; });
+    var sc = refs.find(function (x) { return x.source === "SCANFI v2"; }), me = refs.find(function (x) { return x.source === "Meta/WRI CHM v2"; });
+    if (sc) items.push(["SCANFI MAE", f(sc.mae, 3)]);
+    if (me) items.push(["Meta MAE", f(me.mae, 3)]);
+    items.forEach(function (it) { st.appendChild(h("span", { html: esc(it[0]) + " <b>" + it[1] + "</b>" })); });
+    if (sc || me) st.appendChild(h("span", { class: "sub", text: "(existing maps recalibrated)" }));
+    readout.innerHTML = '<span class="lbl">Loading maps…</span>';
+    marks.forEach(function (mk) { mk.hidden = true; });
+    document.getElementById("v-s2").src = "img/" + id + "_s2.jpg";
+    fetch("img/" + id + "_cartes.png").then(function (res) {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.blob();
+    }).then(function (blob) {
+      return new Promise(function (ok, ko) {
+        var im = new Image(), url = URL.createObjectURL(blob);
+        im.onload = function () { URL.revokeObjectURL(url); ok(im); };
+        im.onerror = function () { URL.revokeObjectURL(url); ko(new Error("decode")); };
+        im.src = url;
+      });
+    }).then(function (im) {
+      if (token !== state.token) return;
+      var W4 = im.naturalWidth, H = im.naturalHeight, W = W4 / 4;
+      var c = document.createElement("canvas"); c.width = W4; c.height = H;
+      var ctx = c.getContext("2d", { willReadFrequently: true });
+      ctx.drawImage(im, 0, 0);
+      var px = ctx.getImageData(0, 0, W4, H).data;
+      var gray = new Uint8Array(W4 * H);
+      for (var i = 0; i < gray.length; i++) gray[i] = px[i * 4];
+      state.gray = gray; state.w = W; state.h = H;
+      panels.forEach(function (p) { p.style.aspectRatio = W + " / " + H; });
+      for (var k = 0; k < 4; k++) {
+        var cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+        cv.setAttribute("role", "img"); cv.setAttribute("aria-label", NAMES[k] + " canopy cover map of " + info.nom);
+        var cx = cv.getContext("2d"), out = cx.createImageData(W, H), o = out.data;
+        for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) {
+          var g = gray[yy * W4 + k * W + xx], j = (yy * W + xx) * 4;
+          o[j] = LUT[g * 4]; o[j + 1] = LUT[g * 4 + 1]; o[j + 2] = LUT[g * 4 + 2]; o[j + 3] = LUT[g * 4 + 3];
+        }
+        cx.putImageData(out, 0, 0);
+        var host = panels[k + 1], old = host.querySelector("canvas");
+        if (old) host.replaceChild(cv, old); else host.insertBefore(cv, host.firstChild);
+      }
+      readout.innerHTML = '<span class="lbl">Move over a panel to read canopy cover at one pixel.</span>';
+    }).catch(function () {
+      if (token !== state.token) return;
+      readout.innerHTML = '<span class="lbl">The maps for this site could not be loaded. Reload the page to try again.</span>';
+    });
+  }
+
+  function value(k, xx, yy) {
+    var g = state.gray[yy * state.w * 4 + k * state.w + xx];
+    return g > 250 ? null : g / 250;
+  }
+  function onMove(ev) {
+    if (!state.gray) return;
+    var b = ev.currentTarget.getBoundingClientRect();
+    var u = (ev.clientX - b.left) / b.width, v = (ev.clientY - b.top) / b.height;
+    if (u < 0 || u >= 1 || v < 0 || v >= 1) return;
+    var xx = Math.floor(u * state.w), yy = Math.floor(v * state.h);
+    marks.forEach(function (mk) { mk.hidden = false; mk.style.left = (u * 100) + "%"; mk.style.top = (v * 100) + "%"; });
+    var vals = [0, 1, 2, 3].map(function (k) { return value(k, xx, yy); });
+    var parts = NAMES.map(function (n, k) { return '<span><span class="lbl">' + n + "</span> <b>" + (vals[k] == null ? "no data" : vals[k].toFixed(2)) + "</b></span>"; });
+    var verdict = "";
+    if (vals.every(function (x) { return x != null; })) {
+      verdict = vals[0] < vals[1] ? "label below the conservative map" : vals[0] > vals[3] ? "label above the optimistic map" : "label inside the interval";
+      verdict = '<span class="status">' + (verdict === "label inside the interval" ? '<svg viewBox="0 0 16 16" aria-hidden="true"><path class="st-good" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm-1.2 10.2L3.6 8l1.1-1.1 2.1 2.1 4.5-4.5 1.1 1.1z"/></svg>' : "") + verdict + "</span>";
+    }
+    readout.innerHTML = parts.join("") + verdict + '<span class="sub">pixel ' + xx + ", " + yy + " · " + "10&nbsp;m</span>";
+  }
+  function onLeave() { marks.forEach(function (mk) { mk.hidden = true; }); }
+  panels.forEach(function (p) {
+    p.addEventListener("pointermove", onMove);
+    p.addEventListener("pointerdown", onMove);
+    p.addEventListener("pointerleave", onLeave);
+  });
+
+  buildPicker();
+  select("Z16_E0685_N5385_2022");
+})();
+</script>

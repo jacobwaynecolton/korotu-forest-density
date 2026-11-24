@@ -1,0 +1,23 @@
+Comparaison avec les résultats du camarade (référence : /w/20261/tsalin/MLOps/reference_camarade)
+
+[2] labels : 49 sites, écart max de densité moyenne par site = 5.55e-17 (0 = identique)
+    sites seulement chez le camarade : ['Z16_E0275_N5330_2021']
+[4] images Sentinel-2 : 181 fichiers (attendu : 181)
+[5] unet_r34     val 0.0974 (camarade 0.1066)   test 0.1105 (camarade 0.1135)
+[5] unet_r34_s1  val 0.1071 (camarade 0.1026)   test 0.1093 (camarade 0.1052)
+[5] unet_r34_s2  val 0.1054 (camarade 0.1063)   test 0.1109 (camarade 0.1087)
+[8] val  model:unet_r34_ens3    MAE 0.1020 (camarade 0.1034, écart -0.0014)
+[8] val  meta_chm_v2            MAE 0.1546 (camarade 0.1546, écart +0.0000)
+[8] val  meta_chm_v2_cal        MAE 0.1737 (camarade 0.1737, écart +0.0000)
+[8] val  scanfi_v2              MAE 0.2206 (camarade 0.2206, écart +0.0000)
+[8] val  scanfi_v2_cal          MAE 0.1869 (camarade 0.1869, écart +0.0000)
+[8] val  ntems_2022             MAE 0.1802 (camarade 0.1802, écart +0.0000)
+[8] val  ntems_2022_cal         MAE 0.2175 (camarade 0.2175, écart +0.0000)
+[8] test model:unet_r34_ens3    MAE 0.1077 (camarade 0.1063, écart +0.0014)
+[8] test meta_chm_v2            MAE 0.1482 (camarade 0.1482, écart +0.0000)
+[8] test meta_chm_v2_cal        MAE 0.1501 (camarade 0.1501, écart +0.0000)
+[8] test scanfi_v2              MAE 0.1998 (camarade 0.1998, écart +0.0000)
+[8] test scanfi_v2_cal          MAE 0.1610 (camarade 0.1610, écart +0.0000)
+[8] test ntems_2022             MAE 0.2030 (camarade 0.2030, écart +0.0000)
+[8] test ntems_2022_cal         MAE 0.2014 (camarade 0.2014, écart +0.0000)
+[9] vérifications : 10/10 réussies
