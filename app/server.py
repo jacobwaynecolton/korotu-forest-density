@@ -1,7 +1,7 @@
 """Web server of the canopy-cover map tool (Python standard library only).
 
 Serves the single-page app (app/static/) and a small JSON API:
-  POST /api/analyses                 {"bbox": [west, south, east, north], "max_scenes": 1-4, "year": null | 2025...}
+  POST /api/analyses                 {"bbox": [west, south, east, north], "year": null | 2025...}
   GET  /api/analyses                 recent analyses
   GET  /api/analyses/<id>            status, progress and, when done, the result metadata
   GET  /api/analyses/<id>/<file>     maps.u16, overlay.u16, rgb_<k>.jpg, canopy_cover.tif
@@ -39,7 +39,7 @@ STATIC = APP / "static"
 JOBS_DIR = DATA / "app" / "analyses"
 TOKEN_FILE = DATA / "app" / "token.txt"
 KEEP = 60                       # analyses kept on disk
-FILES = re.compile(r"^(maps\.u16|overlay\.u16|rgb_[0-3]\.jpg|canopy_cover\.tif)$")
+FILES = re.compile(r"^(maps\.u16|overlay\.u16|rgb_[0-9]\.jpg|canopy_cover\.tif)$")
 JOBS, LOCK, TODO = {}, threading.Lock(), queue.Queue()
 NOMINATIM = "https://nominatim.openstreetmap.org/search"
 USER_AGENT = "canopy-cover-map/1.0 (research prototype)"
@@ -82,7 +82,7 @@ def worker():
         with LOCK:
             job.update(state="running", started=time.time(), message="Starting")
         try:
-            res = engine.run(JOBS_DIR / jid, job["bbox"], job["max_scenes"], job["year"], progress)
+            res = engine.run(JOBS_DIR / jid, job["bbox"], job["year"], progress)
             with LOCK:
                 job.update(state="done", result=res, finished=time.time(), progress=1.0, message="Done")
         except engine.AnalysisError as e:
@@ -200,8 +200,6 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(min(int(self.headers.get("Content-Length", 0)), 10000)))
             bbox = [float(v) for v in body["bbox"]]
             assert len(bbox) == 4
-            max_scenes = int(body.get("max_scenes", 4))
-            assert 1 <= max_scenes <= 4
             year = body.get("year")
             year = int(year) if year not in (None, "", "auto") else None
             assert year is None or 2017 <= year <= 2100
@@ -213,7 +211,7 @@ class Handler(BaseHTTPRequestHandler):
         except engine.AnalysisError as e:
             return self.send(400, {"error": str(e)})
         jid = uuid.uuid4().hex[:12]
-        job = dict(id=jid, state="queued", bbox=bbox, max_scenes=max_scenes, year=year, label=label,
+        job = dict(id=jid, state="queued", bbox=bbox, year=year, label=label,
                    created=time.time(), progress=0.0, message="Waiting in the queue")
         with LOCK:
             JOBS[jid] = job

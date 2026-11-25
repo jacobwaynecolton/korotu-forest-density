@@ -29,18 +29,35 @@ Then open `http://localhost:8765/?token=<token>` once; the browser keeps a cooki
 
 1. **Area**: at least 500 m and at most 20 km on each side. A 10 m grid is laid out in the area's UTM zone, snapped
    to 60 m like the training data.
-2. **Images**: the pipeline's rules (`pipeline/config.toml`), on the most recent summer:
+2. **Images**, chosen automatically in the most recent summer. The area must lie inside one Sentinel-2 tile.
    - **Window**: Sentinel-2 L2A from the training collection, 1 June to 15 September of the current summer (up to
      today) or, before June, of the last one.
-   - **Choice**: most recent first, at least 5 days apart, up to 4 (or fewer, as chosen).
-   - **Clouds**: under 1% of the area flagged by the scene classification (cloud, shadow, cirrus, snow, saturated, no
-     data), so the area must lie inside one Sentinel-2 tile.
-   - **Fallback**: if no image of that summer passes, the two previous summers are tried, with a warning.
-   - **Year**: a given summer can also be chosen.
-3. **Model**: the 5 final U-Nets (`pipeline/`), exactly as in the evaluation.
-   - **Inference**: each network averages the images pixel by pixel over unflagged dates and 4 flips.
-   - **Combination**: the 5 networks are combined as a mixture, and the bounds are calibrated with the final
-     per-band constants (`pipeline/manifests/calibration.json`).
+   - **Seasonal choice**: up to 6 images spread over the summer, 3 before 1 August and 3 from 1 August. Each has at
+     most 10% of the area flagged by the scene classification (cloud, shadow, cirrus, snow, saturated, no data). The
+     cleanest come first, at least 5 days apart, and one half is filled from the other if it lacks images.
+   - **Fallback**: with fewer than 4 such images, the pipeline's rule applies. That is up to 4 images, most recent
+     first, under 1% flagged, with a warning. If no image of that summer passes, the two previous summers are tried,
+     with a warning.
+   - **Year**: a given summer can also be chosen. The number of images is not a user choice.
+3. **Model**: the 5 final U-Nets (`pipeline/`) predict each image on its own (4 flips).
+   - **Base maps**: each network averages the unflagged dates pixel by pixel. The 5 networks are combined as a
+     mixture, and the bounds are calibrated with the final per-band constants
+     (`pipeline/manifests/calibration.json`), exactly as in the evaluation.
+   - **Date rule (fields)**: with the seasonal choice, two conditions are tested per pixel on the clear dates. If the
+     central value of two dates differs by more than 0.35 and at least 2 dates are below 0.3, the three maps of the
+     date with the lowest central value replace the base maps. Each date's maps combine the 5 networks; the
+     calibration is unchanged.
+   - **Why the rule**: dense green crops (hay, cereals) are read as canopy on June and July images, and much less
+     once mown or harvested. The lidar labels them close to 0.
+   - **Display**: the page gives the share of cells corrected this way. The settings are at the top of
+     `app/engine.py`.
+   - **Test**: 20 held-out test sites with the most cropland and grassland (ESA WorldCover), in the summer of their
+     lidar flight. The MAE was 0.098 against 0.102 with the pipeline's image rule, and 0.026 against 0.055 on
+     cropland.
+   - **False clearings**: the rule changed 3.4% of the cells. 0.4% of all cells are forest in the lidar that became
+     false clearings.
+   - **Status**: the thresholds were chosen on these same sites, so the rule is an application heuristic, not part
+     of the evaluated model.
 4. **Outputs**, kept for the last 60 analyses in `<pipeline data>/app/analyses/<id>/`:
    - `canopy_cover.tif`: 3 bands, cover × 10 000, uint16, 65535 = no data;
    - one true-colour JPEG per image;
@@ -48,14 +65,14 @@ Then open `http://localhost:8765/?token=<token>` once; the browser keeps a cooki
 
 Measured on apps0:
 
-| Area | Time |
-|---|---|
-| 2.5 × 2.2 km | 11 s |
-| 4.9 × 4.1 km | 36 s |
-| 6 × 6 km | 45 s |
+| Area | Images | Time |
+|---|---|---|
+| 3.3 × 3.3 km | 6 | 39 s |
+| 5 × 5 km | 2 | 30 s |
+| 5 × 5 km | 6 | 74 s |
 
-The model takes about 1 second per km² with 4 images. Expect about 2 minutes for 10 × 10 km, and about 7 minutes
-for 20 × 20 km.
+The model takes about 0.4 s per km² and per image for the 5 networks, so about 2.5 s per km² with 6 images. Expect
+4 to 5 minutes for 10 × 10 km, and about 17 minutes for 20 × 20 km.
 
 ## Limits
 
@@ -76,7 +93,7 @@ for 20 × 20 km.
 - `run.sh`: start and stop.
 
 The API:
-- `POST /api/analyses {"bbox": [W, S, E, N], "max_scenes": 1-4, "year": null}`;
+- `POST /api/analyses {"bbox": [W, S, E, N], "year": null}`;
 - `GET /api/analyses/<id>`;
 - `GET /api/analyses/<id>/<file>`;
 - `GET /api/geocode?q=`.

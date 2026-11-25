@@ -55,9 +55,6 @@
     <button type="button" id="corners-btn" class="secondary">Use these corners</button>
     <p class="aoi-size" id="aoi-size">No area yet.</p>
     <div class="opts">
-      <label for="opt-scenes">Images
-        <select id="opt-scenes"><option value="4">up to 4</option><option value="3">up to 3</option><option value="2">up to 2</option><option value="1">1</option></select>
-      </label>
       <label for="opt-year">Summer
         <select id="opt-year"><option value="">most recent</option></select>
       </label>
@@ -73,7 +70,8 @@
     <details class="about">
       <summary>How the maps are made</summary>
       <ul>
-        <li>Images: Sentinel-2 L2A of the most recent summer (1 June to 15 September), most recent first, at least 5 days apart, under 1% cloud, shadow or snow over the area. The area must fit in one Sentinel-2 tile.</li>
+        <li>Images: Sentinel-2 L2A of the most recent summer (1 June to 15 September), chosen automatically: up to 6 images spread over the season (3 before and 3 from 1 August), each under 10% cloud, shadow or snow over the area, at least 5 days apart. With fewer than 4 such images, up to 4 of the most recent images under 1% cloud. The area must fit in one Sentinel-2 tile.</li>
+        <li>Fields: dense green crops can look like forest on early-summer images. Where the images disagree by more than 0.35 and at least two of them show under 0.3, the date with the lowest cover is used.</li>
         <li>Model: the 5 final U-Nets, each predicting the 10th, 50th and 90th percentiles of canopy cover (share of the 10&nbsp;m cell under canopy above 2&nbsp;m), combined and calibrated.</li>
         <li>Conservative: true cover below it in about 10% of cells. Optimistic: above it in about 10%. Central: the median.</li>
         <li>Accuracy on 39 held-out Ontario sites: mean absolute error 0.085. Outside Ontario's forest, expect larger errors.</li>

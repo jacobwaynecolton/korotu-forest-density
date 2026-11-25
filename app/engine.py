@@ -1,13 +1,22 @@
 """From an area of interest (lon/lat box) to calibrated conservative / central / optimistic canopy-cover maps.
 
-Same rules and model as the final pipeline (pipeline/config.toml), applied to the most recent leaf-on season:
+Same model as the final pipeline (pipeline/config.toml), applied to the most recent leaf-on season:
   - scenes from the pipeline's Sentinel-2 collection, between 1 June and 15 September of the most recent summer
-    (the current one if it has started, up to today), most recent first, at least 5 days apart, with less than 1%
-    of the area flagged by the scene classification (cloud, shadow, cirrus, snow, saturated, no data: the area must
-    lie inside one Sentinel-2 tile). If no scene of that summer passes, the previous summers are tried;
+    (the current one if it has started, up to today), inside one Sentinel-2 tile. Seasonal choice (A below): up to
+    6 scenes, 3 before 1 August and 3 from 1 August, each with at most 10% of the area flagged by the scene
+    classification (cloud, shadow, cirrus, snow, saturated, no data), cleanest first, at least 5 days apart. With
+    fewer than 4 such scenes, the pipeline's rule: up to 4 scenes, most recent first, under 1% flagged. If no scene
+    of that summer passes, the previous summers are tried;
   - reflectance = DN x 0.0001, with the pipeline's alarm if a scene still carries the BOA offset;
-  - the 5 final U-Nets (pipeline/data/models/final_g*.pt), each averaging dates pixel by pixel over unflagged
-    dates and 4 flips; the 5 predictions combined as a mixture; bounds calibrated with the final per-band constants.
+  - the 5 final U-Nets (pipeline/data/models/final_g*.pt) predict each date (4 flips). Base maps: each network
+    averages the dates pixel by pixel over unflagged dates, and the 5 networks are combined as a mixture, as in the
+    pipeline. With the seasonal choice, date-disagreement rule: where the central value of two clear dates differs by
+    more than 0.35 and at least 2 clear dates are below 0.3 (typically fields, read as canopy while the crop is dense
+    and green), the maps of the date with the lowest central value (mixture of the 5 networks) are used. Bounds
+    calibrated with the final per-band constants.
+  The seasonal choice and the rule were tested on 20 held-out test sites with fields and grassland (summer of the
+  lidar flight): mean absolute error 0.0975 against 0.1020 with the pipeline's image rule, 0.026 against 0.055 on
+  cropland (ESA WorldCover).
 Inference runs on CPU in one background process that keeps the 5 networks loaded. They run one after the other
 with 8 threads each: apps0 allows 8 CPUs per user, so running them side by side would only make each one slower.
 """
@@ -37,7 +46,11 @@ from sentinel2 import BANDS, check_scale_and_offset, client, read_window, reflec
 
 S2 = CFG["sentinel2"]
 MAX_KM = 20.0                 # longest side of an area
-MAX_CANDIDATES = 30           # scenes whose cloud mask is read, per season and UTM zone
+MAX_CANDIDATES = 60           # scenes whose cloud mask is read, per season and UTM zone (least cloudy tiles first)
+# Image choice and date rule (same names and values as the deliverable's config.toml [app])
+A = dict(season_scenes=6, season_per_half=3, season_split="08-01", season_max_bad=0.10, season_min_scenes=4, max_scenes=4,
+         rule_spread=0.35, rule_low=0.3, rule_min_low=2)
+SPLIT = tuple(int(v) for v in A["season_split"].split("-"))
 SEASONS_BACK = 3              # most recent summer, then up to two earlier ones
 THREADS_PER_MODEL = 8
 SEEDS = CFG["train"]["seeds"]
@@ -99,8 +112,38 @@ def item_epsg(it):
     return int(str(code).split(":")[-1])
 
 
-def find_scenes(cl, bbox, max_scenes, year, progress):
-    """Most recent clean scenes of the most recent summer that has some: (year, epsg, bounds, [(item, bad share)])."""
+def _far_enough(it, kept):
+    return all(abs((it.datetime - k.datetime).days) >= S2["min_days_apart"] for k, _ in kept)
+
+
+def choose_scenes(cands, year):
+    """[(item, flagged share)] of one summer -> (chosen [(item, share)] sorted by date, mode).
+
+    'seasonal': up to season_scenes scenes with at most season_max_bad flagged, season_per_half before season_split and
+    the rest from it, cleanest first, >= 5 days apart, filled from the other half if one half lacks; used when at
+    least season_min_scenes qualify. Otherwise 'standard', the pipeline's rule: max_scenes most recent under 1%."""
+    ok = sorted([c for c in cands if c[1] <= float(A["season_max_bad"])], key=lambda c: (c[1], -c[0].datetime.timestamp()))
+    cut = datetime(year, *SPLIT, tzinfo=timezone.utc)
+    kept = []
+    for half in ([c for c in ok if c[0].datetime < cut], [c for c in ok if c[0].datetime >= cut]):
+        n = 0
+        for c in half:
+            if n < int(A["season_per_half"]) and _far_enough(c[0], kept):
+                kept.append(c); n += 1
+    for c in ok:
+        if len(kept) < int(A["season_scenes"]) and c not in kept and _far_enough(c[0], kept):
+            kept.append(c)
+    if len(kept) >= int(A["season_min_scenes"]):
+        return sorted(kept, key=lambda c: c[0].datetime), "seasonal"
+    kept = []
+    for c in sorted(cands, key=lambda c: c[0].datetime, reverse=True):
+        if len(kept) < int(A["max_scenes"]) and c[1] < S2["max_bad_fraction"] and _far_enough(c[0], kept):
+            kept.append(c)
+    return sorted(kept, key=lambda c: c[0].datetime), "standard"
+
+
+def find_scenes(cl, bbox, year, progress):
+    """Scenes of the most recent summer that has some: (year, epsg, bounds, [(item, flagged share)], mode, tried)."""
     lon, lat = (bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2
     tried = []
     for y, start, end in seasons(date.today(), year):
@@ -112,28 +155,23 @@ def find_scenes(cl, bbox, max_scenes, year, progress):
         for it in items:
             by_epsg.setdefault(item_epsg(it), []).append(it)
         order = sorted(by_epsg, key=lambda e: (e != utm_epsg(lon, lat), -len(by_epsg[e])))
-        checked = 0
         for epsg in order:
             bounds = grid_for(bbox, epsg)
             shp = shape_of(bounds)
-            kept = []
-            for it in sorted(by_epsg[epsg], key=lambda i: i.datetime, reverse=True)[:MAX_CANDIDATES]:
-                if len(kept) == max_scenes:
-                    break
-                if any(abs((it.datetime - k.datetime).days) < S2["min_days_apart"] for k, _ in kept):
-                    continue
-                checked += 1
-                progress(f"Summer {y}: checking clouds on {it.datetime:%d %b %Y} ({len(kept)} clean so far)",
-                         0.05 + 0.25 * min(checked / 12, 1))
+            todo = sorted(by_epsg[epsg], key=lambda i: i.properties.get("eo:cloud_cover", 100))[:MAX_CANDIDATES]
+            progress(f"Summer {y}: checking clouds on {len(todo)} candidate images", 0.08)
+
+            def flagged(it):
                 scl = read_window(it.assets["scl"].href, bounds, shp)
-                bad = float(np.isin(scl, S2["bad_scl"]).mean())
-                if bad < S2["max_bad_fraction"]:
-                    kept.append((it, bad))
+                return it, float(np.isin(scl, S2["bad_scl"]).mean())
+            with ThreadPoolExecutor(8) as ex:
+                cands = list(ex.map(flagged, todo))
+            kept, mode = choose_scenes(cands, y)
             if kept:
-                return y, epsg, bounds, kept, tried
+                return y, epsg, bounds, kept, mode, tried
         tried.append(y)
     raise AnalysisError(
-        f"No Sentinel-2 image of summer {' / '.join(map(str, tried))} has under 1% cloud over this area, inside a single "
+        f"No Sentinel-2 image of summer {' / '.join(map(str, tried))} is clear enough over this area, inside a single "
         "Sentinel-2 tile. Try a smaller area, or move it slightly.")
 
 
@@ -173,7 +211,10 @@ def _predict_one(seed, x_path, bad_path):
     if ph or pw:   # areas smaller than one 256 px window: mirror them up to the window size, then crop back
         refl = np.pad(refl, ((0, 0), (0, 0), (0, ph), (0, pw)), mode="reflect")
         bad = np.pad(bad, ((0, 0), (0, ph), (0, pw)), mode="reflect")
-    return predict(m, torch.from_numpy(normalise(refl, mean, std)), torch.from_numpy(bad))[:, :H, :W]
+    x = torch.from_numpy(normalise(refl, mean, std))
+    b = torch.from_numpy(bad)
+    # each date on its own: (dates, 3, H, W). Averaging them over the clear dates gives the pipeline's prediction.
+    return np.stack([predict(m, x[d:d + 1], b[d:d + 1])[:, :H, :W] for d in range(x.shape[0])]).astype(np.float32)
 
 
 def warm(seed):
@@ -229,7 +270,38 @@ def web_mercator(maps, epsg, bounds):
     return out, w, h, [[lats[0], lons[0]], [lats[1], lons[1]]]
 
 
-def run(job_dir, bbox, max_scenes=4, year=None, progress=lambda m, p: None):
+# ---------- combining dates and networks ----------
+def _mix(preds, rows=256):
+    """mixture() by blocks of rows, to bound memory on large areas."""
+    H = preds[0].shape[-2]
+    return np.concatenate([mixture([p[..., r:r + rows, :] for p in preds]) for r in range(0, H, rows)], axis=-2)
+
+
+def combine(per_seed, good, rule):
+    """per_seed: one (dates, 3, H, W) array per network; good: (dates, H, W) clear pixels.
+
+    Base: each network averages the clear dates (all dates where none is clear), then the networks are mixed: the
+    pipeline's prediction. With rule, where the clear dates disagree (central value spread > rule_spread) and at least
+    rule_min_low clear dates are below rule_low, the maps of the date with the lowest central value (networks mixed)
+    replace the base. Returns (3, H, W) uncalibrated q10, q50, q90 and the (H, W) mask where the rule applied."""
+    g = good.astype(np.float32)
+    g = np.where(g.sum(0, keepdims=True) == 0, 1.0, g)[:, None]                   # (dates, 1, H, W)
+    q = _mix([(p * g).sum(0) / g.sum(0) for p in per_seed])
+    applied = np.zeros(good.shape[1:], bool)
+    if not rule or good.shape[0] < 2:
+        return q, applied
+    by_date = np.stack([_mix([p[d] for p in per_seed]) for d in range(good.shape[0])])   # (dates, 3, H, W)
+    q50 = np.where(good, by_date[:, 1], np.nan)
+    with np.errstate(all="ignore"):
+        spread = np.nan_to_num(np.nanmax(q50, 0) - np.nanmin(q50, 0))
+    low = (q50 < float(A["rule_low"])).sum(0)                                      # NaN compares False
+    applied = (spread > float(A["rule_spread"])) & (low >= int(A["rule_min_low"]))
+    lowest = np.argmin(np.where(np.isfinite(q50), q50, np.inf), axis=0)
+    pick = np.take_along_axis(by_date, lowest[None, None], axis=0)[0]
+    return np.where(applied[None], pick, q), applied
+
+
+def run(job_dir, bbox, year=None, progress=lambda m, p: None):
     """Full analysis; writes outputs into job_dir and returns the result metadata."""
     t0 = time.time()
     kx, ky = check_bbox(bbox)
@@ -239,12 +311,13 @@ def run(job_dir, bbox, max_scenes=4, year=None, progress=lambda m, p: None):
         warnings.append("This area is outside Ontario. The model was trained on Ontario's managed forest; elsewhere "
                         "its maps can be much less accurate, especially in open landscapes with low green vegetation.")
     cl = client()
-    y, epsg, bounds, kept, tried = find_scenes(cl, bbox, max_scenes, year, progress)
+    y, epsg, bounds, kept, mode, tried = find_scenes(cl, bbox, year, progress)
     if tried:
         warnings.append(f"No clean image in summer {' / '.join(map(str, tried))}; summer {y} was used instead.")
-    if len(kept) < max_scenes:
-        warnings.append(f"Only {len(kept)} clean image{'s' if len(kept) > 1 else ''} in summer {y}: the maps rest on "
-                        "fewer dates than in training (up to 4).")
+    if mode == "standard":
+        warnings.append(f"Only {len(kept)} image{'s' if len(kept) > 1 else ''} under 1% cloud in summer {y}, and fewer "
+                        f"than {A['season_min_scenes']} under {float(A['season_max_bad']):.0%}: the dates are averaged "
+                        "without the correction for fields, which may be read as forest early in the summer.")
     t_search = time.time()
 
     progress(f"Reading {len(kept)} image{'s' if len(kept) > 1 else ''} (12 bands + cloud mask)", 0.35)
@@ -268,8 +341,8 @@ def run(job_dir, bbox, max_scenes=4, year=None, progress=lambda m, p: None):
         shutil.rmtree(tmp, ignore_errors=True)
     t_model = time.time()
 
-    progress("Combining the models and calibrating the maps", 0.9)
-    q10, q50, q90 = mixture(preds)
+    progress("Combining the dates and the models, calibrating the maps", 0.9)
+    (q10, q50, q90), applied = combine(preds, ~bad, rule=mode == "seasonal")
     consts = np.array(json.loads((MANIFESTS / "calibration.json").read_text())["bands"])
     lo, hi = calibrate(q10, q50, q90, consts)
     maps = np.stack([lo, q50, hi])
@@ -294,7 +367,8 @@ def run(job_dir, bbox, max_scenes=4, year=None, progress=lambda m, p: None):
              for i, name in enumerate(("conservative", "central", "optimistic"))}
     result = dict(bbox=bbox, size_km=[round(kx, 2), round(ky, 2)], year=y, epsg=epsg, bounds=list(bounds), width=W,
                   height=H, cell_m=CFG["labels"]["cell_m"], corners=[[la, ln] for la, ln in zip(lats, lons)],
-                  scenes=scenes, warnings=warnings, stats=stats,
+                  scenes=scenes, warnings=warnings, stats=stats, image_rule=mode,
+                  corrected_share=round(float(applied[valid].mean()) if valid.any() else 0.0, 4),
                   overlay=dict(width=ow, height=oh, bounds=ob),
                   seconds=dict(search=round(t_search - t0, 1), read=round(t_read - t_search, 1),
                                model=round(t_model - t_read, 1), total=round(time.time() - t0, 1)))

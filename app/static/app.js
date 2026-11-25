@@ -13,7 +13,7 @@
   };
   var S = {
     aoi: null, rect: null, label: "", drawing: false, drawStart: null, preview: null,
-    job: null, timer: null, res: null, resId: null, maps: null, ov: null,
+    job: null, timer: null, polling: false, handled: {}, res: null, resId: null, maps: null, ov: null,
     view: "side", colour: "continuous", scene: 0, overlay: null, lut: null, classes: null
   };
 
@@ -171,7 +171,7 @@
     $("run-btn").disabled = true;
     api("/api/analyses", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bbox: S.aoi, max_scenes: +$("opt-scenes").value, year: $("opt-year").value || null, label: S.label })
+      body: JSON.stringify({ bbox: S.aoi, year: $("opt-year").value || null, label: S.label })
     }).then(function (j) { watch(j.id); refreshHistory(); })
       .catch(function (err) { showError(err.message); $("run-btn").disabled = false; });
   });
@@ -185,20 +185,26 @@
     S.timer = setInterval(poll, 1000);
   }
   function poll() {
+    // one request at a time, and a finished analysis is opened once: a slow reply must not open it (and scroll the
+    // page down to the maps) again after the user has moved away
     var id = S.job;
+    if (S.polling || S.handled[id]) return;
+    S.polling = true;
     api("/api/analyses/" + id).then(function (j) {
-      if (id !== S.job) return;
+      S.polling = false;
+      if (id !== S.job || S.handled[id]) return;
       var msg = j.state === "queued" ? "Waiting: " + (j.queue_position || 1) + " analysis ahead" : j.message;
       $("progress-text").textContent = msg;
       $("progress-fill").style.width = Math.round(100 * (j.progress || 0)) + "%";
       if (j.state === "done" || j.state === "error") {
+        S.handled[id] = true;
         clearInterval(S.timer);
         $("progress").hidden = true;
         $("run-btn").disabled = !S.aoi;
         refreshHistory();
         if (j.state === "error") showError(j.message); else openResult(j);
       }
-    }).catch(function (err) { $("progress-text").textContent = "Connection problem, retrying (" + err.message + ")"; });
+    }).catch(function (err) { S.polling = false; $("progress-text").textContent = "Connection problem, retrying (" + err.message + ")"; });
   }
 
   function refreshHistory() {
@@ -245,6 +251,7 @@
     $("h-res").textContent = "Canopy cover" + (S.label ? ", " + S.label : "");
     $("res-meta").textContent = "Summer " + r.year + " · " + r.scenes.length + " image" + (r.scenes.length > 1 ? "s" : "") + " (" + dates.join(", ") + ") · " +
       r.size_km[0].toFixed(1) + " × " + r.size_km[1].toFixed(1) + " km · " + num(r.width * r.height) + " cells of 10 m · EPSG:" + r.epsg +
+      (r.corrected_share > 0 ? " · " + (100 * r.corrected_share).toFixed(1) + "% of cells corrected as likely fields" : "") +
       " · computed in " + Math.round(r.seconds.total) + " s";
     var w = $("warnings");
     w.innerHTML = r.warnings.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("");
